@@ -70,11 +70,10 @@ a:focus-visible, button:focus-visible, select:focus-visible {
 .btn:hover { transform: translateY(-2px); }
 
 .btn--whats {
-  background: linear-gradient(135deg, #0d4ec7 0%, #0b3ca3 100%);
-  color: #f7fbff;
-  box-shadow: 0 10px 22px rgba(13, 78, 199, 0.28);
+  background: var(--color-whats);
+  color: #08210f;
 }
-.btn--whats:hover { background: linear-gradient(135deg, #0b3ca3 0%, #092d73 100%); }
+.btn--whats:hover { background: var(--color-whats-dim); }
 
 .header {
   position: sticky;
