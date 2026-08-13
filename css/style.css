@@ -181,7 +181,7 @@ a:focus-visible, button:focus-visible, select:focus-visible {
 }
 
 .hero h1 { font-size: clamp(2.2rem, 6vw, 3.2rem); }
-.hero h1 span { color: var(--color-cyan); }
+.hero h1 span { color: #0e4ec5; }
 
 .hero__lead { margin: 20px auto 0; max-width: 46ch; font-size: 1.05rem; }
 .hero__cta { margin-top: 32px; }
