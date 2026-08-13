@@ -1,0 +1,195 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JV Estética de Motos | Lavagem e Detalhamento</title>
+  <meta name="description" content="Cuidado, limpeza e acabamento em cada detalhe. Escolha a cilindrada da sua moto e veja o valor na hora." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="header" id="header">
+    <div class="container header__inner">
+      <a href="#top" class="logo">JV <span>Estética de Motos</span></a>
+
+      <nav class="nav" id="nav">
+        <a href="#servicos">Serviços</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#contato">Contato</a>
+      </nav>
+
+      <a href="https://wa.me/553484266406?text=Ol%C3%A1!%20Quero%20agendar%20uma%20lavagem." target="_blank" rel="noopener" class="btn btn--whats header__cta">
+        <svg viewBox="0 0 32 32" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M16 0C7.2 0 0 7.2 0 16c0 2.8.7 5.5 2.1 7.9L0 32l8.3-2.2c2.3 1.3 4.9 1.9 7.7 1.9 8.8 0 16-7.2 16-16S24.8 0 16 0zm0 29.3c-2.5 0-4.9-.7-7-1.9l-.5-.3-4.9 1.3 1.3-4.8-.3-.5C3 20.7 2.3 18.4 2.3 16 2.3 8.5 8.5 2.3 16 2.3S29.7 8.5 29.7 16 23.5 29.3 16 29.3zm7.6-9.1c-.4-.2-2.4-1.2-2.8-1.3-.4-.1-.6-.2-.9.2s-1 1.3-1.2 1.5c-.2.2-.4.3-.8.1-.4-.2-1.6-.6-3-1.9-1.1-1-1.9-2.2-2.1-2.6-.2-.4 0-.6.2-.8.2-.2.4-.4.6-.7.2-.2.3-.4.4-.6.1-.3.1-.5 0-.7-.1-.2-.9-2.2-1.2-3-.3-.8-.6-.7-.9-.7h-.7c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.3 3.4 1.4 3.6c.2.2 2.5 3.9 6.1 5.4.9.4 1.5.6 2.1.7.9.3 1.6.2 2.2.1.7-.1 2.4-1 2.7-1.9.3-.9.3-1.7.2-1.9-.1-.2-.3-.3-.6-.4z"/></svg>
+        Agendar
+      </a>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero" id="top">
+      <div class="container hero__inner">
+        <div class="hero__brand" aria-label="Logo JV Estética Automotiva">
+          <div class="hero__brand-mark">
+            <span class="hero__brand-box">JV</span>
+            <span class="hero__brand-text">ESTÉTICA<br>AUTOMOTIVA</span>
+          </div>
+        </div>
+        <p class="eyebrow">JV Estética de Motos</p>
+        <h1>Muito mais que<br><span>limpeza.</span></h1>
+        <p class="hero__lead">
+          Cuidado, limpeza e acabamento em cada detalhe. Escolha a cilindrada
+          da sua moto e veja o valor certinho, na hora.
+        </p>
+        <a href="#servicos" class="btn btn--whats hero__cta">Ver serviços e valores</a>
+      </div>
+    </section>
+
+    <section class="notice">
+      <div class="container">
+        <div class="notice__box">
+          <span class="notice__icon">⚠️</span>
+          <p><strong>Atenção:</strong> os valores podem variar de acordo com o estado da sua moto. Entre em contato para confirmarmos.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="services" id="servicos">
+      <div class="container">
+        <h2 class="section-title">Serviços</h2>
+        <p class="section-subtitle">Escolha a cilindrada da sua moto em cada plano para ver o valor.</p>
+
+        <div class="plans">
+
+          <article class="plan" data-accent="cyan">
+            <p class="plan__eyebrow">🧼 Lavagem completa</p>
+            <h3 class="plan__title">Lavagem Completa</h3>
+            <ul class="plan__features">
+              <li>Limpeza completa da moto</li>
+              <li>Foco nas principais partes</li>
+              <li>Pretinho nos pneus</li>
+              <li>Aplicação de cera</li>
+            </ul>
+
+            <label class="plan__label" for="select-completa">Cilindrada</label>
+            <select class="plan__select" id="select-completa">
+              <option value="50" data-range="150cc – 400cc">150cc – 400cc — R$ 50,00</option>
+              <option value="70" data-range="400cc – 900cc">400cc – 900cc — R$ 70,00</option>
+              <option value="100" data-range="+900cc">+900cc — R$ 100,00</option>
+            </select>
+
+            <p class="plan__price-label">A partir de</p>
+            <p class="plan__price" id="price-completa">R$ 50,00</p>
+
+            <a class="btn btn--whats plan__cta" id="cta-completa" href="#" target="_blank" rel="noopener">
+              <svg viewBox="0 0 32 32" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M16 0C7.2 0 0 7.2 0 16c0 2.8.7 5.5 2.1 7.9L0 32l8.3-2.2c2.3 1.3 4.9 1.9 7.7 1.9 8.8 0 16-7.2 16-16S24.8 0 16 0zm0 29.3c-2.5 0-4.9-.7-7-1.9l-.5-.3-4.9 1.3 1.3-4.8-.3-.5C3 20.7 2.3 18.4 2.3 16 2.3 8.5 8.5 2.3 16 2.3S29.7 8.5 29.7 16 23.5 29.3 16 29.3zm7.6-9.1c-.4-.2-2.4-1.2-2.8-1.3-.4-.1-.6-.2-.9.2s-1 1.3-1.2 1.5c-.2.2-.4.3-.8.1-.4-.2-1.6-.6-3-1.9-1.1-1-1.9-2.2-2.1-2.6-.2-.4 0-.6.2-.8.2-.2.4-.4.6-.7.2-.2.3-.4.4-.6.1-.3.1-.5 0-.7-.1-.2-.9-2.2-1.2-3-.3-.8-.6-.7-.9-.7h-.7c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.3 3.4 1.4 3.6c.2.2 2.5 3.9 6.1 5.4.9.4 1.5.6 2.1.7.9.3 1.6.2 2.2.1.7-.1 2.4-1 2.7-1.9.3-.9.3-1.7.2-1.9-.1-.2-.3-.3-.6-.4z"/></svg>
+              Agendar
+            </a>
+          </article>
+
+          <article class="plan" data-accent="orange">
+            <p class="plan__eyebrow">✨ Lavagem detalhada</p>
+            <h3 class="plan__title">Lavagem Detalhada</h3>
+            <ul class="plan__features">
+              <li>Lavagem completa</li>
+              <li>Limpeza detalhada</li>
+              <li>Atenção especial às áreas de difícil acesso</li>
+              <li>Pretinho nos pneus</li>
+              <li>Aplicação de cera</li>
+            </ul>
+
+            <label class="plan__label" for="select-detalhada">Cilindrada</label>
+            <select class="plan__select" id="select-detalhada">
+              <option value="100" data-range="150cc – 400cc">150cc – 400cc — R$ 100,00</option>
+              <option value="110" data-range="400cc – 900cc">400cc – 900cc — R$ 110,00</option>
+              <option value="125" data-range="+900cc">+900cc — R$ 125,00</option>
+            </select>
+
+            <p class="plan__price-label">A partir de</p>
+            <p class="plan__price" id="price-detalhada">R$ 100,00</p>
+
+            <a class="btn btn--whats plan__cta" id="cta-detalhada" href="#" target="_blank" rel="noopener">
+              <svg viewBox="0 0 32 32" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M16 0C7.2 0 0 7.2 0 16c0 2.8.7 5.5 2.1 7.9L0 32l8.3-2.2c2.3 1.3 4.9 1.9 7.7 1.9 8.8 0 16-7.2 16-16S24.8 0 16 0zm0 29.3c-2.5 0-4.9-.7-7-1.9l-.5-.3-4.9 1.3 1.3-4.8-.3-.5C3 20.7 2.3 18.4 2.3 16 2.3 8.5 8.5 2.3 16 2.3S29.7 8.5 29.7 16 23.5 29.3 16 29.3zm7.6-9.1c-.4-.2-2.4-1.2-2.8-1.3-.4-.1-.6-.2-.9.2s-1 1.3-1.2 1.5c-.2.2-.4.3-.8.1-.4-.2-1.6-.6-3-1.9-1.1-1-1.9-2.2-2.1-2.6-.2-.4 0-.6.2-.8.2-.2.4-.4.6-.7.2-.2.3-.4.4-.6.1-.3.1-.5 0-.7-.1-.2-.9-2.2-1.2-3-.3-.8-.6-.7-.9-.7h-.7c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.3 3.4 1.4 3.6c.2.2 2.5 3.9 6.1 5.4.9.4 1.5.6 2.1.7.9.3 1.6.2 2.2.1.7-.1 2.4-1 2.7-1.9.3-.9.3-1.7.2-1.9-.1-.2-.3-.3-.6-.4z"/></svg>
+              Agendar
+            </a>
+          </article>
+
+          <article class="plan plan--premium" data-accent="gold">
+            <span class="plan__badge">Mais completo</span>
+            <p class="plan__eyebrow">💎 Lavagem premium</p>
+            <h3 class="plan__title">Lavagem Premium</h3>
+            <p class="plan__desc">Lavagem extremamente detalhada, feita para quem busca o máximo de cuidado e acabamento.</p>
+            <ul class="plan__features">
+              <li>Lavagem completa e detalhada</li>
+              <li>Desmontagem de peças para alcançar áreas de difícil acesso</li>
+              <li>Limpeza minuciosa</li>
+              <li>Aplicação de cera</li>
+              <li>Pretinho nos pneus</li>
+            </ul>
+
+            <label class="plan__label" for="select-premium">Cilindrada</label>
+            <select class="plan__select" id="select-premium">
+              <option value="115" data-range="150cc – 400cc">150cc – 400cc — R$ 115,00</option>
+              <option value="125" data-range="400cc – 900cc">400cc – 900cc — R$ 125,00</option>
+              <option value="140" data-range="+900cc">+900cc — R$ 140,00</option>
+            </select>
+
+            <p class="plan__price-label">A partir de</p>
+            <p class="plan__price" id="price-premium">R$ 115,00</p>
+
+            <a class="btn btn--whats plan__cta" id="cta-premium" href="#" target="_blank" rel="noopener">
+              <svg viewBox="0 0 32 32" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M16 0C7.2 0 0 7.2 0 16c0 2.8.7 5.5 2.1 7.9L0 32l8.3-2.2c2.3 1.3 4.9 1.9 7.7 1.9 8.8 0 16-7.2 16-16S24.8 0 16 0zm0 29.3c-2.5 0-4.9-.7-7-1.9l-.5-.3-4.9 1.3 1.3-4.8-.3-.5C3 20.7 2.3 18.4 2.3 16 2.3 8.5 8.5 2.3 16 2.3S29.7 8.5 29.7 16 23.5 29.3 16 29.3zm7.6-9.1c-.4-.2-2.4-1.2-2.8-1.3-.4-.1-.6-.2-.9.2s-1 1.3-1.2 1.5c-.2.2-.4.3-.8.1-.4-.2-1.6-.6-3-1.9-1.1-1-1.9-2.2-2.1-2.6-.2-.4 0-.6.2-.8.2-.2.4-.4.6-.7.2-.2.3-.4.4-.6.1-.3.1-.5 0-.7-.1-.2-.9-2.2-1.2-3-.3-.8-.6-.7-.9-.7h-.7c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.3 3.4 1.4 3.6c.2.2 2.5 3.9 6.1 5.4.9.4 1.5.6 2.1.7.9.3 1.6.2 2.2.1.7-.1 2.4-1 2.7-1.9.3-.9.3-1.7.2-1.9-.1-.2-.3-.3-.6-.4z"/></svg>
+              Agendar
+            </a>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="about" id="sobre">
+      <div class="container about__inner">
+        <div>
+          <h2 class="section-title">🏆 JV Estética de Motos</h2>
+          <p>
+            Sua moto merece esse cuidado. Com a JV Estética de Motos, você recebe
+            acabamento profissional, atenção aos detalhes e resultado real em cada
+            serviço. Cuidado, limpeza e acabamento em cada detalhe.
+          </p>
+        </div>
+        <div class="about__stats">
+          <div class="stat"><strong>3</strong><span>níveis de serviço</span></div>
+          <div class="stat"><strong>100%</strong><span>foco no detalhe</span></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer" id="contato">
+    <div class="container footer__inner">
+      <div>
+        <p class="logo logo--footer">JV <span>Estética de Motos</span></p>
+        <p class="footer__tagline">Cuidado, limpeza e acabamento em cada detalhe.</p>
+      </div>
+      <div class="footer__contact">
+        <a href="https://wa.me/553484266406" target="_blank" rel="noopener" class="btn btn--whats">Chamar no WhatsApp</a>
+        <a href="https://instagram.com/" target="_blank" rel="noopener" class="footer__link">@jvesteticademotos</a>
+      </div>
+    </div>
+    <p class="footer__copy">© <span id="year"></span> JV Estética de Motos. Todos os direitos reservados.</p>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
