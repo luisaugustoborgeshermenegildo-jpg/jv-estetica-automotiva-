@@ -363,6 +363,10 @@ a:focus-visible, button:focus-visible, select:focus-visible {
 }
 
 @media (max-width: 700px) {
+  .container {
+    padding: 0 18px;
+  }
+
   .nav {
     position: absolute;
     top: 100%;
@@ -377,6 +381,94 @@ a:focus-visible, button:focus-visible, select:focus-visible {
   .nav.is-open { display: flex; }
   .nav-toggle { display: flex; }
   .header__cta { display: none; }
+
+  .hero {
+    padding: 46px 0 32px;
+    text-align: left;
+  }
+
+  .hero__brand {
+    width: min(68vw, 260px);
+    margin: 0 0 18px;
+  }
+
+  .hero__brand-mark {
+    gap: 10px;
+    padding: 12px 10px 0;
+  }
+
+  .hero__brand-box {
+    width: 68px;
+    height: 58px;
+    border-radius: 14px;
+    font-size: 1.7rem;
+  }
+
+  .hero__brand-text {
+    font-size: 0.72rem;
+    line-height: 0.9;
+  }
+
+  .eyebrow {
+    font-size: 0.72rem;
+    margin-bottom: 10px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 11vw, 2.7rem);
+    line-height: 1.08;
+  }
+
+  .hero__lead {
+    margin-top: 14px;
+    max-width: 100%;
+    font-size: 0.96rem;
+    line-height: 1.5;
+  }
+
+  .hero__cta {
+    display: inline-flex;
+    width: 100%;
+    margin-top: 22px;
+  }
+
+  .notice__box {
+    padding: 14px 16px;
+  }
+
+  .notice__box p {
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .plan__title {
+    font-size: 1.05rem;
+  }
+
+  .plan__features li,
+  .plan__desc,
+  .plan__label,
+  .plan__select,
+  .plan__cta,
+  .plan__price-label,
+  .plan__price {
+    font-size: 0.92rem;
+  }
+
+  .plan__price {
+    font-size: 1.9rem;
+  }
+
+  .footer__inner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .footer__contact {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
