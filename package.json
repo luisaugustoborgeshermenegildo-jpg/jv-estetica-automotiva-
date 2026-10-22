@@ -1,0 +1,11 @@
+{
+  "name": "jv-estetica-automotiva",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "@netlify/database": "^2.0.1"
+  }
+}

@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+data/
+.env
+node_modules/
+dist/
+.pnpm-store/
+.netlify/
