@@ -29,4 +29,6 @@ No modo local, defina `ADMIN_PASSWORD` no PowerShell antes de iniciar `app.py`; 
 
 O expediente configurado é das 8h às 12h e das 13h às 17h, de terça a domingo. Atualize `OPEN_DAYS` e `TIMES` em `app.py` e nas Functions caso o expediente mude.
 
+Os serviços adicionais disponíveis são limpeza e lubrificação da corrente (R$ 20,00) e revitalização de plásticos (R$ 40,00). Eles aparecem na seção de serviços e como opções no formulário; mantenha a lista `SERVICES` sincronizada entre `app.py` e `netlify/functions/bookings.mjs`.
+
 O projeto inclui cabeçalhos de segurança, validação no servidor, limite do corpo do pedido, campo honeypot e restrições de acesso ao código local. Não coloque credenciais no repositório. Nenhum deploy foi realizado por este projeto.

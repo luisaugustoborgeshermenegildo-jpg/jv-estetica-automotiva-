@@ -2,7 +2,13 @@ import { randomUUID } from 'node:crypto';
 import { getDatabase } from '@netlify/database';
 
 const TIMES = new Set(['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']);
-const SERVICES = new Set(['Lavagem completa', 'Lavagem detalhada', 'Lavagem premium']);
+const SERVICES = new Set([
+  'Lavagem completa',
+  'Lavagem detalhada',
+  'Lavagem premium',
+  'Limpeza e lubrificação da corrente',
+  'Revitalização de plásticos',
+]);
 const ENGINES = new Set(['150cc – 400cc', '400cc – 900cc', 'Mais de 900cc']);
 const OPEN_DAYS = new Set([2, 3, 4, 5, 6, 0]);
 const TZ = 'America/Sao_Paulo';

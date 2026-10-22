@@ -16,7 +16,8 @@ ROOT = Path(__file__).resolve().parent
 DB_PATH = Path(os.environ.get("DB_PATH", str(ROOT / "data" / "bookings.sqlite3")))
 OPEN_DAYS = {1, 2, 3, 4, 5, 6}  # terça a domingo; segunda fechado
 TIMES = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"]
-SERVICES = {"Lavagem completa", "Lavagem detalhada", "Lavagem premium"}
+SERVICES = {"Lavagem completa", "Lavagem detalhada", "Lavagem premium",
+            "Limpeza e lubrificação da corrente", "Revitalização de plásticos"}
 ENGINES = {"150cc – 400cc", "400cc – 900cc", "Mais de 900cc"}
 BR_TZ = ZoneInfo("America/Sao_Paulo")
 
