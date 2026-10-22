@@ -21,6 +21,6 @@ Com o repositório ligado ao Netlify, crie uma branch/PR para gerar um Deploy Pr
 
 ## Expediente
 
-O horário configurado é demonstrativo: terça a domingo, 9h–11h e 13h–17h. Atualize `OPEN_DAYS` e `TIMES` em `app.py` e nas Functions antes de abrir os agendamentos ao público.
+O expediente configurado é das 8h às 12h e das 13h às 17h, de terça a domingo. Atualize `OPEN_DAYS` e `TIMES` em `app.py` e nas Functions caso o expediente mude.
 
 O projeto inclui cabeçalhos de segurança, validação no servidor, limite do corpo do pedido, campo honeypot e restrições de acesso ao código local. Não coloque credenciais no repositório. Nenhum deploy foi realizado por este projeto.
