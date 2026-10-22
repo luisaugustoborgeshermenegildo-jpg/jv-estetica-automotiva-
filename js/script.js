@@ -64,6 +64,14 @@ form.addEventListener('submit', async event => {
   event.preventDefault();
   feedback.className = 'form-feedback';
   if (!timeInput.value) { message('Selecione um dos horários disponíveis antes de continuar.'); return; }
+  // Reserve the tab while the submit still has a direct user gesture; browsers
+  // may block a WhatsApp window opened only after the API request completes.
+  const whatsappWindow = window.open('about:blank', '_blank');
+  if (whatsappWindow) {
+    whatsappWindow.opener = null;
+    whatsappWindow.document.title = 'Preparando seu WhatsApp…';
+    whatsappWindow.document.body.textContent = 'Agendamento sendo salvo. Aguarde…';
+  }
   const submit = form.querySelector('[type="submit"]');
   submit.disabled = true; submit.textContent = 'Enviando solicitação…';
   const payload = Object.fromEntries(new FormData(form).entries());
@@ -73,7 +81,7 @@ form.addEventListener('submit', async event => {
     });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'Não foi possível concluir o pedido.');
-    message(`Pedido recebido! Protocolo ${result.booking.id}. Vamos confirmar seu horário pelo WhatsApp.`, 'success');
+    message(`Pedido salvo! Protocolo ${result.booking.id}. O WhatsApp será aberto com os dados para avisar a equipe. Toque em Enviar para concluir o aviso.`, 'success');
     const whatsappMessage = [
       `Olá! Fiz uma solicitação de agendamento na JV. Protocolo ${result.booking.id}.`,
       `${payload.name} — ${payload.phone}`,
@@ -81,14 +89,17 @@ form.addEventListener('submit', async event => {
       `${payload.service} — ${payload.date} às ${payload.time}`,
       payload.notes ? `Observação: ${payload.notes}` : ''
     ].filter(Boolean).join('\n');
+    const whatsappUrl = `https://wa.me/5534984266406?text=${encodeURIComponent(whatsappMessage)}`;
+    if (whatsappWindow) whatsappWindow.location.replace(whatsappUrl);
     const contactLink = document.createElement('a');
-    contactLink.href = `https://wa.me/5534984266406?text=${encodeURIComponent(whatsappMessage)}`;
+    contactLink.href = whatsappUrl;
     contactLink.target = '_blank'; contactLink.rel = 'noopener noreferrer';
-    contactLink.textContent = 'Avisar a equipe pelo WhatsApp ↗';
+    contactLink.textContent = 'Abrir WhatsApp novamente ↗';
     feedback.append(contactLink);
     form.reset(); timeInput.value = ''; slotsEl.innerHTML = '<span class="slot-hint">Selecione um serviço e um dia para consultar.</span>';
     dateInput.min = localDate;
   } catch (error) {
+    if (whatsappWindow && !whatsappWindow.closed) whatsappWindow.close();
     message(error.message || 'Não foi possível enviar. Confira sua conexão e tente novamente.');
   } finally {
     submit.disabled = false; submit.innerHTML = 'Solicitar agendamento <span>↗</span>';

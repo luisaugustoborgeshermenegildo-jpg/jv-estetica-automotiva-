@@ -19,6 +19,12 @@ O deploy do Netlify publica apenas `dist/` e usa as Functions em `netlify/functi
 
 Com o repositório ligado ao Netlify, crie uma branch/PR para gerar um Deploy Preview e valide o fluxo de agenda e envio sem trocar o site de produção. O Netlify Database isola deploy previews em branches próprios. Só publique a branch principal quando a prévia estiver aprovada.
 
+### Painel administrativo
+
+O João Vitor pode consultar os pedidos em `https://SEU-DOMINIO/admin/`. O painel usa sessão assinada em cookie `HttpOnly`, `Secure` e `SameSite=Strict`; a senha fica somente no servidor e não deve ser colocada no repositório. No projeto Netlify, configure a variável secreta `ADMIN_PASSWORD` (mínimo de 16 caracteres) em **Project configuration > Environment variables**, incluindo deploys de produção e preview que precisem do painel. Depois, faça um novo deploy. O acesso expira após 12 horas e tentativas de login são limitadas. O painel mostra até 250 pedidos e permite abrir uma conversa com o cliente pelo WhatsApp.
+
+No modo local, defina `ADMIN_PASSWORD` no PowerShell antes de iniciar `app.py`; em HTTPS o cookie administrativo é marcado como seguro. A agenda pública e o painel consultam a base correspondente ao ambiente em que estão rodando. Para o painel online listar reservas dos clientes, o Netlify Database deve estar ativo e ligado a esse deploy.
+
 ## Expediente
 
 O expediente configurado é das 8h às 12h e das 13h às 17h, de terça a domingo. Atualize `OPEN_DAYS` e `TIMES` em `app.py` e nas Functions caso o expediente mude.

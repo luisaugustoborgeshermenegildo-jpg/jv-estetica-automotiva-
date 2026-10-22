@@ -3,11 +3,13 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 import os
 import re
+import hmac
 import sqlite3
 import uuid
 from zoneinfo import ZoneInfo
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, make_response, request, send_from_directory
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 ROOT = Path(__file__).resolve().parent
@@ -64,7 +66,7 @@ def security_headers(response):
         "font-src 'self' https://fonts.gstatic.com; connect-src 'self'; "
         "img-src 'self' data:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
     )
-    response.headers["Cache-Control"] = "no-store" if request.path.startswith("/api/") else "no-cache"
+    response.headers["Cache-Control"] = "no-store" if request.path.startswith(("/api/", "/admin")) else "no-cache"
     if os.environ.get("RENDER"):
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     return response
@@ -83,6 +85,81 @@ def css_file(filename):
 @app.get("/js/<path:filename>")
 def js_file(filename):
     return send_from_directory(ROOT / "js", filename)
+
+
+@app.get("/admin")
+@app.get("/admin/")
+def admin_page():
+    return send_from_directory(ROOT / "admin", "index.html")
+
+
+@app.get("/admin/<path:filename>")
+def admin_assets(filename):
+    return send_from_directory(ROOT / "admin", filename)
+
+
+def admin_password():
+    password = os.environ.get("ADMIN_PASSWORD", "")
+    return password if len(password) >= 16 else None
+
+
+def admin_serializer(password):
+    return URLSafeTimedSerializer(password, salt="jv-estetica-admin-session")
+
+
+def is_admin():
+    password = admin_password()
+    if not password:
+        return False
+    try:
+        admin_serializer(password).loads(request.cookies.get("jv_admin", ""), max_age=12 * 60 * 60)
+        return True
+    except (BadSignature, SignatureExpired):
+        return False
+
+
+@app.post("/api/admin/login")
+def admin_login():
+    password = admin_password()
+    if not password:
+        return jsonify(error="O acesso administrativo ainda não foi configurado."), 503
+    if not request.is_json or request.content_length is not None and request.content_length > 1024:
+        return jsonify(error="Dados inválidos."), 400
+    body = request.get_json(silent=True)
+    candidate = body.get("password") if isinstance(body, dict) else None
+    if not isinstance(candidate, str) or len(candidate) > 256 or not hmac.compare_digest(candidate, password):
+        return jsonify(error="Senha incorreta."), 401
+    response = make_response(jsonify(ok=True))
+    response.set_cookie("jv_admin", admin_serializer(password).dumps({"admin": True}), max_age=12 * 60 * 60,
+                        httponly=True, secure=bool(os.environ.get("RENDER")), samesite="Strict", path="/api/admin")
+    return response
+
+
+@app.post("/api/admin/logout")
+def admin_logout():
+    response = make_response(jsonify(ok=True))
+    response.delete_cookie("jv_admin", path="/api/admin", secure=bool(os.environ.get("RENDER")), httponly=True, samesite="Strict")
+    return response
+
+
+@app.get("/api/admin/bookings")
+def admin_bookings():
+    if not admin_password():
+        return jsonify(error="O acesso administrativo ainda não foi configurado."), 503
+    if not is_admin():
+        return jsonify(error="Entre novamente para consultar os agendamentos."), 401
+    with connect_db() as connection:
+        rows = connection.execute(
+            """SELECT id, name, phone, motorcycle, service, engine, date, time, notes, status, created_at
+            FROM bookings ORDER BY CASE WHEN date >= ? THEN 0 ELSE 1 END, date ASC, time ASC, created_at DESC LIMIT 250""",
+            (datetime.now(BR_TZ).date().isoformat(),),
+        ).fetchall()
+    bookings = [{
+        "id": row["id"], "name": row["name"], "phone": row["phone"], "motorcycle": row["motorcycle"],
+        "service": row["service"], "engine": row["engine"], "date": row["date"], "time": row["time"],
+        "notes": row["notes"], "status": row["status"], "createdAt": row["created_at"],
+    } for row in rows]
+    return jsonify(bookings=bookings)
 
 
 @app.get("/health")

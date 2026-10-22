@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101114">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Área administrativa | JV Estética Automotiva</title>
+  <link rel="stylesheet" href="/admin/css/admin.css">
+  <script src="/admin/js/admin.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/" aria-label="JV Estética Automotiva"><span class="brand-mark">JV</span><span>ESTÉTICA<br>AUTOMOTIVA</span></a><span class="private-label">ACESSO RESTRITO</span></header>
+  <main class="page-shell">
+    <section class="login-card" id="loginCard" aria-labelledby="loginTitle">
+      <p class="eyebrow">PAINEL DA EQUIPE</p>
+      <h1 id="loginTitle">Acompanhe sua agenda.</h1>
+      <p class="intro">Entre com a senha administrativa para consultar os pedidos recebidos.</p>
+      <form id="loginForm">
+        <label for="password">Senha administrativa</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="256">
+        <button class="primary-button" type="submit">Entrar no painel <span>↗</span></button>
+      </form>
+      <p class="status" id="loginStatus" role="status" aria-live="polite"></p>
+      <a class="back-link" href="/">← Voltar ao site</a>
+    </section>
+
+    <section class="dashboard hidden" id="dashboard" aria-labelledby="dashboardTitle">
+      <div class="dashboard-head"><div><p class="eyebrow">JV / AGENDA</p><h1 id="dashboardTitle">Agendamentos</h1><p class="intro">Pedidos online recentes, do mais próximo para o mais distante.</p></div><button class="secondary-button" id="refreshButton" type="button">Atualizar</button></div>
+      <div class="summary"><span id="bookingCount">0 pedidos</span><span>Atualização manual</span></div>
+      <p class="status" id="dashboardStatus" role="status" aria-live="polite"></p>
+      <div class="booking-list" id="bookingList"></div>
+      <button class="logout-button" id="logoutButton" type="button">Sair do painel</button>
+    </section>
+  </main>
+  <footer>Informações de clientes são confidenciais. Use este painel somente em um dispositivo confiável.</footer>
+</body>
+</html>
