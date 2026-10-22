@@ -136,6 +136,11 @@ def admin_login():
     return response
 
 
+@app.get("/api/admin/status")
+def admin_status():
+    return jsonify(mode="login" if admin_password() else "disabled")
+
+
 @app.post("/api/admin/logout")
 def admin_logout():
     response = make_response(jsonify(ok=True))

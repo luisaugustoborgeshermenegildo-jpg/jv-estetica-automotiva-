@@ -1,16 +1,15 @@
 import { getDatabase } from '@netlify/database';
-import { configuredPassword, hasAdminSession, json } from '../lib/admin-session.mjs';
+import { readAdminCredential, hasAdminSession, json } from '../lib/admin-session.mjs';
 
 export const config = { path: '/api/admin/bookings' };
 
 export default async request => {
   if (request.method !== 'GET') return json({ error: 'Método não permitido.' }, 405);
-  const password = configuredPassword();
-  if (!password) return json({ error: 'O acesso administrativo ainda não foi configurado.' }, 503);
-  if (!hasAdminSession(request, password)) return json({ error: 'Entre novamente para consultar os agendamentos.' }, 401);
-
   try {
     const db = getDatabase();
+    const credential = await readAdminCredential(db);
+    if (!credential) return json({ error: 'O painel ainda não foi configurado.' }, 503);
+    if (!hasAdminSession(request, credential.sessionKey)) return json({ error: 'Entre novamente para consultar os agendamentos.' }, 401);
     const rows = await db.sql`SELECT id, name, phone, motorcycle, service, engine, booking_date, booking_time, notes, status, created_at
       FROM bookings
       ORDER BY CASE WHEN booking_date >= CURRENT_DATE THEN 0 ELSE 1 END, booking_date ASC, booking_time ASC, created_at DESC

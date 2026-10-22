@@ -1,6 +1,9 @@
 const loginCard = document.querySelector('#loginCard');
 const loginForm = document.querySelector('#loginForm');
 const loginStatus = document.querySelector('#loginStatus');
+const setupCard = document.querySelector('#setupCard');
+const setupForm = document.querySelector('#setupForm');
+const setupStatus = document.querySelector('#setupStatus');
 const dashboard = document.querySelector('#dashboard');
 const dashboardStatus = document.querySelector('#dashboardStatus');
 const bookingList = document.querySelector('#bookingList');
@@ -14,8 +17,15 @@ function setStatus(element, text, success = false) {
 
 function showDashboard() {
   loginCard.classList.add('hidden');
+  setupCard.classList.add('hidden');
   dashboard.classList.remove('hidden');
   loadBookings();
+}
+
+function showLogin() {
+  setupCard.classList.add('hidden');
+  loginCard.classList.remove('hidden');
+  loginForm.classList.remove('hidden');
 }
 
 function renderBookings(bookings) {
@@ -113,6 +123,36 @@ loginForm.addEventListener('submit', async event => {
   }
 });
 
+setupForm.addEventListener('submit', async event => {
+  event.preventDefault();
+  const button = setupForm.querySelector('button');
+  const codeInput = document.querySelector('#setupCode');
+  const newPassword = document.querySelector('#newPassword');
+  const confirmPassword = document.querySelector('#confirmPassword');
+  if (newPassword.value !== confirmPassword.value) {
+    setStatus(setupStatus, 'As senhas não são iguais. Confira e tente de novo.');
+    return;
+  }
+  button.disabled = true;
+  setStatus(setupStatus, 'Configurando seu acesso…');
+  try {
+    const response = await fetch('/api/admin/setup', {
+      method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: codeInput.value, password: newPassword.value })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Não foi possível configurar o acesso.');
+    codeInput.value = '';
+    newPassword.value = '';
+    confirmPassword.value = '';
+    showDashboard();
+  } catch (error) {
+    setStatus(setupStatus, error.message || 'Não foi possível configurar o acesso.');
+  } finally {
+    button.disabled = false;
+  }
+});
+
 document.querySelector('#refreshButton').addEventListener('click', loadBookings);
 document.querySelector('#logoutButton').addEventListener('click', async () => {
   await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' });
@@ -121,6 +161,31 @@ document.querySelector('#logoutButton').addEventListener('click', async () => {
   setStatus(loginStatus, 'Você saiu do painel.', true);
 });
 
-fetch('/api/admin/bookings', { credentials: 'same-origin', cache: 'no-store' })
-  .then(response => { if (response.ok) showDashboard(); })
-  .catch(() => {});
+async function initialize() {
+  try {
+    const response = await fetch('/api/admin/status', { credentials: 'same-origin', cache: 'no-store' });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Não foi possível verificar o painel.');
+    if (data.mode === 'setup') {
+      loginCard.classList.add('hidden');
+      setupCard.classList.remove('hidden');
+      return;
+    }
+    if (data.mode === 'disabled') {
+      loginCard.classList.add('hidden');
+      setupCard.classList.remove('hidden');
+      setupForm.classList.add('hidden');
+      setStatus(setupStatus, 'A configuração inicial está pendente. O responsável precisa ativar o código privado na Netlify.');
+      return;
+    }
+    showLogin();
+    const session = await fetch('/api/admin/bookings', { credentials: 'same-origin', cache: 'no-store' });
+    if (session.ok) showDashboard();
+  } catch (error) {
+    loginCard.classList.remove('hidden');
+    loginForm.classList.add('hidden');
+    setStatus(loginStatus, error.message || 'O painel não está disponível agora.');
+  }
+}
+
+initialize();
