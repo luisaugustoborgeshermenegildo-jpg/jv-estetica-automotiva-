@@ -101,7 +101,7 @@ def admin_assets(filename):
 
 def admin_password():
     password = os.environ.get("ADMIN_PASSWORD", "")
-    return password if len(password) >= 16 else None
+    return password if len(password) >= 12 else None
 
 
 def admin_serializer(password):

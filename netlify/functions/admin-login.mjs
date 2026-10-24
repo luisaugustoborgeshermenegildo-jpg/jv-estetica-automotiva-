@@ -51,7 +51,7 @@ export default async request => {
   if (path === '/api/admin/setup') {
     if (configuredPassword()) return json({ error: 'O painel já foi configurado. Entre com a senha administrativa.' }, 409);
     if (!matchesSetupToken(body.code)) return json({ error: 'Código de ativação incorreto.' }, 401);
-    if (!validAdminPassword(body.password)) return json({ error: 'Crie uma senha com pelo menos 16 e no máximo 128 caracteres.' }, 400);
+    if (!validAdminPassword(body.password)) return json({ error: 'Crie uma senha com pelo menos 12 e no máximo 128 caracteres.' }, 400);
     try {
       if (await readAdminCredential(db)) return json({ error: 'O painel já foi configurado. Entre com a senha administrativa.' }, 409);
       const credential = await makePasswordRecord(body.password);

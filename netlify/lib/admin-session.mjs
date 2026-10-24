@@ -8,7 +8,7 @@ const PASSWORD_BYTES = 64;
 
 export function configuredPassword() {
   const password = process.env.ADMIN_PASSWORD ?? '';
-  return password.length >= 16 ? password : null;
+  return password.length >= 12 ? password : null;
 }
 
 function safeEqual(left, right) {
@@ -47,7 +47,7 @@ export async function adminMode(db) {
 }
 
 export function validAdminPassword(password) {
-  return typeof password === 'string' && password.length >= 16 && password.length <= 128;
+  return typeof password === 'string' && password.length >= 12 && password.length <= 128;
 }
 
 export function matchesSetupToken(candidate) {
