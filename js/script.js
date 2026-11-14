@@ -73,9 +73,8 @@ document.querySelectorAll('.pick-service').forEach(button => {
     if (sending) return;
     serviceSelect.value = button.dataset.service;
     serviceSelect.dispatchEvent(new Event('change'));
-    document.querySelector('#agendar').scrollIntoView({
-      behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'
-    });
+    // Keep focus and the visible field together, including below a sticky header.
+    serviceSelect.scrollIntoView({ behavior: 'instant', block: 'center' });
     serviceSelect.focus({ preventScroll: true });
   });
 });

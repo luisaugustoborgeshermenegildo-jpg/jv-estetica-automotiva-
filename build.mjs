@@ -15,3 +15,6 @@ await copyFile('admin/admin.js', 'dist/admin/js/admin.js');
 
 await cp('css/assets', 'dist/css/assets', { recursive: true });
 await copyFile('css/creditos.html', 'dist/css/creditos.html');
+
+await copyFile('css/monochrome.css', 'dist/css/monochrome.css');
+await copyFile('css/monochrome.html', 'dist/css/monochrome.html');

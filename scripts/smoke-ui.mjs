@@ -7,6 +7,8 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 
 const root=path.resolve('dist');
+const pagePath = process.argv[2] || '/';
+assert(['/', '/css/monochrome.html'].includes(pagePath), 'Escolha uma das duas páginas de comparação.');
 assert(existsSync(path.join(root,'index.html')), 'Rode npm run build antes.');
 const chrome=[process.env.CHROME_PATH,'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Google/Chrome/Application/chrome.exe'].find(p=>p&&existsSync(p));
 assert(chrome,'Chrome ou Edge necessário.');
@@ -56,14 +58,14 @@ try{
  const wait=async expression=>{for(let i=0;i<100;i++){if(await ev(expression))return;await sleep(30);}throw new Error('Timeout: '+expression);};
  const check=async(label,expression)=>{assert(await ev(expression),label);passed++;console.log('PASS '+label);};
  await S('Page.enable');await S('Runtime.enable');
- await S('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/'});
+ await S('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+pagePath});
  await wait("document.documentElement.classList.contains('js') && document.querySelector('.submit-button')?.disabled===false");
  await ev('document.fonts.ready');await ev('window.open=()=>null');
  for(const[width,height]of [[320,780],[375,812],[390,844],[768,1024],[820,1180],[1024,768],[1440,900]]){
   await S('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<600});await sleep(50);
   await check('Sem rolagem horizontal em '+width+'px','document.documentElement.scrollWidth<=innerWidth');
  }
- await check('Fontes locais carregadas','document.fonts.check(\'600 16px "Barlow Condensed"\') && document.fonts.check(\'400 16px "DM Sans"\')');
+ await check('Fontes locais carregadas','document.fonts.check(getComputedStyle(document.querySelector(\'#hero-title\')).fontWeight + \' 16px "Barlow Condensed"\') && document.fonts.check(\'400 16px "DM Sans"\')');
  await check('Links internos têm destino',"Array.from(document.querySelectorAll('a[href^=\"#\"]')).every(a=>document.getElementById(a.hash.slice(1)))");
  await check('Foto principal carregada',"document.querySelector('.hero-photo img').naturalWidth>0");
  await check('Consentimento obrigatório',"document.querySelector('[name=consent]').required");
@@ -71,6 +73,15 @@ try{
   await ev('document.querySelector('+JSON.stringify(selector)+').focus()');await sleep(500);
   await check('Foco visível em '+selector,"(()=>{const e=document.activeElement;const r=e.getBoundingClientRect();const h=document.querySelector('.header').getBoundingClientRect();return r.top>=h.bottom-1&&r.bottom<=innerHeight+1&&getComputedStyle(e).outlineStyle!=='none';})()");
  }
+ await ev("document.querySelector('.skip').focus()");
+ await check('Foco inicial tem contorno de alto contraste', "getComputedStyle(document.querySelector('.skip')).outlineColor==='rgb(17, 17, 17)' && getComputedStyle(document.querySelector('.skip')).boxShadow!=='none'");
+ for (let stop = 0; stop < 20; stop++) {
+  await S('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+  await S('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9 });
+  await sleep(100);
+  assert(await ev("(()=>{const e=document.activeElement;const r=e.getBoundingClientRect();const h=document.querySelector('.header').getBoundingClientRect();return r.width>0&&r.height>0&&r.bottom<=innerHeight+1&&(e.closest('.header')||r.top>=h.bottom);})()"), 'Tab stop visível '+stop);
+ }
+ passed++;console.log('PASS Percurso por teclado mantém 20 controles visíveis');
  await S('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
  await ev("document.querySelector('.menu-toggle').click()");
  await check('Menu móvel abre',"document.querySelector('.menu-toggle').getAttribute('aria-expanded')==='true' && getComputedStyle(document.querySelector('.nav')).display==='flex'");
@@ -79,6 +90,8 @@ try{
  await ev("document.querySelector('[data-vehicle=carro]').click()");
  await check('Carro oferece consulta por WhatsApp',"!document.querySelector('#car-services').hidden && document.querySelector('#moto-services').hidden && document.querySelector('#car-services a').href.startsWith('https://wa.me/')");
  await ev("document.querySelector('[data-vehicle=moto]').click();document.querySelector('[data-service=\"Lavagem premium\"]').click()");
+ await sleep(400);
+ await check('Escolha de serviço leva o foco ao campo visível no celular', "(()=>{const e=document.querySelector('#serviceSelect');const r=e.getBoundingClientRect();const h=document.querySelector('.header').getBoundingClientRect();return document.activeElement===e&&r.top>=h.bottom&&r.bottom<=innerHeight;})()");
  await check('Serviço atualiza formulário e resumo',"document.querySelector('#serviceSelect').value==='Lavagem premium' && document.querySelector('#selectedPrice').textContent.includes('115')");
  await ev("document.querySelector('#bookingForm').requestSubmit()");await sleep(50);
  assert.equal(posted.length,0);passed++;console.log('PASS Formulário incompleto não envia dados');
