@@ -9,7 +9,10 @@ const SERVICES = new Set([
   'Limpeza e lubrificação da corrente',
   'Revitalização de plásticos',
 ]);
-const ENGINES = new Set(['150cc – 400cc', '400cc – 900cc', 'Mais de 900cc']);
+const MOTO_ENGINES = new Set(['150cc – 400cc', '400cc – 900cc', 'Mais de 900cc']);
+const CAR_ENGINES = new Set(['Carro hatch ou sedã', 'Carro SUV ou picape']);
+const ENGINES = new Set([...MOTO_ENGINES, ...CAR_ENGINES]);
+const MOTO_ONLY_SERVICES = new Set(['Limpeza e lubrificação da corrente', 'Revitalização de plásticos']);
 const OPEN_DAYS = new Set([2, 3, 4, 5, 6, 0]);
 const TZ = 'America/Sao_Paulo';
 export const config = {
@@ -41,7 +44,8 @@ export default async (request) => {
   const keys = ['name', 'phone', 'motorcycle', 'service', 'engine', 'date', 'time', 'notes'];
   const fields = Object.fromEntries(keys.map(key => [key, typeof body[key] === 'string' ? body[key].trim() : '']));
   if (keys.slice(0, 7).some(key => !fields[key])) return json({ error: 'Preencha todos os campos obrigatórios.' }, 400);
-  if (!SERVICES.has(fields.service) || !ENGINES.has(fields.engine) || !TIMES.has(fields.time)) return json({ error: 'Serviço, cilindrada ou horário inválido.' }, 400);
+  if (!SERVICES.has(fields.service) || !ENGINES.has(fields.engine) || !TIMES.has(fields.time)) return json({ error: 'Serviço, cilindrada/porte ou horário inválido.' }, 400);
+  if (MOTO_ONLY_SERVICES.has(fields.service) && !MOTO_ENGINES.has(fields.engine)) return json({ error: 'Esse serviço adicional é só para motos.' }, 400);
   if (fields.name.length > 80 || fields.phone.length > 20 || fields.motorcycle.length > 80 || fields.notes.length > 500) return json({ error: 'Revise os campos: um deles excede o tamanho permitido.' }, 400);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(fields.date)) return json({ error: 'Informe uma data válida.' }, 400);
   const chosen = new Date(`${fields.date}T12:00:00Z`);

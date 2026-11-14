@@ -1,4 +1,322 @@
-.honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important}
-.booking-form .consent-label{display:flex;align-items:flex-start;gap:10px;margin:3px 0 14px;font-size:11px;line-height:1.45;color:#aeb1ba}
-.booking-form .consent-label input{width:16px;height:16px;accent-color:#2861ed;flex:none;margin:0}
-.form-feedback a{display:block;margin-top:8px}
+/* Formulário de agendamento */
+.booking-form {
+  display: grid;
+  gap: 22px;
+  padding: clamp(20px, 3vw, 32px);
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+.field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+.field legend {
+  padding: 0;
+  margin-bottom: 8px;
+}
+.optional {
+  font-weight: 400;
+  color: var(--muted);
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.booking-form input:not([type="radio"]):not([type="checkbox"]),
+.booking-form select,
+.booking-form textarea {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 14px;
+  font-size: 16px;
+  font-weight: 400;
+  background: var(--black);
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.booking-form select {
+  appearance: none;
+  padding-right: 36px;
+  cursor: pointer;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 13px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+.booking-form textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+.booking-form input::placeholder,
+.booking-form textarea::placeholder {
+  color: #5d6474;
+}
+.booking-form input:focus,
+.booking-form select:focus,
+.booking-form textarea:focus {
+  outline: 0;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgb(31 92 255 / 0.25);
+}
+.booking-form [aria-invalid="true"] {
+  border-color: #ff6b6b !important;
+}
+
+/* Moto / Carro */
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--line-strong);
+}
+.segmented label {
+  position: relative;
+  cursor: pointer;
+}
+.segmented label + label {
+  border-left: 1px solid var(--line-strong);
+}
+.segmented input,
+.chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.segmented span {
+  display: block;
+  padding: 13px;
+  text-align: center;
+  font: 600 12px/1 var(--mono);
+  text-transform: uppercase;
+  color: var(--muted);
+  transition:
+    background 0.3s,
+    color 0.3s;
+}
+.segmented input:checked + span {
+  background: var(--blue);
+  color: #fff;
+}
+.segmented input:focus-visible + span,
+.chip input:focus-visible + span {
+  outline: 2px solid var(--blue-hi);
+  outline-offset: 2px;
+}
+
+/* Serviços */
+.chips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.chip {
+  cursor: pointer;
+}
+.chip span {
+  display: grid;
+  gap: 4px;
+  height: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong);
+  background: var(--black);
+  transition:
+    border-color 0.25s,
+    background 0.25s;
+}
+.chip b {
+  font-size: 14px;
+  font-weight: 500;
+}
+.chip small {
+  font: 500 12px/1.2 var(--mono);
+  color: var(--muted);
+}
+.chip:hover span {
+  border-color: #4a5060;
+}
+.chip input:checked + span {
+  border-color: var(--blue);
+  background: rgb(31 92 255 / 0.12);
+}
+.chip input:checked + span small {
+  color: var(--blue-hi);
+}
+.chip[hidden] {
+  display: none;
+}
+
+/* Dias */
+.days {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+.day {
+  flex: 0 0 64px;
+  scroll-snap-align: start;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 10px 0;
+  background: var(--black);
+  border: 1px solid var(--line-strong);
+  cursor: pointer;
+  transition:
+    border-color 0.25s,
+    background 0.25s,
+    transform 0.25s var(--ease);
+}
+.day small {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: lowercase;
+}
+.day b {
+  font: 600 18px/1.1 var(--mono);
+}
+.day:hover {
+  border-color: #4a5060;
+}
+.day[aria-pressed="true"] {
+  background: var(--blue);
+  border-color: var(--blue);
+}
+.day[aria-pressed="true"] small {
+  color: #dbe5ff;
+}
+
+/* Horários */
+.slots {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  min-height: 46px;
+}
+.slot-hint {
+  grid-column: 1 / -1;
+  align-self: center;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.slot {
+  min-height: 48px;
+  font: 500 13px/1 var(--mono);
+  background: var(--black);
+  border: 1px solid var(--line-strong);
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+  animation: slotIn 0.4s var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 30ms);
+}
+@keyframes slotIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.slot:hover:not(:disabled) {
+  border-color: var(--blue-hi);
+}
+.slot.selected {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+.slot:disabled {
+  color: #4a5060;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+.honeypot {
+  position: absolute !important;
+  left: -10000px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
+.consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+  cursor: pointer;
+}
+.consent input {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  margin: 1px 0 0;
+  accent-color: var(--blue);
+}
+.submit {
+  width: 100%;
+  min-height: 52px;
+}
+.submit:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.form-feedback {
+  display: none;
+  padding: 14px 16px;
+  font-size: 14px;
+  border: 1px solid;
+}
+.form-feedback.visible {
+  display: block;
+  animation: slotIn 0.4s var(--ease);
+}
+.form-feedback.error {
+  color: #ffb4b4;
+  border-color: #6b2a2a;
+  background: #1a0b0b;
+}
+.form-feedback.success {
+  color: #c7f5d6;
+  border-color: #1f5c39;
+  background: #08160e;
+}
+.form-feedback a {
+  display: inline-block;
+  margin-top: 8px;
+  color: #fff;
+  border-bottom: 1px solid currentColor;
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .chips {
+    grid-template-columns: 1fr 1fr;
+  }
+  .slots {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
