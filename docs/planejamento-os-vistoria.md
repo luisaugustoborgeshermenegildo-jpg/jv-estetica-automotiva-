@@ -100,7 +100,11 @@ A ordem vem do que o JV pediu primeiro.
 8. **Retorno e lembretes:**
    - lista de quem não volta há 30, 45, 60 ou 90 dias, desde que não tenha agendamento novo;
    - botão de WhatsApp com a mensagem pronta.
-9. **Depois, só se o JV precisar:** orçamentos, estoque por OS, equipe e comissões, simulador de preço.
+9. **Crescimento:** orçamentos por veículo, pátio (veículos presentes e vaga), estoque com consumo por OS e resumo de vendas.
+10. **Equipe e comissões:** funcionários, percentual por serviço e comissões pendentes.
+11. **Simulador de preço:** custo por hora, insumos, margem e preço sugerido.
+
+O painel tem as mesmas áreas do EficeAuto, com visual próprio da JV (preto e azul `#2861ed`, tipografia da Monochrome). Nada de copiar telas, cores ou textos deles.
 
 **Não fazer:**
 - WhatsApp automático por conexão não oficial (risco de bloqueio do número);

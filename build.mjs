@@ -20,6 +20,23 @@ await copyFile('admin/index.html', 'dist/admin/index.html');
 await copyFile('admin/admin.css', 'dist/admin/css/admin.css');
 await copyFile('admin/admin.js', 'dist/admin/js/admin.js');
 
+// Cabeçalhos de segurança e link /app para a Cloudflare (mesmo conteúdo do netlify.toml).
+const CSP = "default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+await writeFile('dist/_headers', `/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: ${CSP}
+
+/sw.js
+  Cache-Control: no-cache
+
+/manifest.webmanifest
+  Content-Type: application/manifest+json
+`);
+await writeFile('dist/_redirects', '/app /monochrome?instalar=1 302\n');
+
 // Service worker com versão calculada a partir dos arquivos publicados:
 // qualquer mudança no site gera um cache novo nos celulares.
 const hash = createHash('sha256');
