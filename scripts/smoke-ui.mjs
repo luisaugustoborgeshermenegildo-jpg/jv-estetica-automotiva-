@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
-import { readFile, mkdtemp, rm } from 'node:fs/promises';
+import { readFile, mkdtemp, rm, mkdir, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { spawn, execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
@@ -8,7 +8,7 @@ import path from 'node:path';
 
 const root=path.resolve('dist');
 const pagePath = process.argv[2] || '/';
-assert(['/', '/css/monochrome.html'].includes(pagePath), 'Escolha uma das duas páginas de comparação.');
+assert(['/', '/css/original.html', '/css/monochrome.html'].includes(pagePath), 'Escolha uma das três páginas de comparação.');
 assert(existsSync(path.join(root,'index.html')), 'Rode npm run build antes.');
 const chrome=[process.env.CHROME_PATH,'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Google/Chrome/Application/chrome.exe'].find(p=>p&&existsSync(p));
 assert(chrome,'Chrome ou Edge necessário.');
@@ -65,6 +65,24 @@ try{
   await S('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<600});await sleep(50);
   await check('Sem rolagem horizontal em '+width+'px','document.documentElement.scrollWidth<=innerWidth');
  }
+ await ev("window.scrollTo({top:0,behavior:'instant'})");
+ await sleep(1100);
+ const variant = pagePath === '/' ? 'lavagem' : pagePath.includes('original') ? 'moto' : 'monochrome';
+ await mkdir('.qa', { recursive: true });
+ const capture = async size => {
+  const shot = await S('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+  await writeFile('.qa/fluido-' + variant + '-' + size + '.png', Buffer.from(shot.data, 'base64'));
+ };
+ await S('Input.dispatchMouseEvent', { type:'mouseMoved', x:1100, y:350 });
+ await sleep(250);
+ await check('Profundidade 3D responde ao ponteiro', "document.querySelector('.hero-photo').style.getPropertyValue('--depth-y')!==''");
+ await capture('desktop');
+ await S('Input.dispatchMouseEvent', { type:'mouseMoved', x:20, y:20 });
+ await sleep(700);
+ await check('Profundidade retorna ao repouso', "document.querySelector('.hero-photo').style.getPropertyValue('--depth-y')===''");
+ await ev("document.querySelector('.hero-actions a[href=\"#servicos\"]').click()");
+ await wait("location.hash==='#servicos' && Math.abs(document.querySelector('#servicos').getBoundingClientRect().top-112)<5");
+ await check('Navegação suave chega ao destino com foco', "document.activeElement.id==='servicos'");
  await check('Fontes locais carregadas','document.fonts.check(getComputedStyle(document.querySelector(\'#hero-title\')).fontWeight + \' 16px "Barlow Condensed"\') && document.fonts.check(\'400 16px "DM Sans"\')');
  await check('Links internos têm destino',"Array.from(document.querySelectorAll('a[href^=\"#\"]')).every(a=>document.getElementById(a.hash.slice(1)))");
  await check('Foto principal carregada',"document.querySelector('.hero-photo img').naturalWidth>0");
@@ -83,6 +101,9 @@ try{
  }
  passed++;console.log('PASS Percurso por teclado mantém 20 controles visíveis');
  await S('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+ await ev("window.scrollTo({top:0,behavior:'instant'})");
+ await check('Menu fechado fica oculto no celular', "getComputedStyle(document.querySelector('.nav')).visibility==='hidden'");
+ await capture('mobile');
  await ev("document.querySelector('.menu-toggle').click()");
  await check('Menu móvel abre',"document.querySelector('.menu-toggle').getAttribute('aria-expanded')==='true' && getComputedStyle(document.querySelector('.nav')).display==='flex'");
  await S('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape'});
@@ -90,7 +111,7 @@ try{
  await ev("document.querySelector('[data-vehicle=carro]').click()");
  await check('Carro oferece consulta por WhatsApp',"!document.querySelector('#car-services').hidden && document.querySelector('#moto-services').hidden && document.querySelector('#car-services a').href.startsWith('https://wa.me/')");
  await ev("document.querySelector('[data-vehicle=moto]').click();document.querySelector('[data-service=\"Lavagem premium\"]').click()");
- await sleep(400);
+ await wait("(()=>{const e=document.querySelector('#serviceSelect');const r=e.getBoundingClientRect();return r.top>=110&&r.bottom<=innerHeight;})()");
  await check('Escolha de serviço leva o foco ao campo visível no celular', "(()=>{const e=document.querySelector('#serviceSelect');const r=e.getBoundingClientRect();const h=document.querySelector('.header').getBoundingClientRect();return document.activeElement===e&&r.top>=h.bottom&&r.bottom<=innerHeight;})()");
  await check('Serviço atualiza formulário e resumo',"document.querySelector('#serviceSelect').value==='Lavagem premium' && document.querySelector('#selectedPrice').textContent.includes('115')");
  await ev("document.querySelector('#bookingForm').requestSubmit()");await sleep(50);
@@ -117,6 +138,7 @@ try{
  await check('WhatsApp funciona mesmo com popup bloqueado',"document.querySelector('#formFeedback a').href.includes('QA-LOCAL')");
  await check('Sucesso limpa horário e serviço',"!document.querySelector('#timeInput').value && !document.querySelector('#serviceSelect').value");
  await S('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+ await check('Modo reduzido desativa profundidade e entrada', "getComputedStyle(document.querySelector('.hero-photo')).transform==='none' && getComputedStyle(document.querySelector('#hero-title')).animationName==='none'");
  await check('Movimento reduzido respeitado',"getComputedStyle(document.querySelector('.hero-copy')).animationName==='none' && getComputedStyle(document.documentElement).scrollBehavior==='auto'");
  assert.deepEqual(errors,[]);passed++;console.log('PASS Sem exceções de JavaScript');
  console.log('\n'+passed+' verificações passaram; API simulada, nenhum pedido real enviado.');

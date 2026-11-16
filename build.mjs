@@ -18,3 +18,7 @@ await copyFile('css/creditos.html', 'dist/css/creditos.html');
 
 await copyFile('css/monochrome.css', 'dist/css/monochrome.css');
 await copyFile('css/monochrome.html', 'dist/css/monochrome.html');
+
+await copyFile('css/original.html', 'dist/css/original.html');
+await copyFile('css/motion.css', 'dist/css/motion.css');
+await copyFile('js/motion.js', 'dist/js/motion.js');

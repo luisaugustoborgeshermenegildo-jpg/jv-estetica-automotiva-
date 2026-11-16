@@ -74,7 +74,10 @@ document.querySelectorAll('.pick-service').forEach(button => {
     serviceSelect.value = button.dataset.service;
     serviceSelect.dispatchEvent(new Event('change'));
     // Keep focus and the visible field together, including below a sticky header.
-    serviceSelect.scrollIntoView({ behavior: 'instant', block: 'center' });
+    serviceSelect.scrollIntoView({
+      behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+      block: 'center'
+    });
     serviceSelect.focus({ preventScroll: true });
   });
 });

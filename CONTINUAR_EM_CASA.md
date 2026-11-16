@@ -43,20 +43,22 @@ Peça: "Leia CONTINUAR_EM_CASA.md e ENTREGA_CODEX.md e continue a versão Codex 
 Com Python instalado:
 
     npm run build
-    python -m http.server 8767 --bind 127.0.0.1 --directory dist
+    python -m http.server 8768 --bind 127.0.0.1 --directory dist
 
-Compare as duas propostas no navegador.
+Compare as três propostas no navegador.
 
-- Azul refinada em http://127.0.0.1:8767/
-- Preto e vermelho em http://127.0.0.1:8767/css/monochrome.html
+- Azul original com moto em http://127.0.0.1:8768/css/original.html
+- Azul refinada em http://127.0.0.1:8768/
+- Preto e vermelho em http://127.0.0.1:8768/css/monochrome.html
 
 O rodapé de cada proposta contém o link para a outra.
 A entrada Monochrome está em css/monochrome.html e carrega o estilo adicional css/monochrome.css.
-As duas entradas usam js/script.js e devem receber as mesmas atualizações nos campos e serviços.
+As três entradas usam js/script.js, js/motion.js e css/motion.css e devem receber as mesmas atualizações nos campos e serviços.
 
-Para validar ambas após o build, execute os comandos abaixo.
+Para validar as três propostas após o build, execute os comandos abaixo.
 
     npm test
+    npm test -- /css/original.html
     npm test -- /css/monochrome.html
 
 Essa prévia estática permite comparar o visual, mas a agenda exige o servidor Flask ou Netlify Functions.

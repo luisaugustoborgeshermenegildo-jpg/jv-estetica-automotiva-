@@ -1,3 +1,30 @@
+# Fluidez nas três propostas — 16/11/2026
+
+Três entradas disponíveis na prévia local da porta 8768.
+
+- Azul com moto em /css/original.html, com conteúdo recuperado do commit 7ccfef2 e os estilos e correções atuais.
+- Azul com lavagem em /.
+- Preto e vermelho em /css/monochrome.html.
+
+## Interações implementadas
+
+Profundidade 3D por perspectiva CSS nas fotografias ao mover o mouse, entrada coordenada de textos e imagem, botões com resposta ao toque, serviços com destaque de seleção, indicador deslizante Moto/Carro, entrada suave do painel e resumo do agendamento.
+Navegação entre seções e seleção de serviço com rolagem suave e foco acessível.
+A preferência de movimento reduzido desativa as transformações e animações. O efeito de ponteiro é ativado para mouse com ponteiro preciso.
+
+Frontend Design orientou a composição. React Bits e Transitions foram consultados como referências de movimento. A implementação usa CSS e JavaScript do próprio projeto.
+Referências consultadas em https://reactbits.dev/ e https://transitions.dev/.
+As fotografias continuam ilustrativas, com créditos existentes.
+
+## Verificação desta etapa
+
+Build passou. Foram executadas 37 verificações por entrada, total de 111, com API simulada.
+As verificações incluem sete larguras, mouse, retorno do efeito 3D ao repouso, navegação com foco, menu, formulário e movimento reduzido.
+Capturas de abertura desktop e celular conferidas. A revisão estática independente foi concluída.
+Foi corrigida a sobreposição transitória do menu ao entrar no breakpoint móvel.
+O servidor anterior na porta 8767 deixou de responder. A prévia atual usa a porta 8768 e o banco isolado .qa/preview-motion.sqlite3.
+Os resultados Taste abaixo pertencem às etapas anteriores. A checagem completa Taste desta etapa permanece pendente.
+
 # Atualização com duas propostas — 14/11/2026
 
 Luis solicitou o refinamento da versão azul e uma alternativa baseada em Monochrome Studio.
