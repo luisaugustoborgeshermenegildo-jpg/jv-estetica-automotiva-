@@ -8,6 +8,8 @@ const SERVICES = new Set([
   'Lavagem premium',
   'Limpeza e lubrificação da corrente',
   'Revitalização de plásticos',
+  'Clareamento do bacalhau',
+  'Clareamento do motor',
 ]);
 const MOTO_ENGINES = new Set([
   'Até 160cc', '161cc a 400cc', 'Acima de 400cc',
@@ -16,7 +18,12 @@ const MOTO_ENGINES = new Set([
 ]);
 const CAR_ENGINES = new Set(['Carro hatch ou sedã', 'Carro SUV ou picape']);
 const ENGINES = new Set([...MOTO_ENGINES, ...CAR_ENGINES]);
-const MOTO_ONLY_SERVICES = new Set(['Limpeza e lubrificação da corrente', 'Revitalização de plásticos']);
+const MOTO_ONLY_SERVICES = new Set([
+  'Limpeza e lubrificação da corrente',
+  'Revitalização de plásticos',
+  'Clareamento do bacalhau',
+  'Clareamento do motor',
+]);
 const OPEN_DAYS = new Set([2, 3, 4, 5, 6, 0]);
 const TZ = 'America/Sao_Paulo';
 export const config = {

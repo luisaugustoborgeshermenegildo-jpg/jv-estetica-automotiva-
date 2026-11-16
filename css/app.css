@@ -221,34 +221,76 @@ label {
   display: none !important;
 }
 
-/* Botão "Baixar o app" do site */
+/* Botão "Baixar o app" do site: selo de app com ícone da JV */
 .install-link {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 0 16px;
-  border: 1px solid currentColor;
-  background: none;
-  color: inherit;
+  gap: 12px;
+  min-height: 56px;
+  padding: 8px 16px 8px 8px;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
   font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
+  text-align: left;
   cursor: pointer;
+  transition:
+    border-color 0.3s,
+    background 0.3s,
+    box-shadow 0.3s;
 }
-.install-link svg {
-  width: 18px;
-  height: 18px;
+.install-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--blue);
+  color: #fff;
+  font: 900 17px/1 var(--display, Impact, sans-serif);
+  letter-spacing: -0.02em;
+  box-shadow: 0 6px 16px rgb(40 97 237 / 0.45);
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+.install-text {
+  display: grid;
+  gap: 2px;
+}
+.install-text small {
+  font-size: 11px;
+  color: rgb(255 255 255 / 0.65);
+}
+.install-text b {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+.install-arrow {
+  width: 20px;
+  height: 20px;
+  margin-left: 6px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
+  opacity: 0.7;
+  transition: transform 0.3s, opacity 0.3s;
 }
 .install-link:hover {
-  background: var(--blue);
   border-color: var(--blue);
-  color: #fff;
+  background: rgb(40 97 237 / 0.16);
+  box-shadow: 0 0 0 4px rgb(40 97 237 / 0.18);
+}
+.install-link:hover .install-icon {
+  transform: rotate(-6deg) scale(1.06);
+}
+.install-link:hover .install-arrow {
+  transform: translateY(2px);
+  opacity: 1;
 }
 .hero-install {
   margin-top: 14px;

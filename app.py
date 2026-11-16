@@ -35,6 +35,8 @@ SERVICES = {
     "Lavagem premium",
     "Limpeza e lubrificação da corrente",
     "Revitalização de plásticos",
+    "Clareamento do bacalhau",
+    "Clareamento do motor",
 }
 MOTO_ENGINES = {"Até 160cc", "161cc a 400cc", "Acima de 400cc"}
 # Faixas antigas: aceitas por um tempo, para celulares com a página antiga em cache.
@@ -44,6 +46,8 @@ ENGINES = MOTO_ENGINES | CAR_ENGINES
 MOTO_ONLY_SERVICES = {
     "Limpeza e lubrificação da corrente",
     "Revitalização de plásticos",
+    "Clareamento do bacalhau",
+    "Clareamento do motor",
 }
 BR_TZ = ZoneInfo("America/Sao_Paulo")
 

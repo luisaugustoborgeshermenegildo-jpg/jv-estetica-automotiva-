@@ -9,6 +9,8 @@ const SERVICES = {
   "Lavagem premium": { moto: [125, 140, 170] },
   "Limpeza e lubrificação da corrente": { moto: 20, fixed: true, motoOnly: true },
   "Revitalização de plásticos": { moto: 40, fixed: true, motoOnly: true },
+  "Clareamento do bacalhau": { moto: 25, fixed: true, motoOnly: true },
+  "Clareamento do motor": { moto: 30, fixed: true, motoOnly: true },
 };
 const ENGINES = {
   moto: {

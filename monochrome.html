@@ -104,29 +104,8 @@
           <span class="row"><span>Sujeira</span> <em>sai.</em></span>
           <span class="row"><em>O brilho</em> <span>fica.</span></span>
         </h1>
-        <div class="hero-phone" aria-hidden="true">
-          <div class="phone">
-            <div class="phone-screen">
-              <p class="ps-status"><span>9:41</span><i></i></p>
-              <p class="ps-brand">JV <em>Estética</em></p>
-              <p class="ps-count">2 de 3</p>
-              <p class="ps-title">Escolha o horário</p>
-              <div class="ps-bar"><i></i></div>
-              <div class="ps-seg"><b>Moto</b><span>Carro</span></div>
-              <div class="ps-days">
-                <span><small>ter</small>18</span><span class="on"><small>qua</small>19</span><span><small>qui</small>20</span><span><small>sex</small>21</span>
-              </div>
-              <div class="ps-slots">
-                <span>08:00</span><span class="off">09:00</span><span>10:00</span><span class="pick">13:00</span><span>14:00</span><span class="off">15:00</span>
-              </div>
-              <p class="ps-price">Lavagem detalhada <b>R$ 130</b></p>
-              <p class="ps-cta">Continuar</p>
-              <div class="ps-tabs"><i class="on"></i><i></i><i></i><i></i></div>
-            </div>
-          </div>
-        </div>
         <p class="hero-hours">Aberto de terça a domingo, das 8h às 17h</p>
-        <p class="hero-install"><button type="button" class="install-link" data-install><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>Baixar o app</button></p>
+        <p class="hero-install"><button type="button" class="install-link" data-install><span class="install-icon" aria-hidden="true">JV</span><span class="install-text"><small>Baixe o app</small><b>JV Estética</b></span><svg class="install-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v12M7 11l5 5 5-5M6 20h12" /></svg></button></p>
       </section>
 
 
@@ -315,6 +294,46 @@
               </button>
             </div>
           </details>
+          <details class="row-item only-moto" name="servico">
+            <summary>
+              <span class="row-no">+</span>
+              <span class="row-name">Bacalhau</span>
+              <span class="row-price">R$ 25</span>
+              <span class="row-arrow" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 9v8H9" /></svg
+              ></span>
+            </summary>
+            <div class="row-body">
+              <p>Clareamento do bacalhau: clareia o bacalhau (balança) e tira o aspecto encardido. Extra só para moto.</p>
+              <button
+                type="button"
+                class="btn btn-black pick"
+                data-service="Clareamento do bacalhau"
+              >
+                Agendar este
+              </button>
+            </div>
+          </details>
+          <details class="row-item only-moto" name="servico">
+            <summary>
+              <span class="row-no">+</span>
+              <span class="row-name">Motor</span>
+              <span class="row-price">R$ 30</span>
+              <span class="row-arrow" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 9v8H9" /></svg
+              ></span>
+            </summary>
+            <div class="row-body">
+              <p>Clareamento do motor: clareia o bloco e as peças aparentes do motor. Extra só para moto.</p>
+              <button
+                type="button"
+                class="btn btn-black pick"
+                data-service="Clareamento do motor"
+              >
+                Agendar este
+              </button>
+            </div>
+          </details>
         </div>
         <p class="services-note only-moto">
           Na moto, o valor segue a tabela por cilindrada. O
@@ -437,6 +456,20 @@
                   name="service"
                   value="Revitalização de plásticos"
                 /><span><b>Plásticos</b><small>R$ 40,00</small></span></label
+              >
+              <label class="chip moto-only"
+                ><input
+                  type="radio"
+                  name="service"
+                  value="Clareamento do bacalhau"
+                /><span><b>Bacalhau</b><small>R$ 25,00</small></span></label
+              >
+              <label class="chip moto-only"
+                ><input
+                  type="radio"
+                  name="service"
+                  value="Clareamento do motor"
+                /><span><b>Motor</b><small>R$ 30,00</small></span></label
               >
             </div>
           </fieldset>
@@ -567,7 +600,7 @@
             rel="noopener"
             >WhatsApp (34) 98426-6406</a
           >
-          <button type="button" class="install-link" data-install><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>Baixar o app</button>
+          <button type="button" class="install-link" data-install><span class="install-icon" aria-hidden="true">JV</span><span class="install-text"><small>Baixe o app</small><b>JV Estética</b></span><svg class="install-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v12M7 11l5 5 5-5M6 20h12" /></svg></button>
         </aside>
       </section>
 
