@@ -6,6 +6,12 @@
 const VERSION = "jv-__VERSAO__";
 const SHELL = [
   "/",
+  "/monochrome",
+  "/css/monochrome.css",
+  "/css/mono-app.css",
+  "/js/monochrome.js",
+  "/js/mono-app.js",
+  "/assets/moto.webp",
   "/css/style.css",
   "/css/forms.css",
   "/css/app.css",
@@ -59,7 +65,10 @@ self.addEventListener("fetch", (event) => {
           return response;
         })
         .catch(() =>
-          caches.match(request).then((hit) => hit || caches.match("/")),
+          // O app abre em /monochrome?origem=app: ignora o "?..." ao procurar a cópia.
+          caches
+            .match(request, { ignoreSearch: true })
+            .then((hit) => hit || caches.match("/monochrome")),
         ),
     );
     return;

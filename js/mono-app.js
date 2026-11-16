@@ -7,6 +7,43 @@
   if (demo) html.classList.add("is-app");
   if (!html.classList.contains("is-app")) return;
 
+  /* ---------- Abertura do app (uma vez por sessão) ---------- */
+  let seen = false;
+  try {
+    seen = sessionStorage.getItem("jv:abertura") === "1";
+    sessionStorage.setItem("jv:abertura", "1");
+  } catch {
+    /* sem armazenamento: mostra a abertura */
+  }
+  if (!seen) {
+    const splash = document.createElement("div");
+    splash.className = "splash";
+    splash.setAttribute("aria-hidden", "true");
+    const img = document.createElement("img");
+    img.src = "assets/moto.webp";
+    img.alt = "";
+    const word = document.createElement("p");
+    word.className = "splash-word";
+    let i = 0;
+    for (const [text, accent] of [["JV", false], ["Estética", true]]) {
+      const part = document.createElement(accent ? "em" : "span");
+      for (const char of text) {
+        const ch = document.createElement("span");
+        ch.textContent = char;
+        ch.style.setProperty("--i", i++);
+        part.append(ch);
+      }
+      word.append(part, " ");
+    }
+    const tag = document.createElement("p");
+    tag.className = "splash-tag";
+    tag.textContent = "Agende a lavagem da sua moto ou carro";
+    splash.append(img, word, tag);
+    document.body.append(splash);
+    setTimeout(() => splash.classList.add("is-out"), 1700);
+    setTimeout(() => splash.remove(), 2300);
+  }
+
   const MINE_KEY = "jv:agendamentos";
   const form = document.getElementById("bookingForm");
   const feedback = document.getElementById("formFeedback");

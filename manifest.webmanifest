@@ -4,7 +4,7 @@
   "description": "Agende a lavagem e estética da sua moto ou carro na JV, em Uberaba.",
   "lang": "pt-BR",
   "id": "/",
-  "start_url": "/?origem=app",
+  "start_url": "/monochrome?origem=app",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
@@ -17,7 +17,7 @@
     { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "Agendar horário", "short_name": "Agendar", "url": "/?origem=atalho#agendar", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Agendar horário", "short_name": "Agendar", "url": "/monochrome?origem=atalho#agendar", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
     { "name": "Falar no WhatsApp", "short_name": "WhatsApp", "url": "https://wa.me/5534984266406" }
   ]
 }
