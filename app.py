@@ -5,6 +5,7 @@ from pathlib import Path
 import os
 import re
 import hashlib
+import secrets
 import hmac
 import sqlite3
 import uuid
@@ -81,6 +82,27 @@ def init_db():
             created_at TEXT NOT NULL,
             UNIQUE(date, time)
         )""")
+        # Etapas da OS: histórico e código de acesso do cliente (só o hash).
+        columns = {row["name"] for row in connection.execute("PRAGMA table_info(bookings)")}
+        if "access_hash" not in columns:
+            connection.execute("ALTER TABLE bookings ADD COLUMN access_hash TEXT")
+        connection.execute("""CREATE TABLE IF NOT EXISTS booking_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            booking_id TEXT NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
+            status TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )""")
+
+
+STATUSES = {"pending", "confirmed", "received", "washing", "ready", "delivered", "cancelled"}
+
+
+def hash_access(code):
+    return hashlib.sha256(code.encode()).hexdigest()
+
+
+def now_utc():
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
 init_db()
@@ -284,6 +306,61 @@ def admin_bookings():
     return jsonify(bookings=bookings)
 
 
+@app.post("/api/admin/bookings/status")
+def admin_set_status():
+    if not admin_password():
+        return jsonify(error="O acesso administrativo ainda não foi configurado."), 503
+    if not is_admin():
+        return jsonify(error="Entre novamente para alterar a etapa."), 401
+    body = request.get_json(silent=True)
+    body = body if isinstance(body, dict) else {}
+    booking_id = body.get("id") if isinstance(body.get("id"), str) else ""
+    status = body.get("status") if isinstance(body.get("status"), str) else ""
+    if not re.fullmatch(r"[A-F0-9]{8}", booking_id) or status not in STATUSES:
+        return jsonify(error="Agendamento ou etapa inválida."), 400
+    try:
+        with connect_db() as connection:
+            row = connection.execute("SELECT status FROM bookings WHERE id = ?", (booking_id,)).fetchone()
+            if not row:
+                return jsonify(error="Agendamento não encontrado."), 404
+            if row["status"] != status:
+                connection.execute("UPDATE bookings SET status = ? WHERE id = ?", (status, booking_id))
+                connection.execute(
+                    "INSERT INTO booking_events (booking_id, status, created_at) VALUES (?, ?, ?)",
+                    (booking_id, status, now_utc()),
+                )
+    except sqlite3.IntegrityError:
+        return jsonify(error="Esse horário já foi ocupado por outro agendamento."), 409
+    return jsonify(booking={"id": booking_id, "status": status})
+
+
+@app.post("/api/os")
+def service_order():
+    body = request.get_json(silent=True)
+    code = body.get("code") if isinstance(body, dict) else None
+    if not isinstance(code, str) or not re.fullmatch(r"[A-Za-z0-9_-]{24}", code):
+        return jsonify(error="Agendamento não encontrado."), 404
+    with connect_db() as connection:
+        row = connection.execute(
+            "SELECT id, service, date, time, status FROM bookings WHERE access_hash = ?",
+            (hash_access(code),),
+        ).fetchone()
+        if not row:
+            return jsonify(error="Agendamento não encontrado."), 404
+        events = connection.execute(
+            "SELECT status, created_at FROM booking_events WHERE booking_id = ? ORDER BY id",
+            (row["id"],),
+        ).fetchall()
+    return jsonify(order={
+        "id": row["id"],
+        "service": row["service"],
+        "date": row["date"],
+        "time": row["time"],
+        "status": row["status"],
+        "events": [{"status": e["status"], "at": e["created_at"]} for e in events],
+    })
+
+
 @app.get("/health")
 def health():
     return jsonify(status="ok")
@@ -373,12 +450,13 @@ def create_booking():
         ), 400
 
     booking_id = uuid.uuid4().hex[:8].upper()
+    access = secrets.token_urlsafe(18)
     try:
         with connect_db() as connection:
             connection.execute(
                 """INSERT INTO bookings
-                (id, name, phone, motorcycle, service, engine, date, time, notes, status, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)""",
+                (id, name, phone, motorcycle, service, engine, date, time, notes, status, created_at, access_hash)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)""",
                 (
                     booking_id,
                     fields["name"],
@@ -389,14 +467,19 @@ def create_booking():
                     fields["date"],
                     fields["time"],
                     fields["notes"],
-                    datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                    now_utc(),
+                    hash_access(access),
                 ),
+            )
+            connection.execute(
+                "INSERT INTO booking_events (booking_id, status, created_at) VALUES (?, 'pending', ?)",
+                (booking_id, now_utc()),
             )
     except sqlite3.IntegrityError:
         return jsonify(
             error="Esse horário acabou de ser reservado. Escolha outro."
         ), 409
-    return jsonify(booking={"id": booking_id, "status": "pending"}), 201
+    return jsonify(booking={"id": booking_id, "status": "pending", "access": access}), 201
 
 
 if __name__ == "__main__":

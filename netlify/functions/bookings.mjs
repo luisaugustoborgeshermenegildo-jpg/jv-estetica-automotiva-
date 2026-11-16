@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { getDatabase } from '@netlify/database';
+import { newAccessCode, hashAccessCode } from '../lib/stages.mjs';
 
 const TIMES = new Set(['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']);
 const SERVICES = new Set([
@@ -64,14 +65,21 @@ export default async (request) => {
   if (!/^\+?[\d\s().-]+$/.test(fields.phone) || (fields.phone.match(/\d/g) ?? []).length < 10 || (fields.phone.match(/\d/g) ?? []).length > 13) return json({ error: 'Informe um número de WhatsApp válido.' }, 400);
 
   const id = randomUUID().replaceAll('-', '').slice(0, 8).toUpperCase();
+  const access = newAccessCode();
+  let db;
   try {
-    const db = getDatabase();
-    await db.sql`INSERT INTO bookings (id, name, phone, motorcycle, service, engine, booking_date, booking_time, notes)
-      VALUES (${id}, ${fields.name}, ${fields.phone}, ${fields.motorcycle}, ${fields.service}, ${fields.engine}, ${fields.date}::date, ${fields.time}, ${fields.notes})`;
+    db = getDatabase();
+    await db.sql`INSERT INTO bookings (id, name, phone, motorcycle, service, engine, booking_date, booking_time, notes, access_hash)
+      VALUES (${id}, ${fields.name}, ${fields.phone}, ${fields.motorcycle}, ${fields.service}, ${fields.engine}, ${fields.date}::date, ${fields.time}, ${fields.notes}, ${hashAccessCode(access)})`;
   } catch (error) {
     if (error?.code === '23505') return json({ error: 'Esse horário acabou de ser reservado. Escolha outro.' }, 409);
     console.error('Erro ao gravar agendamento:', error?.message ?? 'erro desconhecido');
     return json({ error: 'A agenda está indisponível neste momento. Tente novamente em instantes.' }, 503);
   }
-  return json({ booking: { id, status: 'pending' } }, 201);
+  try {
+    await db.sql`INSERT INTO booking_events (booking_id, status) VALUES (${id}, 'pending')`;
+  } catch (error) {
+    console.error('Erro ao registrar histórico:', error?.message ?? 'erro desconhecido');
+  }
+  return json({ booking: { id, status: 'pending', access } }, 201);
 };

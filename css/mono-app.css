@@ -282,3 +282,33 @@
     transform: translateY(8px);
   }
 }
+
+/* etapas da OS em "Meus horários" */
+.mine-stages {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  margin: 10px 0 4px;
+  padding: 0;
+  list-style: none;
+}
+.mine-stages li {
+  padding-top: 8px;
+  border-top: 3px solid var(--line-strong);
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--muted);
+}
+.mine-stages li.done {
+  border-top-color: var(--accent);
+}
+.mine-stages li.now {
+  border-top-color: var(--blue-hi);
+  color: var(--paper);
+  font-weight: 700;
+}
+.mine-cancelled {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-weight: 700;
+}

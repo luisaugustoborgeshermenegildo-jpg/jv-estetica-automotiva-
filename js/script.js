@@ -7,7 +7,11 @@ const SERVICES = {
   "Lavagem completa": { moto: [70, 100, 120] },
   "Lavagem detalhada": { moto: [110, 130, 150] },
   "Lavagem premium": { moto: [125, 140, 170] },
-  "Limpeza e lubrificação da corrente": { moto: 20, fixed: true, motoOnly: true },
+  "Limpeza e lubrificação da corrente": {
+    moto: 20,
+    fixed: true,
+    motoOnly: true,
+  },
   "Revitalização de plásticos": { moto: 40, fixed: true, motoOnly: true },
   "Clareamento do bacalhau": { moto: 25, fixed: true, motoOnly: true },
   "Clareamento do motor": { moto: 30, fixed: true, motoOnly: true },
@@ -424,9 +428,16 @@ form.addEventListener("submit", async (event) => {
     link.rel = "noopener noreferrer";
     link.textContent = "Abrir WhatsApp novamente ↗";
     feedback.append(document.createElement("br"), link);
-    document.dispatchEvent(new CustomEvent("jv:booked", {
-        detail: { ...payload, id: result.booking.id, vehicle: vehicle() },
-      }));
+    document.dispatchEvent(
+      new CustomEvent("jv:booked", {
+        detail: {
+          ...payload,
+          id: result.booking.id,
+          access: result.booking.access,
+          vehicle: vehicle(),
+        },
+      }),
+    );
     const v = vehicle();
     form.reset();
     setFormVehicle(v);

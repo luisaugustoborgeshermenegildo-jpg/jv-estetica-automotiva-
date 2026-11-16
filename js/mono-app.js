@@ -25,7 +25,10 @@
     const word = document.createElement("p");
     word.className = "splash-word";
     let i = 0;
-    for (const [text, accent] of [["JV", false], ["Estética", true]]) {
+    for (const [text, accent] of [
+      ["JV", false],
+      ["Estética", true],
+    ]) {
       const part = document.createElement(accent ? "em" : "span");
       for (const char of text) {
         const ch = document.createElement("span");
@@ -150,10 +153,18 @@
 
   // Agendamento salvo (script.js): guarda em "Meus horários" e mostra a confirmação.
   document.addEventListener("jv:booked", (e) => {
-    const { id, service, date, time, vehicle } = e.detail;
+    const { id, access, service, date, time, vehicle } = e.detail;
     try {
       const list = loadMine().filter((b) => b.id !== id);
-      list.unshift({ id, service, date, time, vehicle });
+      list.unshift({
+        id,
+        access,
+        service,
+        date,
+        time,
+        vehicle,
+        status: "pending",
+      });
       localStorage.setItem(MINE_KEY, JSON.stringify(list.slice(0, 20)));
     } catch {
       /* armazenamento bloqueado: segue sem guardar */
@@ -170,7 +181,89 @@
       return [];
     }
   }
-  function renderMine() {
+  // Etapas da ordem de serviço, vindas do painel da JV.
+  const STAGES = ["pending", "received", "washing", "ready", "delivered"];
+  const STAGE_LABEL = {
+    pending: "Agendado",
+    received: "Recebido",
+    washing: "Em lavagem",
+    ready: "Pronto",
+    delivered: "Entregue",
+  };
+  const ACCESS = /^[A-Za-z0-9_-]{24}$/;
+  let refreshing = false;
+
+  // Busca a etapa atual de cada agendamento que tem código e guarda junto.
+  async function refreshStages() {
+    if (refreshing) return;
+    refreshing = true;
+    const list = loadMine();
+    const open = list.filter(
+      (b) =>
+        ACCESS.test(b.access || "") &&
+        !["delivered", "cancelled"].includes(b.status),
+    );
+    let changed = false;
+    await Promise.all(
+      open.map(async (b) => {
+        try {
+          const response = await fetch("/api/os", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: b.access }),
+            cache: "no-store",
+          });
+          if (!response.ok) return;
+          const { order } = await response.json();
+          if (order?.status && order.status !== b.status) {
+            b.status = order.status;
+            changed = true;
+          }
+        } catch {
+          /* sem internet: mantém a última etapa conhecida */
+        }
+      }),
+    );
+    refreshing = false;
+    if (!changed) return;
+    try {
+      localStorage.setItem(MINE_KEY, JSON.stringify(list));
+    } catch {
+      /* armazenamento bloqueado */
+    }
+    if (html.dataset.tab === "meus") renderMine(false);
+  }
+
+  function stageTrack(status) {
+    const current = status === "confirmed" ? "pending" : status;
+    if (current === "cancelled") {
+      const p = document.createElement("p");
+      p.className = "mine-cancelled";
+      p.textContent = "Cancelado";
+      return p;
+    }
+    const position = STAGES.indexOf(current);
+    const ol = document.createElement("ol");
+    ol.className = "mine-stages";
+    ol.setAttribute(
+      "aria-label",
+      `Etapa: ${STAGE_LABEL[current] || "Agendado"}`,
+    );
+    STAGES.forEach((stage, index) => {
+      const li = document.createElement("li");
+      li.textContent = STAGE_LABEL[stage];
+      if (index < position) li.className = "done";
+      if (index === position) {
+        li.className = "now";
+        li.setAttribute("aria-current", "step");
+      }
+      ol.append(li);
+    });
+    return ol;
+  }
+
+  function renderMine(fetchStages = true) {
+    if (fetchStages) refreshStages();
     const ul = document.getElementById("mineList");
     const today = new Date().toISOString().slice(0, 10);
     const list = loadMine().sort(
@@ -195,8 +288,14 @@
         const what = document.createElement("p");
         what.textContent = `${b.service} · ${b.vehicle === "carro" ? "Carro" : "Moto"}`;
         const code = document.createElement("small");
-        code.textContent = `Protocolo ${b.id}${b.date < today ? " · já passou" : ""}`;
-        li.append(when, what, code);
+        const active =
+          b.status && !["delivered", "cancelled"].includes(b.status);
+        const past = b.date < today && !active;
+        if (!past) li.classList.remove("is-past");
+        code.textContent = `Protocolo ${b.id}${past ? " · já passou" : ""}`;
+        li.append(when, what);
+        if (b.status) li.append(stageTrack(b.status));
+        li.append(code);
         return li;
       }),
     );
