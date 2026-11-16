@@ -24,6 +24,7 @@
     />
     <link rel="stylesheet" href="css/monochrome.css" />
     <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/mono-app.css" />
   </head>
   <body class="mono">
     <a class="skip" href="#agendar">Pular para o agendamento</a>
@@ -103,6 +104,27 @@
           <span class="row"><span>Sujeira</span> <em>sai.</em></span>
           <span class="row"><em>O brilho</em> <span>fica.</span></span>
         </h1>
+        <div class="hero-phone" aria-hidden="true">
+          <div class="phone">
+            <div class="phone-screen">
+              <p class="ps-status"><span>9:41</span><i></i></p>
+              <p class="ps-brand">JV <em>Estética</em></p>
+              <p class="ps-count">2 de 3</p>
+              <p class="ps-title">Escolha o horário</p>
+              <div class="ps-bar"><i></i></div>
+              <div class="ps-seg"><b>Moto</b><span>Carro</span></div>
+              <div class="ps-days">
+                <span><small>ter</small>18</span><span class="on"><small>qua</small>19</span><span><small>qui</small>20</span><span><small>sex</small>21</span>
+              </div>
+              <div class="ps-slots">
+                <span>08:00</span><span class="off">09:00</span><span>10:00</span><span class="pick">13:00</span><span>14:00</span><span class="off">15:00</span>
+              </div>
+              <p class="ps-price">Lavagem detalhada <b>R$ 100</b></p>
+              <p class="ps-cta">Continuar</p>
+              <div class="ps-tabs"><i class="on"></i><i></i><i></i><i></i></div>
+            </div>
+          </div>
+        </div>
         <p class="hero-hours">Aberto de terça a domingo, das 8h às 17h</p>
       </section>
 
@@ -348,6 +370,12 @@
         </div>
 
         <form class="booking-form" id="bookingForm" novalidate>
+          <div class="wiz-head app-only" aria-live="polite">
+            <p class="wiz-count"><b id="wizNow">1</b> de 3</p>
+            <h2 class="wiz-title" id="wizTitle">Escolha o serviço</h2>
+            <div class="wiz-bar" aria-hidden="true"><i id="wizFill"></i></div>
+          </div>
+          <div class="wiz-step" data-step="1">
           <fieldset class="field">
             <legend>Veículo</legend>
             <div class="segmented">
@@ -427,6 +455,8 @@
             </label>
           </div>
 
+          </div>
+          <div class="wiz-step" data-step="2">
           <fieldset class="field">
             <legend>Dia</legend>
             <div
@@ -448,6 +478,8 @@
             <input type="hidden" name="time" id="timeInput" />
           </fieldset>
 
+          </div>
+          <div class="wiz-step" data-step="3">
           <div class="form-row">
             <label class="field"
               >Seu nome
@@ -501,12 +533,18 @@
           <button class="btn btn-accent submit" type="submit">
             Solicitar agendamento
           </button>
+          </div>
+          <div class="wiz-nav app-only">
+            <button type="button" class="btn wiz-back" id="wizBack">Voltar</button>
+            <button type="button" class="btn btn-accent wiz-next" id="wizNext">Continuar</button>
+          </div>
           <div
             class="form-feedback"
             id="formFeedback"
             role="status"
             aria-live="polite"
           ></div>
+          <button type="button" class="btn wiz-again app-only" id="wizAgain">Fazer outro agendamento</button>
         </form>
 
         <aside class="contact-card" aria-labelledby="contact-title">
@@ -526,6 +564,17 @@
             >WhatsApp (34) 98426-6406</a
           >
         </aside>
+      </section>
+
+      <!-- MEUS HORÁRIOS (só no app instalado) -->
+      <section class="mine dark app-only" id="meus" aria-labelledby="mine-title">
+        <h2 id="mine-title" class="title">Meus horários</h2>
+        <p class="mine-note">Os agendamentos feitos neste celular.</p>
+        <ul class="mine-list" id="mineList"></ul>
+        <div class="mine-empty" id="mineEmpty">
+          <p>Você ainda não agendou por aqui.</p>
+          <button type="button" class="btn btn-accent" data-go="agendar">Agendar agora</button>
+        </div>
       </section>
 
       <!-- DÚVIDAS -->
@@ -623,6 +672,21 @@
       </p>
       <p class="copyright">© <span id="year"></span> JV Estética Automotiva</p>
     </footer>
+    <nav class="tabbar app-only" aria-label="Menu do app">
+      <button type="button" data-go="agendar" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v15H5zM8 3v4m8-4v4M5 10h14" /></svg>Agendar
+      </button>
+      <button type="button" data-go="servicos">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" /></svg>Serviços
+      </button>
+      <button type="button" data-go="meus">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" /></svg>Meus horários
+      </button>
+      <a href="https://wa.me/5534984266406" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-3.8A8 8 0 1 1 8 19zM9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-.8.8c-1-.4-1.8-1.2-2.2-2.2l.8-.8-1-2z" /></svg>WhatsApp
+      </a>
+    </nav>
+
     <div class="app-bar" id="appBar">
       <button type="button" class="app-icon" id="installBtn" hidden aria-label="Instalar o app da JV">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>
@@ -636,5 +700,6 @@
     <script src="js/monochrome.js" defer></script>
     <script src="js/script.js" defer></script>
     <script src="js/app.js" defer></script>
+    <script src="js/mono-app.js" defer></script>
   </body>
 </html>

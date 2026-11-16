@@ -1,0 +1,410 @@
+/* Monochrome: celular de demonstração no topo (computador) e modo aplicativo
+   (js/mono-app.js). Fora do app, as peças do app ficam escondidas. */
+
+.app-only {
+  display: none;
+}
+.wiz-step {
+  display: contents;
+}
+
+/* ---------- Celular com o app, no topo (só em tela grande) ---------- */
+.hero-phone {
+  display: none;
+}
+@media (min-width: 1100px) {
+  html:not(.is-app) .hero {
+    grid-template-columns: 1fr auto;
+    align-content: center;
+    justify-items: start;
+    column-gap: clamp(40px, 5vw, 96px);
+  }
+  html:not(.is-app) .hero-title {
+    grid-column: 1;
+    align-self: end;
+    text-align: left;
+    font-size: clamp(5rem, 8.6vw, 9.5rem);
+  }
+  html:not(.is-app) .hero-hours {
+    grid-column: 1;
+  }
+  html:not(.is-app) .hero-side,
+  html:not(.is-app) .badge {
+    display: none;
+  }
+  .hero-phone {
+    display: block;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    perspective: 1400px;
+  }
+}
+
+.phone {
+  width: 268px;
+  aspect-ratio: 9 / 19;
+  padding: 10px;
+  border-radius: 44px;
+  background: linear-gradient(145deg, #2a2a2a, #0a0a0a 60%);
+  box-shadow:
+    0 0 0 1px #3a3a3a inset,
+    0 40px 80px rgb(0 0 0 / 0.6);
+  transform: rotate(-5deg) rotateY(-8deg);
+}
+.hero.is-ready .phone {
+  animation: phone-in 1.1s var(--ease) 0.3s both;
+}
+@keyframes phone-in {
+  from {
+    opacity: 0;
+    transform: translateY(60px) rotate(-12deg) rotateY(-20deg);
+  }
+}
+.phone-screen {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px 12px;
+  border-radius: 34px;
+  background: #050505;
+  color: var(--paper);
+  font: 500 11px/1.2 var(--body);
+}
+.ps-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+.ps-status i {
+  width: 70px;
+  height: 18px;
+  border-radius: 10px;
+  background: #000;
+  box-shadow: 0 0 0 1px #1c1c1c;
+}
+.ps-brand {
+  font: 900 18px/1 var(--display);
+  text-transform: uppercase;
+}
+.ps-brand em,
+.ps-count {
+  font-style: normal;
+  color: var(--blue-hi);
+}
+.ps-title {
+  font: 800 22px/0.95 var(--display);
+  text-transform: uppercase;
+}
+.ps-bar {
+  height: 3px;
+  background: #222;
+}
+.ps-bar i {
+  display: block;
+  width: 66%;
+  height: 100%;
+  background: var(--accent);
+}
+.ps-seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid #2a2a2a;
+  text-align: center;
+}
+.ps-seg > * {
+  padding: 7px 0;
+}
+.ps-seg b {
+  background: var(--accent);
+  font-weight: 600;
+}
+.ps-days {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+.ps-days span,
+.ps-slots span {
+  display: grid;
+  place-items: center;
+  border: 1px solid #2a2a2a;
+  font-weight: 600;
+}
+.ps-days span {
+  padding: 6px 0;
+  font-size: 15px;
+}
+.ps-days small {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.ps-days .on {
+  border-color: var(--paper);
+}
+.ps-slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+.ps-slots span {
+  padding: 8px 0;
+}
+.ps-slots .off {
+  color: #555;
+  text-decoration: line-through;
+}
+.hero.is-ready .ps-slots .pick {
+  animation: ps-pick 0.5s ease 1.9s both;
+}
+@keyframes ps-pick {
+  to {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+}
+.ps-price {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid #222;
+  color: var(--muted);
+}
+.ps-price b {
+  color: var(--paper);
+}
+.ps-cta {
+  padding: 11px 0;
+  background: var(--paper);
+  color: #000;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.ps-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  justify-items: center;
+  padding-top: 6px;
+}
+.ps-tabs i {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid #555;
+  border-radius: 4px;
+}
+.ps-tabs .on {
+  border-color: var(--blue-hi);
+}
+
+/* ---------- Modo aplicativo ---------- */
+.is-app [hidden] {
+  display: none !important;
+}
+.is-app body {
+  padding-bottom: calc(74px + env(safe-area-inset-bottom));
+  background: var(--ink);
+}
+.is-app .hero,
+.is-app .footer,
+.is-app #appBar,
+.is-app .nav,
+.is-app .header-cta,
+.is-app .menu-toggle,
+.is-app .booking-intro,
+.is-app .contact-card,
+.is-app .services-head p,
+.is-app .booking-bg {
+  display: none !important;
+}
+.is-app .header {
+  background: rgb(3 3 3 / 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* uma aba por vez */
+.is-app main > section {
+  display: none;
+  padding: calc(84px + env(safe-area-inset-top)) 18px 28px;
+}
+.is-app[data-tab="agendar"] #agendar,
+.is-app[data-tab="servicos"] #servicos,
+.is-app[data-tab="servicos"] #duvidas,
+.is-app[data-tab="meus"] #meus {
+  display: block;
+}
+.is-app[data-tab="servicos"] #duvidas {
+  padding-top: 8px;
+}
+.is-app .title {
+  font-size: clamp(2.4rem, 11vw, 3.4rem);
+}
+
+/* agendamento em telas */
+.is-app #agendar {
+  min-height: calc(100svh - 74px);
+}
+.is-app .booking-form {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0;
+  background: none;
+  border: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.is-app .wiz-step {
+  display: grid;
+  gap: 22px;
+}
+.is-app .wiz-head {
+  display: grid;
+  gap: 8px;
+}
+.wiz-count {
+  font-size: 13px;
+  color: var(--muted);
+}
+.wiz-count b {
+  color: var(--blue-hi);
+}
+.wiz-title {
+  font: 800 clamp(2rem, 9vw, 2.6rem)/0.95 var(--display);
+  text-transform: uppercase;
+}
+.wiz-bar {
+  height: 4px;
+  margin-top: 6px;
+  background: #222;
+}
+.wiz-bar i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transform: scaleX(var(--p, 0.33));
+  transform-origin: left;
+  transition: transform 0.4s var(--ease);
+}
+.is-app .wiz-nav {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+}
+.is-app .wiz-nav:has(.wiz-back[hidden]) {
+  grid-template-columns: 1fr;
+}
+.is-app .wiz-nav .btn,
+.is-app .wiz-again {
+  min-height: 52px;
+}
+.wiz-back,
+.wiz-again {
+  background: none;
+  color: var(--paper);
+  border: 1px solid var(--line-strong);
+}
+.is-app .wiz-again {
+  display: flex;
+  width: 100%;
+}
+.is-app .booking-form[data-step="4"] .wiz-nav {
+  display: none;
+}
+
+/* serviços no app */
+.is-app .vehicle-pick .shot {
+  aspect-ratio: 16 / 10;
+}
+.is-app .services {
+  background: var(--paper);
+}
+
+/* meus horários */
+.is-app #meus {
+  min-height: calc(100svh - 74px);
+}
+.mine-note {
+  margin: 10px 0 24px;
+  color: var(--muted);
+}
+.mine-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mine-list li {
+  display: grid;
+  gap: 4px;
+  padding: 16px;
+  border: 1px solid var(--line-strong);
+  border-left: 3px solid var(--accent);
+}
+.mine-list li.is-past {
+  border-left-color: var(--line-strong);
+  opacity: 0.6;
+}
+.mine-when {
+  font: 800 1.5rem/1 var(--display);
+  text-transform: uppercase;
+}
+.mine-list small {
+  color: var(--muted);
+}
+.mine-empty {
+  display: grid;
+  justify-items: start;
+  gap: 16px;
+  color: var(--muted);
+}
+
+/* barra de abas */
+.is-app .tabbar {
+  position: fixed;
+  z-index: 60;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  background: rgb(0 0 0 / 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--line);
+}
+.tabbar > * {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-height: 56px;
+  padding: 6px 2px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: 500 11px/1.1 var(--body);
+  cursor: pointer;
+}
+.tabbar svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tabbar [aria-current="page"] {
+  color: var(--blue-hi);
+}
+.is-app .app-toast {
+  bottom: calc(86px + env(safe-area-inset-bottom));
+}
