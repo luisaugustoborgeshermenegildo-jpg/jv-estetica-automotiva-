@@ -54,6 +54,27 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/admin"))
     return;
 
+  // CSS e JS também vão à rede primeiro: senão a página nova abre com o
+  // estilo antigo do cache (ex.: botão do app sem formato após atualizar).
+  if (request.destination === "style" || request.destination === "script") {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(VERSION).then((cache) => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() =>
+          caches
+            .match(request, { ignoreSearch: true })
+            .then((hit) => hit || Response.error()),
+        ),
+    );
+    return;
+  }
+
   // Páginas: rede primeiro (conteúdo sempre atualizado); sem rede, usa a cópia guardada.
   if (request.mode === "navigate") {
     event.respondWith(
@@ -74,7 +95,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // CSS, JS, imagens: cache primeiro e atualiza em segundo plano.
+  // Imagens e demais arquivos: cache primeiro e atualiza em segundo plano.
   event.respondWith(
     caches.match(request).then((hit) => {
       const network = fetch(request)
