@@ -82,3 +82,9 @@ Site ID appgprj_6afaee3bccec81919187a038867af6c8, versão publicada 1.
 Luis informou em 16/11/2026 que JV preferiu o modelo panorâmico, com moto ao fundo e o título Seu veículo. Em evidência., mantendo os destaques azuis. A entrada permanece css/monochrome.html.
 
 As três propostas receberam letras que acompanham suavemente o mouse, retornam ao repouso e respeitam movimento reduzido. Build e 40 verificações por modelo passaram nesta etapa, totalizando 120. Revisão do diff sem problemas confirmados.
+
+## Refinamento do panorâmico aprovado por Luis
+
+Aplicados espaçamentos, superfícies azuladas, letras por proximidade em títulos e textos estáticos, entradas suaves ao rolar e suporte a movimento reduzido. Campos digitáveis e mensagens dinâmicas mantêm leitura estável. Referências consultadas foram Taste, Transitions e React Bits Variable Proximity. Implementação nativa em js/panoramic.js, carregada exclusivamente no panorâmico.
+
+Build, sintaxe JavaScript e 42 verificações do panorâmico passaram. Capturas desktop e mobile conferidas. Revisão do diff corrigiu espaçamento de palavras nos controles flex; conferência final sem problemas confirmados.

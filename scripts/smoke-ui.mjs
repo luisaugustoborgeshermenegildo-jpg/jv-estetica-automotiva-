@@ -85,7 +85,15 @@ try{
  await ev("document.querySelector('.hero-actions a[href=\"#servicos\"]').click()");
  await wait("location.hash==='#servicos' && Math.abs(document.querySelector('#servicos').getBoundingClientRect().top-112)<5");
  await check('Navegação suave chega ao destino com foco', "document.activeElement.id==='servicos'");
- await check('Fontes locais carregadas','document.fonts.check(getComputedStyle(document.querySelector(\'#hero-title\')).fontWeight + \' 16px "Barlow Condensed"\') && document.fonts.check(\'400 16px "DM Sans"\')');
+ if (pagePath.includes('monochrome')) {
+  await sleep(800);
+  const point = await ev("(()=>{const r=document.querySelector('#services-title .fluid-letter').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()");
+  await S('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point });
+  await sleep(400);
+  await check('Texto das seções responde por proximidade', "document.querySelector('#services-title .fluid-letter').style.translate!==''");
+  await check('Menu preserva espaços e texto acessível', "document.querySelector('#main-nav a .fluid-readable').textContent==='Nosso cuidado' && document.querySelector('#main-nav a .fluid-run').textContent==='Nosso cuidado'");
+ }
+ await check('Fontes locais carregadas' ,'document.fonts.check(getComputedStyle(document.querySelector(\'#hero-title\')).fontWeight + \' 16px "Barlow Condensed"\') && document.fonts.check(\'400 16px "DM Sans"\')');
  await check('Links internos têm destino',"Array.from(document.querySelectorAll('a[href^=\"#\"]')).every(a=>document.getElementById(a.hash.slice(1)))");
  await check('Foto principal carregada',"document.querySelector('.hero-photo img').naturalWidth>0");
  await check('Consentimento obrigatório',"document.querySelector('[name=consent]').required");

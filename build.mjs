@@ -22,3 +22,5 @@ await copyFile('css/monochrome.html', 'dist/css/monochrome.html');
 await copyFile('css/original.html', 'dist/css/original.html');
 await copyFile('css/motion.css', 'dist/css/motion.css');
 await copyFile('js/motion.js', 'dist/js/motion.js');
+
+await copyFile('js/panoramic.js', 'dist/js/panoramic.js');
