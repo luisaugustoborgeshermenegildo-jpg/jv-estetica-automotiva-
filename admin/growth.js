@@ -70,7 +70,9 @@
         .forEach((p) => (p.hidden = p.dataset.panel !== button.dataset.sub));
     }),
   );
-  document.querySelector("#growthRefresh").addEventListener("click", load);
+  document.querySelector("#growthRefresh")?.addEventListener("click", load);
+  // O sistema (/sistema) chama isto ao abrir a tela "Orçamentos e pátio".
+  window.jvGrowthLoad = load;
 
   /* ---------- Comunicação com a API ---------- */
   async function call(path, body) {

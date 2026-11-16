@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#050608" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>JV Sistema | Gestão da JV Estética</title>
+    <link rel="manifest" href="/sistema/manifest.webmanifest" />
+    <link rel="icon" href="/icons/favicon-48.png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="JV Sistema" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Big+Shoulders+Display:wght@700;800;900&display=swap"
+    />
+    <link rel="stylesheet" href="/sistema/css/sistema.css" />
+    <script src="/sistema/js/sistema.js" defer></script>
+    <script src="/sistema/js/inspection.js" defer></script>
+    <script src="/sistema/js/growth.js" defer></script>
+  </head>
+  <body>
+    <!-- ---------- Entrada ---------- -->
+    <main class="login" id="login" hidden>
+      <div class="login-card">
+        <span class="brand-mark">JV</span>
+        <h1>JV Sistema</h1>
+        <p>
+          Gestão da JV Estética Automotiva: agenda, ordens de serviço, vistoria,
+          orçamentos e estoque.
+        </p>
+        <form id="loginForm">
+          <label for="password">Senha</label>
+          <input
+            id="password"
+            type="password"
+            autocomplete="current-password"
+            required
+            maxlength="128"
+          />
+          <button class="btn-primary" type="submit">Entrar</button>
+        </form>
+        <p class="status" id="loginStatus" role="status" aria-live="polite"></p>
+        <a class="link-muted" href="/monochrome">Ir para o site da JV</a>
+      </div>
+    </main>
+
+    <!-- ---------- Sistema ---------- -->
+    <div class="shell" id="shell" hidden>
+      <aside class="sidebar" id="sidebar">
+        <a class="side-brand" href="#visao">
+          <span class="brand-mark">JV</span>
+          <span
+            ><b>JV SISTEMA</b
+            ><small>Gestão para estética automotiva</small></span
+          >
+        </a>
+        <p class="side-tag">Seu dia, no controle.</p>
+        <nav aria-label="Menu do sistema">
+          <p class="side-group">Operação</p>
+          <a href="#visao" data-page="visao"
+            ><svg viewBox="0 0 24 24">
+              <path
+                d="M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z"
+              /></svg
+            >Visão geral</a
+          >
+          <a href="#agenda" data-page="agenda"
+            ><svg viewBox="0 0 24 24">
+              <path d="M4 6h16v14H4zM4 10h16M8 3v5M16 3v5" /></svg
+            >Agenda<span class="side-count" id="countToday">0</span></a
+          >
+          <a href="#os" data-page="os"
+            ><svg viewBox="0 0 24 24">
+              <path d="M6 3h9l3 3v15H6zM9 9h6M9 13h6M9 17h4" /></svg
+            >Ordens de serviço<span class="side-count" id="countOs">0</span></a
+          >
+          <a href="#clientes" data-page="clientes"
+            ><svg viewBox="0 0 24 24">
+              <path
+                d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21c0-4 3-6 7-6s7 2 7 6M17 11a3 3 0 1 0 0-6M22 20c0-3-2-5-5-5"
+              /></svg
+            >Clientes</a
+          >
+          <p class="side-group">Gestão</p>
+          <a href="#crescimento" data-page="crescimento"
+            ><svg viewBox="0 0 24 24">
+              <path d="M3 4h2l2 12h11l2-8H6M9 20h.01M17 20h.01" /></svg
+            >Orçamentos e pátio</a
+          >
+          <a href="/monochrome" target="_blank" rel="noopener"
+            ><svg viewBox="0 0 24 24">
+              <path
+                d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"
+              /></svg
+            >Agendamento online</a
+          >
+        </nav>
+        <div class="side-foot">
+          <button type="button" class="install-panel" id="installPanel" hidden>
+            Instalar app
+          </button>
+          <button type="button" class="side-logout" id="logout">Sair</button>
+        </div>
+      </aside>
+      <button
+        type="button"
+        class="menu-btn"
+        id="menuBtn"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+      >
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+      <div class="scrim" id="scrim" hidden></div>
+
+      <div class="main">
+        <header class="top">
+          <div class="top-row">
+            <p class="crumb">
+              <span>JV Estética</span> / <b id="crumb">Visão geral</b>
+            </p>
+            <p class="today" id="todayLabel"></p>
+          </div>
+          <div class="top-title">
+            <div>
+              <p class="kicker" id="kicker">01 / Visão geral</p>
+              <h1 id="pageTitle">Boa tarde, João</h1>
+              <p class="subtitle" id="pageSub"></p>
+            </div>
+            <a
+              class="btn-primary"
+              href="/monochrome?app=1#agendar"
+              target="_blank"
+              rel="noopener"
+              >+ Novo agendamento</a
+            >
+          </div>
+        </header>
+
+        <p
+          class="status page-status"
+          id="dashboardStatus"
+          role="status"
+          aria-live="polite"
+        ></p>
+
+        <!-- Visão geral -->
+        <section class="page" data-view="visao">
+          <div class="kpis">
+            <article class="kpi kpi-dark">
+              <span>Agenda do dia</span><strong id="kpiToday">00</strong
+              ><small>Veículos esperados no estúdio</small>
+            </article>
+            <article class="kpi">
+              <span>Em lavagem</span><strong id="kpiWashing">00</strong
+              ><small>Serviços em andamento</small>
+            </article>
+            <article class="kpi">
+              <span>Prontos para sair</span><strong id="kpiReady">00</strong
+              ><small>Aguardando a retirada</small>
+            </article>
+            <article class="kpi kpi-accent">
+              <span>Entregues hoje</span><strong id="kpiDelivered">00</strong
+              ><small>Veículos finalizados no dia</small>
+            </article>
+          </div>
+          <div class="overview">
+            <div class="panel-block">
+              <div class="block-head">
+                <h2>Na agenda de hoje</h2>
+                <a href="#agenda">Abrir agenda</a>
+              </div>
+              <div class="list" id="todayList"></div>
+            </div>
+            <div class="side-blocks">
+              <div class="card rhythm">
+                <h2>Ritmo do estúdio</h2>
+                <div class="rhythm-bar" id="rhythmBar"></div>
+                <ul class="rhythm-list" id="rhythmList"></ul>
+              </div>
+              <div class="card card-dark">
+                <p class="kicker">Reservas online</p>
+                <h2>O próximo cuidado começa aqui.</h2>
+                <p>
+                  O link de agendamento da JV, pronto para mandar aos clientes.
+                </p>
+                <button type="button" class="btn-light" id="copyLink">
+                  Copiar link de agendamento
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Agenda -->
+        <section class="page" data-view="agenda" hidden>
+          <div class="day-nav">
+            <button
+              type="button"
+              class="btn-ghost"
+              id="dayPrev"
+              aria-label="Dia anterior"
+            >
+              ‹
+            </button>
+            <input type="date" id="dayPick" />
+            <button
+              type="button"
+              class="btn-ghost"
+              id="dayNext"
+              aria-label="Próximo dia"
+            >
+              ›
+            </button>
+            <button type="button" class="btn-ghost" id="dayToday">Hoje</button>
+          </div>
+          <div class="list" id="agendaList"></div>
+        </section>
+
+        <!-- Ordens de serviço -->
+        <section class="page" data-view="os" hidden>
+          <div class="list" id="osList"></div>
+        </section>
+
+        <!-- Clientes -->
+        <section class="page" data-view="clientes" hidden>
+          <input
+            class="search"
+            id="clientSearch"
+            type="search"
+            placeholder="Buscar por nome, WhatsApp ou veículo"
+          />
+          <div class="list" id="clientList"></div>
+        </section>
+
+        <!-- Orçamentos e pátio (growth.js) -->
+        <section class="page" data-view="crescimento" hidden>
+          <div id="growthView">
+            <div class="growth-tabs" role="tablist">
+              <button type="button" data-sub="quotes" aria-selected="true">
+                Orçamentos
+              </button>
+              <button type="button" data-sub="yard" aria-selected="false">
+                Pátio
+              </button>
+              <button type="button" data-sub="stock" aria-selected="false">
+                Estoque
+              </button>
+              <button type="button" data-sub="sales" aria-selected="false">
+                Vendas
+              </button>
+            </div>
+            <p
+              class="status"
+              id="growthStatus"
+              role="status"
+              aria-live="polite"
+            ></p>
+
+            <section class="growth-panel" data-panel="quotes">
+              <form id="quoteForm" class="grid-form">
+                <h2>Novo orçamento</h2>
+                <label
+                  >Cliente<input name="customer" required maxlength="80"
+                /></label>
+                <label
+                  >WhatsApp<input
+                    name="phone"
+                    inputmode="tel"
+                    maxlength="20"
+                    placeholder="(34) 9 9999-9999"
+                /></label>
+                <label
+                  >Veículo<select name="vehicle">
+                    <option value="moto">Moto</option>
+                    <option value="carro">Carro</option>
+                  </select></label
+                >
+                <label
+                  >Modelo<input
+                    name="model"
+                    maxlength="80"
+                    placeholder="Ex.: XRE 300"
+                /></label>
+                <label class="wide"
+                  >Serviço<input
+                    name="service"
+                    required
+                    maxlength="120"
+                    placeholder="Ex.: Lavagem premium + clareamento do motor"
+                /></label>
+                <label
+                  >Valor (R$)<input
+                    name="amount"
+                    required
+                    inputmode="decimal"
+                    placeholder="150,00"
+                /></label>
+                <label>Validade<input name="validUntil" type="date" /></label>
+                <label class="wide"
+                  >Observações e condições<textarea
+                    name="notes"
+                    rows="2"
+                    maxlength="500"
+                  ></textarea>
+                </label>
+                <button class="btn-primary" type="submit">
+                  Criar orçamento
+                </button>
+              </form>
+              <div class="list" id="quoteList"></div>
+            </section>
+
+            <section class="growth-panel" data-panel="yard" hidden>
+              <p class="hint">
+                Veículos que já chegaram e ainda não foram entregues. As etapas
+                da OS alimentam esta lista.
+              </p>
+              <div class="list" id="yardList"></div>
+            </section>
+
+            <section class="growth-panel" data-panel="stock" hidden>
+              <form id="productForm" class="grid-form">
+                <h2>Novo produto</h2>
+                <label class="wide"
+                  >Produto<input
+                    name="name"
+                    required
+                    maxlength="80"
+                    placeholder="Ex.: Shampoo automotivo"
+                /></label>
+                <label
+                  >Quantidade<input
+                    name="quantity"
+                    required
+                    inputmode="decimal"
+                    value="0"
+                /></label>
+                <label
+                  >Estoque mínimo<input
+                    name="minimum"
+                    required
+                    inputmode="decimal"
+                    value="0"
+                /></label>
+                <label
+                  >Unidade<input name="unit" maxlength="10" value="un"
+                /></label>
+                <label
+                  >Custo unitário (R$)<input
+                    name="unitCost"
+                    required
+                    inputmode="decimal"
+                    value="0,00"
+                /></label>
+                <button class="btn-primary" type="submit">
+                  Adicionar produto
+                </button>
+              </form>
+              <div class="list" id="productList"></div>
+              <form id="moveForm" class="grid-form">
+                <h2>Entrada e consumo</h2>
+                <label
+                  >Produto<select name="productId" required></select
+                ></label>
+                <label
+                  >Movimentação<select name="kind">
+                    <option value="out">Consumo / saída</option>
+                    <option value="in">Entrada / compra</option>
+                  </select></label
+                >
+                <label
+                  >Quantidade<input
+                    name="quantity"
+                    required
+                    inputmode="decimal"
+                /></label>
+                <label
+                  >OS (opcional)<select name="bookingId">
+                    <option value="">Sem vínculo</option>
+                  </select></label
+                >
+                <label class="wide"
+                  >Motivo<input
+                    name="reason"
+                    maxlength="200"
+                    placeholder="Ex.: material usado na lavagem"
+                /></label>
+                <button class="btn-primary" type="submit">
+                  Registrar movimentação
+                </button>
+              </form>
+              <h2 class="list-title">Histórico do estoque</h2>
+              <div class="list" id="moveList"></div>
+            </section>
+
+            <section class="growth-panel" data-panel="sales" hidden>
+              <div class="sales-cards" id="salesCards"></div>
+            </section>
+          </div>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>

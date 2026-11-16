@@ -22,6 +22,15 @@ await copyFile('admin/admin.js', 'dist/admin/js/admin.js');
 await copyFile('admin/inspection.js', 'dist/admin/js/inspection.js');
 await copyFile('admin/growth.js', 'dist/admin/js/growth.js');
 await copyFile('admin/manifest.webmanifest', 'dist/admin/manifest.webmanifest');
+// JV Sistema (gestão separada do site, instalável como app).
+await mkdir('dist/sistema/css', { recursive: true });
+await mkdir('dist/sistema/js', { recursive: true });
+await copyFile('sistema/index.html', 'dist/sistema/index.html');
+await copyFile('sistema/manifest.webmanifest', 'dist/sistema/manifest.webmanifest');
+await copyFile('sistema/sistema.css', 'dist/sistema/css/sistema.css');
+await copyFile('sistema/sistema.js', 'dist/sistema/js/sistema.js');
+await copyFile('admin/inspection.js', 'dist/sistema/js/inspection.js');
+await copyFile('admin/growth.js', 'dist/sistema/js/growth.js');
 
 // Cabeçalhos de segurança e link /app para a Cloudflare (mesmo conteúdo do netlify.toml).
 const CSP = "default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data: blob:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
