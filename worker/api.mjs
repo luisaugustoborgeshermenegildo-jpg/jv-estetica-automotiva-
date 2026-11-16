@@ -7,6 +7,7 @@ import { STATUSES, newAccessCode, hashAccessCode, isAccessCode } from '../netlif
 import { TIMES, SERVICES, ENGINES, MOTO_ENGINES, MOTO_ONLY_SERVICES, OPEN_DAYS, localToday } from './rules.mjs';
 import { d1, isUnique, limited, readJson, requireAdmin, json } from './http.mjs';
 import { inspectionRoutes, inspectionFor } from './inspection.mjs';
+import { growthRoutes } from './growth.mjs';
 
 export async function handleApi(request, env, url) {
   const path = url.pathname;
@@ -21,6 +22,8 @@ export async function handleApi(request, env, url) {
     if (path === '/api/admin/bookings/status') return method === 'POST' ? adminStatus(db, request) : json({ error: 'Método não permitido.' }, 405);
     const inspection = await inspectionRoutes(db, request, env, url);
     if (inspection) return inspection;
+    const growth = await growthRoutes(db, request, url);
+    if (growth) return growth;
     if (['/api/admin/status', '/api/admin/login', '/api/admin/logout', '/api/admin/setup'].includes(path)) return adminAuth(db, request, env, path);
     return json({ error: 'Não encontrado.' }, 404);
   } catch (error) {

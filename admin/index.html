@@ -7,7 +7,12 @@
     <meta name="robots" content="noindex, nofollow" />
     <title>Área administrativa | JV Estética Automotiva</title>
     <link rel="stylesheet" href="/admin/css/admin.css" />
+    <link rel="manifest" href="/admin/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="JV Painel" />
     <script src="/admin/js/inspection.js" defer></script>
+    <script src="/admin/js/growth.js" defer></script>
     <script src="/admin/js/admin.js" defer></script>
   </head>
   <body>
@@ -15,6 +20,8 @@
       <a class="brand" href="/" aria-label="JV Estética Automotiva"
         ><span class="brand-mark">JV</span
         ><span>ESTÉTICA<br />AUTOMOTIVA</span></a
+      ><button class="install-panel" id="installPanel" type="button" hidden>
+        Instalar painel</button
       ><span class="private-label">ACESSO RESTRITO</span>
     </header>
     <main class="page-shell">
@@ -96,29 +103,207 @@
         id="dashboard"
         aria-labelledby="dashboardTitle"
       >
-        <div class="dashboard-head">
-          <div>
-            <p class="eyebrow">JV / AGENDA</p>
-            <h1 id="dashboardTitle">Agendamentos</h1>
-            <p class="intro">
-              Pedidos online recentes, do mais próximo para o mais distante.
-            </p>
-          </div>
-          <button class="secondary-button" id="refreshButton" type="button">
-            Atualizar
+        <nav class="admin-tabs" aria-label="Áreas do painel">
+          <button type="button" data-view="agenda" aria-current="page">
+            Agenda
           </button>
+          <button type="button" data-view="growth">Crescimento</button>
+        </nav>
+        <div id="agendaView">
+          <div class="dashboard-head">
+            <div>
+              <p class="eyebrow">JV / AGENDA</p>
+              <h1 id="dashboardTitle">Agendamentos</h1>
+              <p class="intro">
+                Pedidos online recentes, do mais próximo para o mais distante.
+              </p>
+            </div>
+            <button class="secondary-button" id="refreshButton" type="button">
+              Atualizar
+            </button>
+          </div>
+          <div class="summary">
+            <span id="bookingCount">0 pedidos</span
+            ><span>Atualização manual</span>
+          </div>
+          <p
+            class="status"
+            id="dashboardStatus"
+            role="status"
+            aria-live="polite"
+          ></p>
+          <div class="booking-list" id="bookingList"></div>
         </div>
-        <div class="summary">
-          <span id="bookingCount">0 pedidos</span
-          ><span>Atualização manual</span>
+
+        <div id="growthView" hidden>
+          <div class="dashboard-head">
+            <div>
+              <p class="eyebrow">JV / CRESCIMENTO</p>
+              <h1>Crescimento</h1>
+              <p class="intro">
+                Orçamentos, veículos no pátio, estoque e vendas.
+              </p>
+            </div>
+            <button class="secondary-button" id="growthRefresh" type="button">
+              Atualizar
+            </button>
+          </div>
+          <div class="growth-tabs" role="tablist">
+            <button type="button" data-sub="quotes" aria-selected="true">
+              Orçamentos
+            </button>
+            <button type="button" data-sub="yard" aria-selected="false">
+              Pátio
+            </button>
+            <button type="button" data-sub="stock" aria-selected="false">
+              Estoque
+            </button>
+            <button type="button" data-sub="sales" aria-selected="false">
+              Vendas
+            </button>
+          </div>
+          <p
+            class="status"
+            id="growthStatus"
+            role="status"
+            aria-live="polite"
+          ></p>
+
+          <section class="growth-panel" data-panel="quotes">
+            <form id="quoteForm" class="grid-form">
+              <h2>Novo orçamento</h2>
+              <label
+                >Cliente<input name="customer" required maxlength="80"
+              /></label>
+              <label
+                >WhatsApp<input
+                  name="phone"
+                  inputmode="tel"
+                  maxlength="20"
+                  placeholder="(34) 9 9999-9999"
+              /></label>
+              <label
+                >Veículo<select name="vehicle">
+                  <option value="moto">Moto</option>
+                  <option value="carro">Carro</option>
+                </select></label
+              >
+              <label
+                >Modelo<input
+                  name="model"
+                  maxlength="80"
+                  placeholder="Ex.: XRE 300"
+              /></label>
+              <label class="wide"
+                >Serviço<input
+                  name="service"
+                  required
+                  maxlength="120"
+                  placeholder="Ex.: Lavagem premium + clareamento do motor"
+              /></label>
+              <label
+                >Valor (R$)<input
+                  name="amount"
+                  required
+                  inputmode="decimal"
+                  placeholder="150,00"
+              /></label>
+              <label>Validade<input name="validUntil" type="date" /></label>
+              <label class="wide"
+                >Observações e condições<textarea
+                  name="notes"
+                  rows="2"
+                  maxlength="500"
+                ></textarea>
+              </label>
+              <button class="stage-next" type="submit">Criar orçamento</button>
+            </form>
+            <div class="growth-list" id="quoteList"></div>
+          </section>
+
+          <section class="growth-panel" data-panel="yard" hidden>
+            <p class="intro">
+              Veículos que já chegaram e ainda não foram entregues. As etapas da
+              OS alimentam esta lista automaticamente.
+            </p>
+            <div class="growth-list" id="yardList"></div>
+          </section>
+
+          <section class="growth-panel" data-panel="stock" hidden>
+            <form id="productForm" class="grid-form">
+              <h2>Novo produto</h2>
+              <label class="wide"
+                >Produto<input
+                  name="name"
+                  required
+                  maxlength="80"
+                  placeholder="Ex.: Shampoo automotivo"
+              /></label>
+              <label
+                >Quantidade<input
+                  name="quantity"
+                  required
+                  inputmode="decimal"
+                  value="0"
+              /></label>
+              <label
+                >Estoque mínimo<input
+                  name="minimum"
+                  required
+                  inputmode="decimal"
+                  value="0"
+              /></label>
+              <label
+                >Unidade<input name="unit" maxlength="10" value="un"
+              /></label>
+              <label
+                >Custo unitário (R$)<input
+                  name="unitCost"
+                  required
+                  inputmode="decimal"
+                  value="0,00"
+              /></label>
+              <button class="stage-next" type="submit">
+                Adicionar produto
+              </button>
+            </form>
+            <div class="growth-list" id="productList"></div>
+            <form id="moveForm" class="grid-form">
+              <h2>Entrada e consumo</h2>
+              <label>Produto<select name="productId" required></select></label>
+              <label
+                >Movimentação<select name="kind">
+                  <option value="out">Consumo / saída</option>
+                  <option value="in">Entrada / compra</option>
+                </select></label
+              >
+              <label
+                >Quantidade<input name="quantity" required inputmode="decimal"
+              /></label>
+              <label
+                >OS (opcional)<select name="bookingId">
+                  <option value="">Sem vínculo</option>
+                </select></label
+              >
+              <label class="wide"
+                >Motivo<input
+                  name="reason"
+                  maxlength="200"
+                  placeholder="Ex.: material usado na lavagem"
+              /></label>
+              <button class="stage-next" type="submit">
+                Registrar movimentação
+              </button>
+            </form>
+            <h2 class="list-title">Histórico do estoque</h2>
+            <div class="growth-list" id="moveList"></div>
+          </section>
+
+          <section class="growth-panel" data-panel="sales" hidden>
+            <div class="sales-cards" id="salesCards"></div>
+          </section>
         </div>
-        <p
-          class="status"
-          id="dashboardStatus"
-          role="status"
-          aria-live="polite"
-        ></p>
-        <div class="booking-list" id="bookingList"></div>
+
         <button class="logout-button" id="logoutButton" type="button">
           Sair do painel
         </button>

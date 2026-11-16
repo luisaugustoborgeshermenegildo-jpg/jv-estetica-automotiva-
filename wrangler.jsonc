@@ -22,7 +22,9 @@
     }
   ],
   // Fotos da vistoria e da entrega (privadas: só saem pela API).
-  "r2_buckets": [{ "binding": "PHOTOS", "bucket_name": "jv-fotos" }],
+  // Desligado até o R2 ser ativado na conta: depois rodar
+  // `npx wrangler r2 bucket create jv-fotos` e tirar o comentário da linha abaixo.
+  // "r2_buckets": [{ "binding": "PHOTOS", "bucket_name": "jv-fotos" }],
   "ratelimits": [
     { "name": "LIMIT_BOOKING", "namespace_id": "1001", "simple": { "limit": 6, "period": 60 } },
     { "name": "LIMIT_ADMIN", "namespace_id": "1002", "simple": { "limit": 8, "period": 60 } },

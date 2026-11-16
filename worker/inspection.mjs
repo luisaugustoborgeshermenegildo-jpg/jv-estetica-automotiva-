@@ -48,6 +48,7 @@ async function photoResponse(env, db, photoId, bookingId) {
     ? await db.sql`SELECT object_key, content_type FROM photos WHERE id = ${photoId} AND booking_id = ${bookingId}`
     : await db.sql`SELECT object_key, content_type FROM photos WHERE id = ${photoId}`;
   if (!rows.length) return json({ error: 'Foto não encontrada.' }, 404);
+  if (!env.PHOTOS) return json({ error: 'Foto não encontrada.' }, 404);
   const object = await env.PHOTOS.get(rows[0].object_key);
   if (!object) return json({ error: 'Foto não encontrada.' }, 404);
   return new Response(object.body, {
@@ -101,6 +102,8 @@ export async function inspectionRoutes(db, request, env, url) {
   }
 
   if (path === '/api/admin/photos' && method === 'POST') {
+    // Enquanto o R2 não estiver ativado na conta, as fotos ficam indisponíveis.
+    if (!env.PHOTOS) return json({ error: 'Envio de fotos ainda não ativado no servidor.' }, 503);
     if (Number(request.headers.get('content-length') ?? 0) > MAX_PHOTO + 4096) return json({ error: 'Foto muito grande (máximo 2 MB).' }, 413);
     if (!request.headers.get('content-type')?.toLowerCase().startsWith('multipart/form-data')) return json({ error: 'Formato de pedido inválido.' }, 415);
     const denied = await requireAdmin(db, request);
@@ -147,7 +150,7 @@ export async function inspectionRoutes(db, request, env, url) {
     if (!rows.length) return json({ error: 'Foto não encontrada.' }, 404);
     if (rows[0].kind === 'arrival' && (await isConfirmed(db, rows[0].booking_id))) return json({ error: 'O cliente já confirmou a vistoria; as fotos de chegada ficam guardadas.' }, 409);
     await db.sql`DELETE FROM photos WHERE id = ${photoId}`;
-    await env.PHOTOS.delete(rows[0].object_key);
+    await env.PHOTOS?.delete(rows[0].object_key);
     return json({ ok: true }, 200);
   }
 
