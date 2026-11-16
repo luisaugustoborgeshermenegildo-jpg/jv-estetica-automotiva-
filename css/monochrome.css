@@ -8,8 +8,8 @@
   --grey: #6a6a6a;
   --grey-2: #a0a09e;
   --rule: #e4e4e2;
-  --red: #fb0004;
-  --red-deep: #a20002;
+  --accent: #2861ed; /* azul da marca JV */
+  --accent-deep: #1a47c2;
   --display: "Big Shoulders Display", Impact, sans-serif;
   --body: "Archivo", system-ui, sans-serif;
   --pad: clamp(20px, 4.5vw, 64px);
@@ -23,8 +23,8 @@
   --line-strong: #333;
   --text: #fefefe;
   --muted: #9a9a98;
-  --blue: var(--red);
-  --blue-hi: #ff4a4d;
+  --blue: var(--accent);
+  --blue-hi: #447bff;
   --mono: var(--body);
 }
 
@@ -78,7 +78,7 @@ ol {
   list-style: none;
 }
 :focus-visible {
-  outline: 2px solid var(--red);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 .skip {
@@ -86,7 +86,7 @@ ol {
   left: 12px;
   top: -60px;
   z-index: 100;
-  background: var(--red);
+  background: var(--accent);
   color: #fff;
   padding: 10px 14px;
 }
@@ -126,7 +126,7 @@ ol {
   color: var(--ink);
 }
 .btn-white:hover {
-  background: var(--red);
+  background: var(--accent);
   color: #fff;
 }
 .btn-black {
@@ -134,14 +134,14 @@ ol {
   color: var(--paper);
 }
 .btn-black:hover {
-  background: var(--red);
+  background: var(--accent);
 }
-.btn-red {
-  background: var(--red);
+.btn-accent {
+  background: var(--accent);
   color: #fff;
 }
-.btn-red:hover {
-  background: var(--red-deep);
+.btn-accent:hover {
+  background: var(--accent-deep);
 }
 
 /* ---------- Cabeçalho ---------- */
@@ -181,7 +181,7 @@ ol {
   letter-spacing: 0.02em;
 }
 .brand-words span:last-child {
-  color: var(--red);
+  color: var(--blue-hi);
   font-size: 15px;
 }
 .nav {
@@ -206,7 +206,7 @@ ol {
   right: 0;
   bottom: 0;
   height: 1px;
-  background: var(--red);
+  background: var(--accent);
   transform: scaleX(0);
   transition: transform 0.3s var(--ease);
 }
@@ -356,7 +356,7 @@ ol {
   stroke-linejoin: round;
 }
 .badge:hover .badge-core {
-  background: var(--red);
+  background: var(--accent);
   color: #fff;
   transform: rotate(45deg);
 }
@@ -379,7 +379,7 @@ ol {
 }
 .hero-title em {
   font-style: normal;
-  color: var(--red);
+  color: var(--accent);
 }
 .js .hero-title .row > * {
   display: inline-block;
@@ -508,7 +508,7 @@ ol {
   transform: translateX(calc(var(--shift, 0) * -1px));
 }
 .giant-b {
-  color: var(--red);
+  color: var(--accent);
   transform: translateX(calc(var(--shift, 0) * 1px));
 }
 .statement-text {
@@ -589,7 +589,7 @@ ol {
   font-size: clamp(1.3rem, 2.4vw, 1.9rem);
 }
 .row-item summary:hover .row-name {
-  color: var(--red);
+  color: var(--accent);
   transform: translateX(6px);
 }
 .row-price {
@@ -638,7 +638,7 @@ ol {
 }
 .row-body a {
   color: var(--ink);
-  border-bottom: 1px solid var(--red);
+  border-bottom: 1px solid var(--accent);
 }
 .row-body ul {
   display: flex;
@@ -712,7 +712,7 @@ ol {
 .step h3 {
   font: 800 clamp(1.8rem, 3.4vw, 2.6rem)/1 var(--display);
   text-transform: uppercase;
-  color: var(--red);
+  color: var(--accent);
 }
 .step p {
   margin-top: 12px;
@@ -817,13 +817,13 @@ ol {
 }
 @keyframes flash {
   from {
-    color: var(--red);
+    color: var(--blue-hi);
   }
 }
 .summary-total dd {
   font: 800 22px/1 var(--display);
   text-transform: uppercase;
-  color: var(--red);
+  color: var(--blue-hi);
 }
 .mono .booking-form {
   backdrop-filter: blur(18px);
@@ -877,8 +877,8 @@ ol {
 .footer-big a {
   white-space: nowrap;
 }
-.footer-big.red {
-  color: var(--red);
+.footer-big.accent {
+  color: var(--accent);
   margin-top: 6px;
 }
 .footer-big a:hover {
@@ -902,7 +902,7 @@ ol {
   transition: color 0.2s;
 }
 .footer-links a:hover {
-  color: var(--red);
+  color: var(--blue-hi);
 }
 .wordmark {
   margin: clamp(32px, 5vw, 56px) calc(var(--pad) * -0.3) 0;
@@ -914,7 +914,7 @@ ol {
 }
 .wordmark em {
   font-style: normal;
-  color: var(--red);
+  color: var(--accent);
 }
 .copyright {
   padding: 18px 0;
@@ -1034,6 +1034,26 @@ ol {
     display: none;
   }
 }
+/* Letras vivas nos títulos grandes (js/monochrome.js) */
+.ch {
+  display: inline-block;
+  transform: translate(var(--tx, 0), var(--ty, 0));
+  transition: transform 0.45s var(--ease);
+  will-change: transform;
+}
+.hero.is-revealed .hero-title .row {
+  overflow: visible;
+}
+.is-wave .ch {
+  animation: wave 0.7s var(--ease) both;
+  animation-delay: calc(var(--i) * 35ms);
+}
+@keyframes wave {
+  40% {
+    transform: translateY(-0.12em);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
