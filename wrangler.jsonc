@@ -17,8 +17,7 @@
     {
       "binding": "DB",
       "database_name": "jv-db",
-      // Trocar pelo id real depois de `npx wrangler d1 create jv-db`.
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "7e1de623-830c-4c2e-abbe-a7b380d5d70d",
       "migrations_dir": "migrations"
     }
   ],
