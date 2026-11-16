@@ -7,12 +7,40 @@
   const photo = document.querySelector('.hero-photo');
   const summary = document.querySelector('.booking-summary');
   const service = document.querySelector('#serviceSelect');
+  const title = document.querySelector('#hero-title');
+  const titleText = title.innerText.replace(/\s+/g, ' ').trim();
+  const walker = document.createTreeWalker(title, NodeFilter.SHOW_TEXT);
+  const textNodes = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode);
+  title.setAttribute('aria-label', titleText);
+  textNodes.forEach(node => {
+    const fragment = document.createDocumentFragment();
+    node.textContent.split(/(\s+)/).forEach(word => {
+      if (!word.trim()) {
+        fragment.append(document.createTextNode(word));
+        return;
+      }
+      const wrapper = document.createElement('b');
+      wrapper.className = 'motion-word';
+      wrapper.setAttribute('aria-hidden', 'true');
+      Array.from(word).forEach(character => {
+        const letter = document.createElement('i');
+        letter.className = 'motion-letter';
+        letter.textContent = character;
+        wrapper.append(letter);
+      });
+      fragment.append(wrapper);
+    });
+    node.replaceWith(fragment);
+  });
+  const letters = Array.from(title.querySelectorAll('.motion-letter'));
   let pointerFrame = 0;
   let summaryAnimation;
 
   function resetDepth() {
     cancelAnimationFrame(pointerFrame);
     pointerFrame = 0;
+    letters.forEach(letter => letter.style.removeProperty('translate'));
     photo.classList.remove('is-tracking');
     photo.style.removeProperty('--depth-x');
     photo.style.removeProperty('--depth-y');
@@ -26,6 +54,11 @@
     const y = Math.max(-.5, Math.min(.5, (event.clientY - rect.top) / rect.height - .5));
     const depth = document.body.classList.contains('monochrome') ? 3 : 8;
     pointerFrame = requestAnimationFrame(() => {
+      letters.forEach((letter, index) => {
+        const weight = .65 + .35 * Math.sin(index * .55);
+        letter.style.translate = (x * 12 * weight).toFixed(2) + 'px ' +
+          (y * 14 * weight).toFixed(2) + 'px';
+      });
       photo.classList.add('is-tracking');
       photo.style.setProperty('--depth-x', (-y * depth).toFixed(2) + 'deg');
       photo.style.setProperty('--depth-y', (x * depth).toFixed(2) + 'deg');

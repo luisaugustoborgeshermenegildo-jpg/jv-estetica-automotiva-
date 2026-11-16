@@ -241,3 +241,22 @@
   35% { opacity: 1; }
   100% { opacity: 0; background-position: 250px 0; }
 }
+
+.motion-design .motion-word {
+  display: inline-block;
+  white-space: nowrap;
+  font: inherit;
+}
+.motion-design .motion-letter {
+  display: inline-block;
+  font: inherit;
+  transition: translate 450ms var(--motion-ease);
+}
+.wash-design .hero-line {
+  overflow: visible;
+}
+@media (prefers-reduced-motion: reduce) {
+  .motion-design .motion-letter {
+    translate: none !important;
+  }
+}

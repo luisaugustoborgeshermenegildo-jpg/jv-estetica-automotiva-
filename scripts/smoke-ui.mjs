@@ -76,10 +76,12 @@ try{
  await S('Input.dispatchMouseEvent', { type:'mouseMoved', x:1100, y:350 });
  await sleep(250);
  await check('Profundidade 3D responde ao ponteiro', "document.querySelector('.hero-photo').style.getPropertyValue('--depth-y')!==''");
+ await check('Letras acompanham o mouse', "document.querySelector('.motion-letter').style.translate!=='' && document.querySelector('#hero-title').getAttribute('aria-label').length>0");
  await capture('desktop');
  await S('Input.dispatchMouseEvent', { type:'mouseMoved', x:20, y:20 });
  await sleep(700);
  await check('Profundidade retorna ao repouso', "document.querySelector('.hero-photo').style.getPropertyValue('--depth-y')===''");
+ await check('Letras retornam ao repouso', "document.querySelector('.motion-letter').style.translate===''");
  await ev("document.querySelector('.hero-actions a[href=\"#servicos\"]').click()");
  await wait("location.hash==='#servicos' && Math.abs(document.querySelector('#servicos').getBoundingClientRect().top-112)<5");
  await check('Navegação suave chega ao destino com foco', "document.activeElement.id==='servicos'");
@@ -139,6 +141,7 @@ try{
  await check('Sucesso limpa horário e serviço',"!document.querySelector('#timeInput').value && !document.querySelector('#serviceSelect').value");
  await S('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
  await check('Modo reduzido desativa profundidade e entrada', "getComputedStyle(document.querySelector('.hero-photo')).transform==='none' && getComputedStyle(document.querySelector('#hero-title')).animationName==='none'");
+ await check('Letras respeitam movimento reduzido', "getComputedStyle(document.querySelector('.motion-letter')).translate==='none'");
  await check('Movimento reduzido respeitado',"getComputedStyle(document.querySelector('.hero-copy')).animationName==='none' && getComputedStyle(document.documentElement).scrollBehavior==='auto'");
  assert.deepEqual(errors,[]);passed++;console.log('PASS Sem exceções de JavaScript');
  console.log('\n'+passed+' verificações passaram; API simulada, nenhum pedido real enviado.');

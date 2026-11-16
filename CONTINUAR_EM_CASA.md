@@ -76,3 +76,9 @@ https://jv-estetica-modelos-azuis.luisaugustoborges18.chatgpt.site
 A barra superior permite alternar os modelos. A hospedagem de comparação usa uma cópia estática com formulário demonstrativo, sem envio de agendamentos. O código funcional permanece nesta branch.
 
 Site ID appgprj_6afaee3bccec81919187a038867af6c8, versão publicada 1.
+
+## Modelo preferido pelo JV
+
+Luis informou em 16/11/2026 que JV preferiu o modelo panorâmico, com moto ao fundo e o título Seu veículo. Em evidência., mantendo os destaques azuis. A entrada permanece css/monochrome.html.
+
+As três propostas receberam letras que acompanham suavemente o mouse, retornam ao repouso e respeitam movimento reduzido. Build e 40 verificações por modelo passaram nesta etapa, totalizando 120. Revisão do diff sem problemas confirmados.
