@@ -1,0 +1,118 @@
+/* Ajustes de app de celular, comuns às duas versões (usa os tokens de cada página). */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+button,
+a,
+label {
+  touch-action: manipulation;
+}
+
+/* Área segura (entalhe do iPhone e barra de gestos) */
+.header {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Barra inferior fixa, só no celular */
+.app-bar {
+  display: none;
+}
+@media (max-width: 760px) {
+  body {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+  .app-bar {
+    position: fixed;
+    z-index: 60;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+    background: rgb(0 0 0 / 0.86);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border-top: 1px solid var(--line);
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.1, 1);
+  }
+  .app-bar.is-hidden {
+    transform: translateY(110%);
+  }
+  .app-cta {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    min-height: 50px;
+    background: var(--blue);
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .app-cta:active {
+    filter: brightness(0.9);
+  }
+  .app-icon {
+    flex: none;
+    width: 50px;
+    height: 50px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line-strong);
+    background: none;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .app-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .app-icon[hidden] {
+    display: none;
+  }
+}
+
+/* Aberto como app instalado: sem o botão de instalar e com rolagem mais "nativa" */
+.is-app body {
+  overscroll-behavior-y: none;
+}
+.is-app #installBtn {
+  display: none !important;
+}
+
+/* Aviso rápido */
+.app-toast {
+  position: fixed;
+  z-index: 70;
+  left: 50%;
+  bottom: calc(92px + env(safe-area-inset-bottom));
+  width: min(92vw, 420px);
+  padding: 14px 16px;
+  background: var(--text);
+  color: #000;
+  font-size: 14px;
+  line-height: 1.4;
+  transform: translate(-50%, 20px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
+}
+.app-toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* "Lembrar meus dados" */
+.remember {
+  margin-top: -8px;
+}

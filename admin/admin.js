@@ -54,7 +54,7 @@ function renderBookings(bookings) {
 
     const formattedDate = new Date(`${booking.date}T12:00:00`).toLocaleDateString('pt-BR', { dateStyle: 'long' });
     const details = [
-      ['Data', formattedDate], ['WhatsApp', booking.phone], ['Moto', `${booking.motorcycle} · ${booking.engine}`],
+      ['Data', formattedDate], ['WhatsApp', booking.phone], ['Veículo', `${booking.motorcycle} · ${booking.engine}`],
       ['Serviço', booking.service], ['Observação', booking.notes || 'Nenhuma'], ['Situação', booking.status === 'pending' ? 'Aguardando confirmação' : booking.status]
     ];
     details.forEach(([label, value]) => {

@@ -1,8 +1,10 @@
 """JV Estética Automotiva booking site and API."""
+
 from datetime import date, datetime, timezone
 from pathlib import Path
 import os
 import re
+import hashlib
 import hmac
 import sqlite3
 import uuid
@@ -15,10 +17,32 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 ROOT = Path(__file__).resolve().parent
 DB_PATH = Path(os.environ.get("DB_PATH", str(ROOT / "data" / "bookings.sqlite3")))
 OPEN_DAYS = {1, 2, 3, 4, 5, 6}  # terça a domingo; segunda fechado
-TIMES = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"]
-SERVICES = {"Lavagem completa", "Lavagem detalhada", "Lavagem premium",
-            "Limpeza e lubrificação da corrente", "Revitalização de plásticos"}
-ENGINES = {"150cc – 400cc", "400cc – 900cc", "Mais de 900cc"}
+TIMES = [
+    "08:00",
+    "09:00",
+    "10:00",
+    "11:00",
+    "12:00",
+    "13:00",
+    "14:00",
+    "15:00",
+    "16:00",
+    "17:00",
+]
+SERVICES = {
+    "Lavagem completa",
+    "Lavagem detalhada",
+    "Lavagem premium",
+    "Limpeza e lubrificação da corrente",
+    "Revitalização de plásticos",
+}
+MOTO_ENGINES = {"150cc – 400cc", "400cc – 900cc", "Mais de 900cc"}
+CAR_ENGINES = {"Carro hatch ou sedã", "Carro SUV ou picape"}
+ENGINES = MOTO_ENGINES | CAR_ENGINES
+MOTO_ONLY_SERVICES = {
+    "Limpeza e lubrificação da corrente",
+    "Revitalização de plásticos",
+}
 BR_TZ = ZoneInfo("America/Sao_Paulo")
 
 app = Flask(__name__)
@@ -67,15 +91,61 @@ def security_headers(response):
         "font-src 'self' https://fonts.gstatic.com; connect-src 'self'; "
         "img-src 'self' data:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
     )
-    response.headers["Cache-Control"] = "no-store" if request.path.startswith(("/api/", "/admin")) else "no-cache"
+    response.headers["Cache-Control"] = (
+        "no-store" if request.path.startswith(("/api/", "/admin")) else "no-cache"
+    )
     if os.environ.get("RENDER"):
-        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains"
+        )
     return response
 
 
 @app.get("/")
 def home():
     return send_from_directory(ROOT, "index.html")
+
+
+@app.get("/manifest.webmanifest")
+def manifest():
+    return send_from_directory(ROOT, "manifest.webmanifest", mimetype="application/manifest+json")
+
+
+@app.get("/sw.js")
+def service_worker():
+    response = make_response((ROOT / "sw.js").read_text(encoding="utf-8").replace("__VERSAO__", site_version()))
+    response.headers["Content-Type"] = "text/javascript; charset=utf-8"
+    response.headers["Cache-Control"] = "no-cache"
+    return response
+
+
+def site_version():
+    """Código curto que muda sempre que algum arquivo do site muda."""
+    digest = hashlib.sha256()
+    files = [ROOT / "index.html", ROOT / "monochrome.html", ROOT / "manifest.webmanifest"]
+    for folder in ("css", "js", "icons", "assets"):
+        files += sorted((ROOT / folder).glob("*.*"))
+    for path in files:
+        if path.is_file():
+            digest.update(path.name.encode())
+            digest.update(path.read_bytes())
+    return digest.hexdigest()[:10]
+
+
+@app.get("/icons/<path:filename>")
+def icon_file(filename):
+    return send_from_directory(ROOT / "icons", filename)
+
+
+@app.get("/monochrome")
+def monochrome():
+    # Variante visual para comparação (não publicada pelo build da Netlify).
+    return send_from_directory(ROOT, "monochrome.html")
+
+
+@app.get("/assets/<path:filename>")
+def asset_file(filename):
+    return send_from_directory(ROOT / "assets", filename)
 
 
 @app.get("/css/<path:filename>")
@@ -113,7 +183,9 @@ def is_admin():
     if not password:
         return False
     try:
-        admin_serializer(password).loads(request.cookies.get("jv_admin", ""), max_age=12 * 60 * 60)
+        admin_serializer(password).loads(
+            request.cookies.get("jv_admin", ""), max_age=12 * 60 * 60
+        )
         return True
     except (BadSignature, SignatureExpired):
         return False
@@ -124,15 +196,30 @@ def admin_login():
     password = admin_password()
     if not password:
         return jsonify(error="O acesso administrativo ainda não foi configurado."), 503
-    if not request.is_json or request.content_length is not None and request.content_length > 1024:
+    if (
+        not request.is_json
+        or request.content_length is not None
+        and request.content_length > 1024
+    ):
         return jsonify(error="Dados inválidos."), 400
     body = request.get_json(silent=True)
     candidate = body.get("password") if isinstance(body, dict) else None
-    if not isinstance(candidate, str) or len(candidate) > 256 or not hmac.compare_digest(candidate, password):
+    if (
+        not isinstance(candidate, str)
+        or len(candidate) > 256
+        or not hmac.compare_digest(candidate, password)
+    ):
         return jsonify(error="Senha incorreta."), 401
     response = make_response(jsonify(ok=True))
-    response.set_cookie("jv_admin", admin_serializer(password).dumps({"admin": True}), max_age=12 * 60 * 60,
-                        httponly=True, secure=bool(os.environ.get("RENDER")), samesite="Strict", path="/api/admin")
+    response.set_cookie(
+        "jv_admin",
+        admin_serializer(password).dumps({"admin": True}),
+        max_age=12 * 60 * 60,
+        httponly=True,
+        secure=bool(os.environ.get("RENDER")),
+        samesite="Strict",
+        path="/api/admin",
+    )
     return response
 
 
@@ -144,7 +231,13 @@ def admin_status():
 @app.post("/api/admin/logout")
 def admin_logout():
     response = make_response(jsonify(ok=True))
-    response.delete_cookie("jv_admin", path="/api/admin", secure=bool(os.environ.get("RENDER")), httponly=True, samesite="Strict")
+    response.delete_cookie(
+        "jv_admin",
+        path="/api/admin",
+        secure=bool(os.environ.get("RENDER")),
+        httponly=True,
+        samesite="Strict",
+    )
     return response
 
 
@@ -160,11 +253,22 @@ def admin_bookings():
             FROM bookings ORDER BY CASE WHEN date >= ? THEN 0 ELSE 1 END, date ASC, time ASC, created_at DESC LIMIT 250""",
             (datetime.now(BR_TZ).date().isoformat(),),
         ).fetchall()
-    bookings = [{
-        "id": row["id"], "name": row["name"], "phone": row["phone"], "motorcycle": row["motorcycle"],
-        "service": row["service"], "engine": row["engine"], "date": row["date"], "time": row["time"],
-        "notes": row["notes"], "status": row["status"], "createdAt": row["created_at"],
-    } for row in rows]
+    bookings = [
+        {
+            "id": row["id"],
+            "name": row["name"],
+            "phone": row["phone"],
+            "motorcycle": row["motorcycle"],
+            "service": row["service"],
+            "engine": row["engine"],
+            "date": row["date"],
+            "time": row["time"],
+            "notes": row["notes"],
+            "status": row["status"],
+            "createdAt": row["created_at"],
+        }
+        for row in rows
+    ]
     return jsonify(bookings=bookings)
 
 
@@ -188,7 +292,9 @@ def availability():
             (chosen.isoformat(),),
         ).fetchall()
     booked = {row["time"] for row in rows}
-    return jsonify(slots=[{"time": slot, "available": slot not in booked} for slot in TIMES])
+    return jsonify(
+        slots=[{"time": slot, "available": slot not in booked} for slot in TIMES]
+    )
 
 
 @app.post("/api/bookings")
@@ -203,17 +309,44 @@ def create_booking():
     if str(data.get("website", "")).strip():  # honeypot for basic form spam
         return jsonify(error="Não foi possível enviar o pedido."), 400
     if data.get("consent") != "yes":
-        return jsonify(error="Confirme a autorização de uso dos dados para este agendamento."), 400
-    fields = {key: str(data.get(key, "")).strip() for key in
-              ("name", "phone", "motorcycle", "service", "engine", "date", "time", "notes")}
-    if any(not fields[key] for key in ("name", "phone", "motorcycle", "service", "engine", "date", "time")):
+        return jsonify(
+            error="Confirme a autorização de uso dos dados para este agendamento."
+        ), 400
+    fields = {
+        key: str(data.get(key, "")).strip()
+        for key in (
+            "name",
+            "phone",
+            "motorcycle",
+            "service",
+            "engine",
+            "date",
+            "time",
+            "notes",
+        )
+    }
+    if any(
+        not fields[key]
+        for key in ("name", "phone", "motorcycle", "service", "engine", "date", "time")
+    ):
         return jsonify(error="Preencha todos os campos obrigatórios."), 400
-    if (fields["service"] not in SERVICES or fields["engine"] not in ENGINES
-            or fields["time"] not in TIMES):
-        return jsonify(error="Serviço, cilindrada ou horário inválido."), 400
-    if (len(fields["name"]) > 80 or len(fields["phone"]) > 20
-            or len(fields["motorcycle"]) > 80 or len(fields["notes"]) > 500):
-        return jsonify(error="Revise os campos: um deles excede o tamanho permitido."), 400
+    if (
+        fields["service"] not in SERVICES
+        or fields["engine"] not in ENGINES
+        or fields["time"] not in TIMES
+    ):
+        return jsonify(error="Serviço, cilindrada/porte ou horário inválido."), 400
+    if fields["service"] in MOTO_ONLY_SERVICES and fields["engine"] not in MOTO_ENGINES:
+        return jsonify(error="Esse serviço adicional é só para motos."), 400
+    if (
+        len(fields["name"]) > 80
+        or len(fields["phone"]) > 20
+        or len(fields["motorcycle"]) > 80
+        or len(fields["notes"]) > 500
+    ):
+        return jsonify(
+            error="Revise os campos: um deles excede o tamanho permitido."
+        ), 400
     digits = re.sub(r"\D", "", fields["phone"])
     if not 10 <= len(digits) <= 13:
         return jsonify(error="Informe um número de WhatsApp válido."), 400
@@ -223,7 +356,9 @@ def create_booking():
         return jsonify(error="Informe uma data válida."), 400
     today = datetime.now(BR_TZ).date()
     if chosen < today or chosen.weekday() not in OPEN_DAYS:
-        return jsonify(error="A data escolhida não está disponível. Selecione outro dia."), 400
+        return jsonify(
+            error="A data escolhida não está disponível. Selecione outro dia."
+        ), 400
 
     booking_id = uuid.uuid4().hex[:8].upper()
     try:
@@ -232,14 +367,29 @@ def create_booking():
                 """INSERT INTO bookings
                 (id, name, phone, motorcycle, service, engine, date, time, notes, status, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)""",
-                (booking_id, fields["name"], fields["phone"], fields["motorcycle"],
-                 fields["service"], fields["engine"], fields["date"], fields["time"],
-                 fields["notes"], datetime.now(timezone.utc).isoformat(timespec="seconds")),
+                (
+                    booking_id,
+                    fields["name"],
+                    fields["phone"],
+                    fields["motorcycle"],
+                    fields["service"],
+                    fields["engine"],
+                    fields["date"],
+                    fields["time"],
+                    fields["notes"],
+                    datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                ),
             )
     except sqlite3.IntegrityError:
-        return jsonify(error="Esse horário acabou de ser reservado. Escolha outro."), 409
+        return jsonify(
+            error="Esse horário acabou de ser reservado. Escolha outro."
+        ), 409
     return jsonify(booking={"id": booking_id, "status": "pending"}), 201
 
 
 if __name__ == "__main__":
-    app.run(host=os.environ.get("HOST", "127.0.0.1"), port=int(os.environ.get("PORT", "8000")), debug=False)
+    app.run(
+        host=os.environ.get("HOST", "127.0.0.1"),
+        port=int(os.environ.get("PORT", "8000")),
+        debug=False,
+    )

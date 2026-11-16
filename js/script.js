@@ -1,107 +1,448 @@
-const form = document.querySelector('#bookingForm');
-const dateInput = document.querySelector('#dateInput');
-const serviceSelect = document.querySelector('#serviceSelect');
-const slotsEl = document.querySelector('#slots');
-const timeInput = document.querySelector('#timeInput');
-const feedback = document.querySelector('#formFeedback');
-const menuToggle = document.querySelector('.menu-toggle');
-const nav = document.querySelector('.header nav');
-document.querySelector('#year').textContent = new Date().getFullYear();
+// JV Estética Automotiva — navegação, seções interativas e agendamento.
+const WHATSAPP = "5534984266406";
+const OPEN_DAYS = new Set([0, 2, 3, 4, 5, 6]); // terça a domingo (segunda fechado)
+const DAYS_AHEAD = 21;
+const SERVICES = {
+  "Lavagem completa": { moto: 50 },
+  "Lavagem detalhada": { moto: 100 },
+  "Lavagem premium": { moto: 115 },
+  "Limpeza e lubrificação da corrente": {
+    moto: 20,
+    fixed: true,
+    motoOnly: true,
+  },
+  "Revitalização de plásticos": { moto: 40, fixed: true, motoOnly: true },
+};
+const ENGINES = {
+  moto: {
+    label: "Cilindrada",
+    placeholder: "Ex.: Honda CB 300",
+    options: ["150cc – 400cc", "400cc – 900cc", "Mais de 900cc"],
+  },
+  carro: {
+    label: "Porte",
+    placeholder: "Ex.: Fiat Argo",
+    options: ["Carro hatch ou sedã", "Carro SUV ou picape"],
+  },
+};
+const brl = (value) =>
+  value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
-menuToggle.addEventListener('click', () => {
-  const open = nav.classList.toggle('is-open');
-  menuToggle.setAttribute('aria-expanded', String(open));
+$("#year").textContent = new Date().getFullYear();
+
+/* ---------- Cabeçalho ---------- */
+const header = $(".header");
+const nav = $("#nav");
+const menuToggle = $(".menu-toggle");
+const onScroll = () =>
+  header.classList.toggle("is-scrolled", window.scrollY > 8);
+window.addEventListener("scroll", onScroll, { passive: true });
+onScroll();
+function closeMenu() {
+  nav.classList.remove("is-open");
+  menuToggle.setAttribute("aria-expanded", "false");
+  menuToggle.setAttribute("aria-label", "Abrir menu");
+}
+menuToggle.addEventListener("click", () => {
+  const open = nav.classList.toggle("is-open");
+  menuToggle.setAttribute("aria-expanded", String(open));
+  menuToggle.setAttribute("aria-label", open ? "Fechar menu" : "Abrir menu");
 });
-nav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
-  nav.classList.remove('is-open'); menuToggle.setAttribute('aria-expanded', 'false');
-}));
+$$("a", nav).forEach((link) => link.addEventListener("click", closeMenu));
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeMenu();
+});
 
-const today = new Date();
-const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-dateInput.min = localDate;
+/* ---------- Luz que segue o cursor nos cartões ---------- */
+$$(".service, .about-cards li").forEach((card) => {
+  card.addEventListener("pointermove", (e) => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+    card.style.setProperty("--my", `${e.clientY - r.top}px`);
+  });
+});
 
-function message(text, type = 'error') {
+/* ---------- Como funciona: passos ligados às camadas ---------- */
+(() => {
+  const steps = $$(".step");
+  const slabs = $$(".slab");
+  const box = $("#process");
+  if (!box) return; // seção não existe nesta versão da página
+  let current = 0,
+    timer = 0,
+    paused = false;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function show(i) {
+    current = i;
+    steps.forEach((s, n) => s.classList.toggle("is-active", n === i));
+    slabs.forEach((s, n) => s.classList.toggle("is-active", n === i));
+  }
+  function play() {
+    if (reduce) return;
+    clearInterval(timer);
+    timer = setInterval(() => {
+      if (!paused) show((current + 1) % steps.length);
+    }, 3200);
+  }
+  steps.forEach((step, i) => {
+    step.addEventListener("pointerenter", () => {
+      paused = true;
+      show(i);
+    });
+    step.addEventListener("pointerleave", () => {
+      paused = false;
+    });
+  });
+  new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) play();
+      else clearInterval(timer);
+    },
+    { threshold: 0.35 },
+  ).observe(box);
+  show(0);
+})();
+
+/* ---------- Serviços: Moto / Carro ---------- */
+const servicesSection = $("#servicos");
+function setServicesVehicle(vehicle) {
+  servicesSection.dataset.vehicle = vehicle;
+  $$(".toggle-opt").forEach((b) =>
+    b.setAttribute("aria-pressed", String(b.dataset.vehicle === vehicle)),
+  );
+}
+$$(".toggle-opt").forEach((btn) =>
+  btn.addEventListener("click", () => {
+    setServicesVehicle(btn.dataset.vehicle);
+    setFormVehicle(btn.dataset.vehicle);
+  }),
+);
+
+/* ---------- Agendamento ---------- */
+const form = $("#bookingForm");
+const engineSelect = $("#engineSelect");
+const engineLabel = $("#engineLabel");
+const modelInput = $("#modelInput");
+const daysEl = $("#days");
+const dateInput = $("#dateInput");
+const slotsEl = $("#slots");
+const timeInput = $("#timeInput");
+const feedback = $("#formFeedback");
+const sum = {
+  vehicle: $("#sumVehicle"),
+  service: $("#sumService"),
+  date: $("#sumDate"),
+  time: $("#sumTime"),
+  price: $("#sumPrice"),
+};
+const vehicle = () => form.elements.vehicle.value;
+const selectedService = () => form.elements.service.value;
+
+function setSummary(key, text) {
+  const el = sum[key];
+  if (el.textContent === text) return;
+  el.textContent = text;
+  el.classList.remove("flash");
+  void el.offsetWidth;
+  el.classList.add("flash");
+}
+
+function priceLabel(service, v = vehicle()) {
+  const info = SERVICES[service];
+  if (!info) return "—";
+  if (v === "carro") return "Sob consulta";
+  return info.fixed ? brl(info.moto) : `A partir de ${brl(info.moto)}`;
+}
+
+function refreshPrices() {
+  $$("[data-price]", form).forEach((el) => {
+    el.textContent = priceLabel(el.dataset.price);
+  });
+  setSummary("price", priceLabel(selectedService()));
+}
+
+function setFormVehicle(v) {
+  const radio = $(`input[name="vehicle"][value="${v}"]`, form);
+  if (radio && !radio.checked) radio.checked = true;
+  const cfg = ENGINES[v];
+  const previous = engineSelect.value;
+  engineLabel.textContent = cfg.label;
+  modelInput.placeholder = cfg.placeholder;
+  engineSelect.replaceChildren(
+    new Option("Selecione", ""),
+    ...cfg.options.map((o) => new Option(o, o)),
+  );
+  if (cfg.options.includes(previous)) engineSelect.value = previous;
+  $$(".moto-only", form).forEach((chip) => {
+    chip.hidden = v !== "moto";
+    const input = $("input", chip);
+    input.disabled = v !== "moto";
+    if (input.disabled && input.checked) {
+      input.checked = false;
+      setSummary("service", "—");
+    }
+  });
+  setSummary("vehicle", v === "moto" ? "Moto" : "Carro");
+  refreshPrices();
+}
+
+form.addEventListener("change", (e) => {
+  if (e.target.name === "vehicle") {
+    setFormVehicle(e.target.value);
+    setServicesVehicle(e.target.value);
+  }
+  if (e.target.name === "service") {
+    setSummary("service", e.target.value);
+    refreshPrices();
+  }
+  if (e.target.matches("[aria-invalid]"))
+    e.target.removeAttribute("aria-invalid");
+});
+
+// Botões "Agendar este" dos cartões de serviço
+$$(".pick").forEach((btn) =>
+  btn.addEventListener("click", () => {
+    const service = btn.dataset.service;
+    const v = SERVICES[service]?.motoOnly
+      ? "moto"
+      : servicesSection.dataset.vehicle;
+    setFormVehicle(v);
+    const input = $$('input[name="service"]', form).find(
+      (i) => i.value === service,
+    );
+    if (input) {
+      input.checked = true;
+      setSummary("service", service);
+      refreshPrices();
+    }
+    $("#agendar").scrollIntoView({ behavior: "smooth" });
+    setTimeout(() => modelInput.focus({ preventScroll: true }), 600);
+  }),
+);
+
+// Faixa de dias (só dias de atendimento)
+const isoLocal = (d) =>
+  new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 10);
+const longDate = (iso) =>
+  new Date(`${iso}T12:00:00`).toLocaleDateString("pt-BR", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+  });
+function buildDays() {
+  const today = new Date();
+  daysEl.replaceChildren();
+  for (let i = 0; i < DAYS_AHEAD; i++) {
+    const d = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + i,
+    );
+    if (!OPEN_DAYS.has(d.getDay())) continue;
+    const iso = isoLocal(d);
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "day";
+    btn.dataset.date = iso;
+    btn.setAttribute("aria-pressed", "false");
+    btn.setAttribute(
+      "aria-label",
+      d.toLocaleDateString("pt-BR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      }),
+    );
+    const wd = document.createElement("small");
+    wd.textContent =
+      i === 0
+        ? "hoje"
+        : d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "");
+    const dn = document.createElement("b");
+    dn.textContent = String(d.getDate()).padStart(2, "0");
+    const mo = document.createElement("small");
+    mo.textContent = d
+      .toLocaleDateString("pt-BR", { month: "short" })
+      .replace(".", "");
+    btn.append(wd, dn, mo);
+    btn.addEventListener("click", () => selectDay(btn));
+    daysEl.append(btn);
+  }
+}
+function selectDay(btn) {
+  $$(".day", daysEl).forEach((b) =>
+    b.setAttribute("aria-pressed", String(b === btn)),
+  );
+  dateInput.value = btn.dataset.date;
+  setSummary("date", longDate(btn.dataset.date));
+  loadSlots();
+}
+
+function hint(text) {
+  const span = document.createElement("span");
+  span.className = "slot-hint";
+  span.textContent = text;
+  slotsEl.replaceChildren(span);
+}
+
+let slotsRequest = 0;
+async function loadSlots() {
+  timeInput.value = "";
+  setSummary("time", "—");
+  const date = dateInput.value;
+  if (!date) {
+    hint("Escolha um dia para ver os horários livres.");
+    return;
+  }
+  const request = ++slotsRequest;
+  hint("Consultando horários…");
+  try {
+    const response = await fetch(
+      `/api/availability?date=${encodeURIComponent(date)}`,
+    );
+    if (!response.ok) throw new Error();
+    const data = await response.json();
+    if (request !== slotsRequest) return; // resposta de um dia anterior
+    if (!data.slots.length) {
+      hint("Sem horários neste dia. Escolha outra data.");
+      return;
+    }
+    slotsEl.replaceChildren();
+    data.slots.forEach((slot, i) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "slot";
+      button.textContent = slot.time;
+      button.style.setProperty("--i", i);
+      button.disabled = !slot.available;
+      button.setAttribute(
+        "aria-label",
+        slot.available ? `${slot.time} livre` : `${slot.time} ocupado`,
+      );
+      button.addEventListener("click", () => {
+        $$(".slot", slotsEl).forEach((item) =>
+          item.classList.remove("selected"),
+        );
+        button.classList.add("selected");
+        timeInput.value = slot.time;
+        setSummary("time", slot.time);
+      });
+      slotsEl.append(button);
+    });
+  } catch {
+    if (request === slotsRequest)
+      hint(
+        "Não foi possível consultar a agenda agora. Tente de novo em instantes ou chame no WhatsApp.",
+      );
+  }
+}
+
+function message(text, type = "error") {
   feedback.className = `form-feedback visible ${type}`;
   feedback.textContent = text;
 }
 
-async function loadSlots() {
-  timeInput.value = '';
-  const date = dateInput.value;
-  if (!date || !serviceSelect.value) {
-    slotsEl.innerHTML = '<span class="slot-hint">Selecione um serviço e um dia para consultar.</span>';
+function validate() {
+  const required = ["motorcycle", "engine", "name", "phone"];
+  let firstInvalid = null;
+  required.forEach((name) => {
+    const el = form.elements[name];
+    const ok = el.value.trim() && el.checkValidity();
+    if (ok) el.removeAttribute("aria-invalid");
+    else el.setAttribute("aria-invalid", "true");
+    if (!ok && !firstInvalid) firstInvalid = el;
+  });
+  if (!selectedService()) return "Escolha um serviço.";
+  if (!dateInput.value) return "Escolha um dia.";
+  if (!timeInput.value) return "Escolha um dos horários livres.";
+  if (firstInvalid) {
+    firstInvalid.focus();
+    return "Preencha os campos destacados.";
+  }
+  if (!form.elements.consent.checked)
+    return "Marque a autorização de uso dos dados para continuar.";
+  return "";
+}
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  feedback.className = "form-feedback";
+  const problem = validate();
+  if (problem) {
+    message(problem);
     return;
   }
-  slotsEl.innerHTML = '<span class="slot-hint">Consultando horários…</span>';
-  try {
-    const response = await fetch(`/api/availability?date=${encodeURIComponent(date)}`);
-    if (!response.ok) throw new Error('Não foi possível consultar a agenda.');
-    const data = await response.json();
-    slotsEl.replaceChildren();
-    if (!data.slots.length) {
-      slotsEl.innerHTML = '<span class="slot-hint">Sem horários para este dia. Escolha outra data.</span>';
-      return;
-    }
-    data.slots.forEach(slot => {
-      const button = document.createElement('button');
-      button.type = 'button'; button.className = 'slot'; button.textContent = slot.time;
-      button.disabled = !slot.available;
-      if (!slot.available) button.setAttribute('aria-label', `${slot.time} indisponível`);
-      button.addEventListener('click', () => {
-        slotsEl.querySelectorAll('.slot').forEach(item => item.classList.remove('selected'));
-        button.classList.add('selected'); timeInput.value = slot.time;
-      });
-      slotsEl.append(button);
-    });
-  } catch (error) {
-    slotsEl.innerHTML = '<span class="slot-hint">Agenda indisponível agora. Inicie o site pelo servidor JV para consultar horários.</span>';
-  }
-}
-dateInput.addEventListener('change', loadSlots);
-serviceSelect.addEventListener('change', loadSlots);
 
-form.addEventListener('submit', async event => {
-  event.preventDefault();
-  feedback.className = 'form-feedback';
-  if (!timeInput.value) { message('Selecione um dos horários disponíveis antes de continuar.'); return; }
-  // Reserve the tab while the submit still has a direct user gesture; browsers
-  // may block a WhatsApp window opened only after the API request completes.
-  const whatsappWindow = window.open('about:blank', '_blank');
+  // Reserva a aba enquanto ainda há gesto do usuário; navegadores bloqueiam
+  // janelas abertas só depois da resposta da API.
+  const whatsappWindow = window.open("about:blank", "_blank");
   if (whatsappWindow) {
     whatsappWindow.opener = null;
-    whatsappWindow.document.title = 'Preparando seu WhatsApp…';
-    whatsappWindow.document.body.textContent = 'Agendamento sendo salvo. Aguarde…';
+    whatsappWindow.document.title = "Preparando seu WhatsApp…";
+    whatsappWindow.document.body.textContent =
+      "Agendamento sendo salvo. Aguarde…";
   }
-  const submit = form.querySelector('[type="submit"]');
-  submit.disabled = true; submit.textContent = 'Enviando solicitação…';
+  const submit = $('[type="submit"]', form);
+  submit.disabled = true;
+  submit.textContent = "Enviando solicitação…";
   const payload = Object.fromEntries(new FormData(form).entries());
+  delete payload.vehicle;
   try {
-    const response = await fetch('/api/bookings', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+    const response = await fetch("/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'Não foi possível concluir o pedido.');
-    message(`Pedido salvo! Protocolo ${result.booking.id}. O WhatsApp será aberto com os dados para avisar a equipe. Toque em Enviar para concluir o aviso.`, 'success');
-    const whatsappMessage = [
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok)
+      throw new Error(result.error || "Não foi possível concluir o pedido.");
+    message(
+      `Pedido salvo! Protocolo ${result.booking.id}. O WhatsApp vai abrir com os dados; toque em Enviar para avisar a equipe.`,
+      "success",
+    );
+    const text = [
       `Olá! Fiz uma solicitação de agendamento na JV. Protocolo ${result.booking.id}.`,
       `${payload.name} — ${payload.phone}`,
       `${payload.motorcycle} (${payload.engine})`,
-      `${payload.service} — ${payload.date} às ${payload.time}`,
-      payload.notes ? `Observação: ${payload.notes}` : ''
-    ].filter(Boolean).join('\n');
-    const whatsappUrl = `https://wa.me/5534984266406?text=${encodeURIComponent(whatsappMessage)}`;
+      `${payload.service} — ${longDate(payload.date)} às ${payload.time}`,
+      payload.notes ? `Observação: ${payload.notes}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+    const whatsappUrl = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
     if (whatsappWindow) whatsappWindow.location.replace(whatsappUrl);
-    const contactLink = document.createElement('a');
-    contactLink.href = whatsappUrl;
-    contactLink.target = '_blank'; contactLink.rel = 'noopener noreferrer';
-    contactLink.textContent = 'Abrir WhatsApp novamente ↗';
-    feedback.append(contactLink);
-    form.reset(); timeInput.value = ''; slotsEl.innerHTML = '<span class="slot-hint">Selecione um serviço e um dia para consultar.</span>';
-    dateInput.min = localDate;
+    const link = document.createElement("a");
+    link.href = whatsappUrl;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "Abrir WhatsApp novamente ↗";
+    feedback.append(document.createElement("br"), link);
+    document.dispatchEvent(new CustomEvent("jv:booked", { detail: payload }));
+    const v = vehicle();
+    form.reset();
+    setFormVehicle(v);
+    $$(".day", daysEl).forEach((b) => b.setAttribute("aria-pressed", "false"));
+    dateInput.value = "";
+    timeInput.value = "";
+    ["service", "date", "time"].forEach((k) => setSummary(k, "—"));
+    hint("Escolha um dia para ver os horários livres.");
   } catch (error) {
     if (whatsappWindow && !whatsappWindow.closed) whatsappWindow.close();
-    message(error.message || 'Não foi possível enviar. Confira sua conexão e tente novamente.');
+    message(
+      error.message ||
+        "Não foi possível enviar. Confira sua conexão e tente novamente.",
+    );
+    if (/horário/i.test(error.message)) loadSlots();
   } finally {
-    submit.disabled = false; submit.innerHTML = 'Solicitar agendamento <span>↗</span>';
+    submit.disabled = false;
+    submit.innerHTML =
+      'Solicitar agendamento <span aria-hidden="true">↗</span>';
   }
 });
+
+buildDays();
+setFormVehicle("moto");

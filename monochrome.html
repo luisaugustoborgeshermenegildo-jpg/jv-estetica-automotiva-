@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#030303" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/favicon-48.png" sizes="48x48" type="image/png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="JV Estética" />
+    <meta
+      name="description"
+      content="Lavagem e estética para motos e carros em Uberaba. Escolha o serviço, veja os horários livres e reserve seu horário na JV Estética Automotiva."
+    />
+    <title>JV Estética Automotiva | Motos e carros em Uberaba</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Big+Shoulders+Display:wght@600;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/monochrome.css" />
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body class="mono">
+    <a class="skip" href="#agendar">Pular para o agendamento</a>
+
+    <header class="header">
+      <div class="header-inner">
+        <a
+          class="brand"
+          href="#inicio"
+          aria-label="JV Estética Automotiva, início"
+        >
+          <span class="brand-jv">JV</span>
+          <span class="brand-words"
+            ><span>Estética</span><span>Automotiva</span></span
+          >
+        </a>
+        <nav class="nav" id="nav" aria-label="Navegação principal">
+          <a href="#inicio">Início</a>
+          <a href="#servicos">Serviços</a>
+          <a href="#duvidas">Dúvidas</a>
+          <a href="#contato">Contato</a>
+        </nav>
+        <a class="btn btn-white header-cta" href="#agendar">Agendar horário</a>
+        <button
+          class="menu-toggle"
+          type="button"
+          aria-label="Abrir menu"
+          aria-controls="nav"
+          aria-expanded="false"
+        >
+          <i></i><i></i>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero" id="inicio" aria-labelledby="hero-title">
+        <div class="hero-media" aria-hidden="true">
+          <img
+            src="assets/moto.webp"
+            alt=""
+            width="1600"
+            height="1067"
+            fetchpriority="high"
+          />
+        </div>
+        <div class="hero-lines" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i>
+        </div>
+
+        <p class="hero-side">
+          Lavagem e estética para motos e carros em Uberaba. Atenção às áreas
+          difíceis, acabamento de verdade e horário reservado pelo site.
+        </p>
+
+        <a class="badge" href="#agendar" aria-label="Agendar horário">
+          <svg class="badge-ring" viewBox="0 0 120 120" aria-hidden="true">
+            <defs>
+              <path
+                id="ring"
+                d="M60 60m-48 0a48 48 0 1 1 96 0a48 48 0 1 1-96 0"
+              />
+            </defs>
+            <text>
+              <textPath href="#ring" textLength="296" lengthAdjust="spacing">
+                Agende agora • JV Estética • Agende agora • JV Estética •
+              </textPath>
+            </text>
+          </svg>
+          <span class="badge-core" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8" /></svg>
+          </span>
+        </a>
+
+        <h1 id="hero-title" class="hero-title">
+          <span class="row"><span>Sujeira</span> <em>sai.</em></span>
+          <span class="row"><em>O brilho</em> <span>fica.</span></span>
+        </h1>
+        <p class="hero-hours">Aberto de terça a domingo, das 8h às 17h</p>
+      </section>
+
+
+      <!-- SERVIÇOS -->
+      <section
+        class="services light"
+        id="servicos"
+        data-vehicle="moto"
+        aria-labelledby="services-title"
+      >
+        <div class="services-head">
+          <h2 id="services-title" class="title">Serviços</h2>
+          <p>
+            Motos e carros com o mesmo cuidado: lavagem com técnica, pretinho,
+            cera e acabamento peça por peça. Escolha o veículo.
+          </p>
+        </div>
+        <div class="vehicle-pick" role="group" aria-label="Tipo de veículo">
+          <button
+            type="button"
+            class="toggle-opt shot"
+            data-vehicle="moto"
+            aria-pressed="true"
+          >
+            <img
+              src="assets/moto.webp"
+              alt=""
+              width="1600"
+              height="1067"
+              loading="lazy"
+            />
+            <span class="shot-label"
+              ><b>Moto</b><small>Preço pela cilindrada</small></span
+            >
+          </button>
+          <button
+            type="button"
+            class="toggle-opt shot"
+            data-vehicle="carro"
+            aria-pressed="false"
+          >
+            <img
+              src="assets/detalhe.webp"
+              alt=""
+              width="1600"
+              height="1067"
+              loading="lazy"
+            />
+            <span class="shot-label"
+              ><b>Carro</b><small>Valor sob consulta</small></span
+            >
+          </button>
+        </div>
+
+        <div class="list">
+          <details class="row-item" name="servico" open>
+            <summary>
+              <span class="row-no">01</span>
+              <span class="row-name">Lavagem completa</span>
+              <span class="row-price"
+                ><span class="only-moto">a partir de R$ 50</span
+                ><span class="only-carro">sob consulta</span></span
+              >
+              <span class="row-arrow" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 9v8H9" /></svg
+              ></span>
+            </summary>
+            <div class="row-body">
+              <p>Uma limpeza cuidadosa para renovar o visual.</p>
+              <ul>
+                <li>Limpeza completa</li>
+                <li>Pretinho nos pneus</li>
+                <li>Aplicação de cera</li>
+              </ul>
+              <button
+                type="button"
+                class="btn btn-black pick"
+                data-service="Lavagem completa"
+              >
+                Agendar este
+              </button>
+            </div>
+          </details>
+          <details class="row-item" name="servico">
+            <summary>
+              <span class="row-no">02</span>
+              <span class="row-name">Lavagem detalhada</span>
+              <span class="row-price"
+                ><span class="only-moto">a partir de R$ 100</span
+                ><span class="only-carro">sob consulta</span></span
+              >
+              <span class="row-arrow" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 9v8H9" /></svg
+              ></span>
+            </summary>
+            <div class="row-body">
+              <p>Atenção extra até nas áreas mais difíceis de alcançar.</p>
+              <ul>
+                <li>Tudo da lavagem completa</li>
+                <li>Limpeza detalhada</li>
+                <li>Cuidado com áreas de acesso difícil</li>
+              </ul>
+              <button
+                type="button"
+                class="btn btn-black pick"
+                data-service="Lavagem detalhada"
+              >
+                Agendar este
+              </button>
+            </div>
+          </details>
+          <details class="row-item" name="servico">
+            <summary>
+              <span class="row-no">03</span>
+              <span class="row-name">Lavagem premium</span>
+              <span class="row-price"
+                ><span class="only-moto">a partir de R$ 115</span
+                ><span class="only-carro">sob consulta</span></span
+              >
+              <span class="row-arrow" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 9v8H9" /></svg
+              ></span>
+            </summary>
+            <div class="row-body">
+              <p>O máximo de cuidado e acabamento, peça por peça.</p>
+              <ul>
+                <li>Lavagem completa e detalhada</li>
+                <li class="only-moto">Desmontagem de peças</li>
+                <li>Limpeza minuciosa e acabamento</li>
+              </ul>
+              <button
+                type="button"
+                class="btn btn-black pick"
+                data-service="Lavagem premium"
+              >
+                Agendar este
+              </button>
+            </div>
+          </details>
+          <details class="row-item only-moto" name="servico">
+            <summary>
+              <span class="row-no">+</span>
+              <span class="row-name">Corrente</span>
+              <span class="row-price">R$ 20</span>
+              <span class="row-arrow" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 9v8H9" /></svg
+              ></span>
+            </summary>
+            <div class="row-body">
+              <p>
+                Limpeza e lubrificação da corrente, para mantê-la protegida e
+                funcionando bem. Extra só para moto.
+              </p>
+              <button
+                type="button"
+                class="btn btn-black pick"
+                data-service="Limpeza e lubrificação da corrente"
+              >
+                Agendar este
+              </button>
+            </div>
+          </details>
+          <details class="row-item only-moto" name="servico">
+            <summary>
+              <span class="row-no">+</span>
+              <span class="row-name">Plásticos</span>
+              <span class="row-price">R$ 40</span>
+              <span class="row-arrow" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 9v8H9" /></svg
+              ></span>
+            </summary>
+            <div class="row-body">
+              <p>
+                Revitalização que renova o aspecto dos plásticos externos. Extra
+                só para moto.
+              </p>
+              <button
+                type="button"
+                class="btn btn-black pick"
+                data-service="Revitalização de plásticos"
+              >
+                Agendar este
+              </button>
+            </div>
+          </details>
+        </div>
+        <p class="services-note only-moto">
+          Na moto, o valor parte do preço indicado e acompanha a cilindrada. O
+          preço final pode variar conforme o estado do veículo.
+        </p>
+        <p class="services-note only-carro">
+          Para carro, o valor é combinado pelo WhatsApp conforme o porte e o
+          estado do veículo.
+        </p>
+      </section>
+
+
+      <!-- AGENDAMENTO -->
+      <section
+        class="booking dark"
+        id="agendar"
+        aria-labelledby="booking-title"
+      >
+        <div class="booking-bg" aria-hidden="true">
+          <img
+            src="assets/detalhe.webp"
+            alt=""
+            width="1600"
+            height="1067"
+            loading="lazy"
+          />
+        </div>
+        <div class="booking-intro">
+          <h2 id="booking-title" class="title">Reserve<br />seu horário</h2>
+          <ol class="booking-steps" id="como-funciona" aria-label="Como funciona">
+            <li><b>Escolha o serviço</b>Moto ou carro, da completa à premium.</li>
+            <li><b>Reserve o horário</b>Veja os horários livres e garanta o seu.</li>
+            <li><b>Confirme no WhatsApp</b>O pedido fica salvo e o WhatsApp abre com os dados para avisar a equipe.</li>
+          </ol>
+          <dl class="summary" aria-live="polite">
+            <div>
+              <dt>Veículo</dt>
+              <dd id="sumVehicle">Moto</dd>
+            </div>
+            <div>
+              <dt>Serviço</dt>
+              <dd id="sumService">—</dd>
+            </div>
+            <div>
+              <dt>Dia</dt>
+              <dd id="sumDate">—</dd>
+            </div>
+            <div>
+              <dt>Horário</dt>
+              <dd id="sumTime">—</dd>
+            </div>
+            <div class="summary-total">
+              <dt>Valor</dt>
+              <dd id="sumPrice">—</dd>
+            </div>
+          </dl>
+        </div>
+
+        <form class="booking-form" id="bookingForm" novalidate>
+          <fieldset class="field">
+            <legend>Veículo</legend>
+            <div class="segmented">
+              <label
+                ><input type="radio" name="vehicle" value="moto" checked /><span
+                  >Moto</span
+                ></label
+              >
+              <label
+                ><input type="radio" name="vehicle" value="carro" /><span
+                  >Carro</span
+                ></label
+              >
+            </div>
+          </fieldset>
+
+          <fieldset class="field">
+            <legend>Serviço</legend>
+            <div class="chips">
+              <label class="chip"
+                ><input
+                  type="radio"
+                  name="service"
+                  value="Lavagem completa"
+                  required /><span
+                  ><b>Lavagem completa</b
+                  ><small data-price="Lavagem completa"></small></span
+              ></label>
+              <label class="chip"
+                ><input
+                  type="radio"
+                  name="service"
+                  value="Lavagem detalhada" /><span
+                  ><b>Lavagem detalhada</b
+                  ><small data-price="Lavagem detalhada"></small></span
+              ></label>
+              <label class="chip"
+                ><input
+                  type="radio"
+                  name="service"
+                  value="Lavagem premium" /><span
+                  ><b>Lavagem premium</b
+                  ><small data-price="Lavagem premium"></small></span
+              ></label>
+              <label class="chip moto-only"
+                ><input
+                  type="radio"
+                  name="service"
+                  value="Limpeza e lubrificação da corrente"
+                /><span><b>Corrente</b><small>R$ 20,00</small></span></label
+              >
+              <label class="chip moto-only"
+                ><input
+                  type="radio"
+                  name="service"
+                  value="Revitalização de plásticos"
+                /><span><b>Plásticos</b><small>R$ 40,00</small></span></label
+              >
+            </div>
+          </fieldset>
+
+          <div class="form-row">
+            <label class="field"
+              >Modelo do veículo
+              <input
+                name="motorcycle"
+                id="modelInput"
+                placeholder="Ex.: Honda CB 300"
+                required
+                maxlength="80"
+                autocomplete="off"
+              />
+            </label>
+            <label class="field"
+              ><span id="engineLabel">Cilindrada</span>
+              <select name="engine" id="engineSelect" required></select>
+            </label>
+          </div>
+
+          <fieldset class="field">
+            <legend>Dia</legend>
+            <div
+              class="days"
+              id="days"
+              role="group"
+              aria-label="Dias disponíveis"
+            ></div>
+            <input type="hidden" name="date" id="dateInput" />
+          </fieldset>
+
+          <fieldset class="field">
+            <legend>Horário</legend>
+            <div class="slots" id="slots">
+              <span class="slot-hint"
+                >Escolha um dia para ver os horários livres.</span
+              >
+            </div>
+            <input type="hidden" name="time" id="timeInput" />
+          </fieldset>
+
+          <div class="form-row">
+            <label class="field"
+              >Seu nome
+              <input
+                name="name"
+                autocomplete="name"
+                placeholder="Como podemos te chamar?"
+                required
+                minlength="2"
+                maxlength="80"
+              />
+            </label>
+            <label class="field"
+              >WhatsApp
+              <input
+                name="phone"
+                autocomplete="tel"
+                inputmode="tel"
+                placeholder="(34) 99999-9999"
+                required
+                minlength="10"
+                maxlength="20"
+              />
+            </label>
+          </div>
+
+          <label class="field"
+            >Observação <span class="optional">opcional</span>
+            <textarea
+              name="notes"
+              rows="2"
+              maxlength="500"
+              placeholder="Algum detalhe que devemos saber?"
+            ></textarea>
+          </label>
+
+          <label class="honeypot" aria-hidden="true"
+            >Deixe este campo vazio<input
+              name="website"
+              tabindex="-1"
+              autocomplete="off"
+          /></label>
+        <label class="consent remember"><input type="checkbox" id="rememberMe" /><span>Lembrar meu nome e WhatsApp neste aparelho</span></label>
+          <label class="consent"
+            ><input type="checkbox" name="consent" value="yes" required /><span
+              >Autorizo o uso dos meus dados para tratar este agendamento e
+              entrar em contato sobre ele.</span
+            ></label
+          >
+
+          <button class="btn btn-accent submit" type="submit">
+            Solicitar agendamento
+          </button>
+          <div
+            class="form-feedback"
+            id="formFeedback"
+            role="status"
+            aria-live="polite"
+          ></div>
+        </form>
+
+        <aside class="contact-card" aria-labelledby="contact-title">
+          <h3 id="contact-title">Onde e quando</h3>
+          <a
+            href="https://www.google.com/maps/search/?api=1&amp;query=Rua+S%C3%A3o+S%C3%A9rgio%2C+179%2C+Uberaba%2C+MG"
+            target="_blank"
+            rel="noopener"
+            >Rua São Sérgio, 179, Uberaba (MG) ↗</a
+          >
+          <p>Terça a domingo, das 8h às 12h e das 13h às 17h. Segunda fechado.</p>
+          <a
+            class="contact-wa"
+            href="https://wa.me/5534984266406"
+            target="_blank"
+            rel="noopener"
+            >WhatsApp (34) 98426-6406</a
+          >
+        </aside>
+      </section>
+
+      <!-- DÚVIDAS -->
+      <section class="faq light" id="duvidas" aria-labelledby="faq-title">
+        <h2 id="faq-title" class="title">Dúvidas</h2>
+        <div class="list">
+          <details class="row-item" name="faq">
+            <summary>
+              <span class="row-name">Quanto custa a lavagem de carro?</span
+              ><span class="row-arrow" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 9v8H9" /></svg
+              ></span>
+            </summary>
+            <div class="row-body">
+              <p>
+                O valor é combinado pelo WhatsApp, conforme o porte e o estado
+                do carro.
+              </p>
+            </div>
+          </details>
+          <details class="row-item" name="faq">
+            <summary>
+              <span class="row-name">Por que o preço da moto varia?</span
+              ><span class="row-arrow" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 9v8H9" /></svg
+              ></span>
+            </summary>
+            <div class="row-body">
+              <p>
+                O valor parte do preço indicado e acompanha a cilindrada. O
+                preço final pode mudar conforme o estado da moto.
+              </p>
+            </div>
+          </details>
+          <details class="row-item" name="faq">
+            <summary>
+              <span class="row-name">O horário já fica confirmado?</span
+              ><span class="row-arrow" aria-hidden="true"
+                ><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 9v8H9" /></svg
+              ></span>
+            </summary>
+            <div class="row-body">
+              <p>
+                O pedido fica salvo e o horário reservado para você, sujeito à
+                confirmação da equipe pelo WhatsApp.
+              </p>
+            </div>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer dark" id="contato">
+      <div class="footer-grid">
+        <div class="footer-card">
+          <img
+            src="assets/detalhe.webp"
+            alt=""
+            width="1600"
+            height="1067"
+            loading="lazy"
+          />
+          <div>
+            <p class="footer-big">
+              <a
+                href="https://wa.me/5534984266406"
+                target="_blank"
+                rel="noopener"
+                >WhatsApp ↗</a
+              >
+            </p>
+            <p class="footer-big accent">
+              <a href="tel:+5534984266406">(34) 98426-6406</a>
+            </p>
+          </div>
+        </div>
+        <nav class="footer-links" aria-label="Rodapé">
+          <a href="#inicio">Início</a><a href="#servicos">Serviços</a
+          ><a href="#agendar">Agendar</a><a href="#duvidas">Dúvidas</a>
+        </nav>
+        <address class="footer-links">
+          <a
+            href="https://www.google.com/maps/search/?api=1&amp;query=Rua+S%C3%A3o+S%C3%A9rgio%2C+179%2C+Uberaba%2C+MG"
+            target="_blank"
+            rel="noopener"
+            >Rua São Sérgio, 179</a
+          >
+          <span>Uberaba, MG</span>
+          <span>Ter a dom</span>
+          <span>8h às 17h</span>
+        </address>
+      </div>
+      <p class="wordmark" aria-hidden="true">
+        <span>JV</span> <em>Estética</em>
+      </p>
+      <p class="copyright">© <span id="year"></span> JV Estética Automotiva</p>
+    </footer>
+    <div class="app-bar" id="appBar">
+      <button type="button" class="app-icon" id="installBtn" hidden aria-label="Instalar o app da JV">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>
+      </button>
+      <a class="app-cta" href="#agendar">Agendar horário</a>
+      <a class="app-icon" href="https://wa.me/5534984266406" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-3.8A8 8 0 1 1 8 19zM9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-.8.8c-1-.4-1.8-1.2-2.2-2.2l.8-.8-1-2z" /></svg>
+      </a>
+    </div>
+
+    <script src="js/monochrome.js" defer></script>
+    <script src="js/script.js" defer></script>
+    <script src="js/app.js" defer></script>
+  </body>
+</html>
