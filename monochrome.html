@@ -43,7 +43,6 @@
         <nav class="nav" id="nav" aria-label="Navegação principal">
           <a href="#inicio">Início</a>
           <a href="#servicos">Serviços</a>
-          <a href="#como-funciona">Como funciona</a>
           <a href="#duvidas">Dúvidas</a>
           <a href="#contato">Contato</a>
         </nav>
@@ -104,59 +103,9 @@
           <span class="row"><span>Sujeira</span> <em>sai.</em></span>
           <span class="row"><em>O brilho</em> <span>fica.</span></span>
         </h1>
-        <p class="scroll-cue" aria-hidden="true">Role para ver</p>
+        <p class="hero-hours">Aberto de terça a domingo, das 8h às 17h</p>
       </section>
 
-      <!-- MOTOS E CARROS -->
-      <section class="intro light" aria-labelledby="intro-title">
-        <div class="intro-head">
-          <h2 id="intro-title" class="title">Duas rodas<br />ou quatro.</h2>
-          <p>
-            A JV atende motos e carros com o mesmo cuidado: lavagem com técnica,
-            pretinho, cera e acabamento peça por peça.
-          </p>
-        </div>
-        <div class="gallery">
-          <a class="shot" href="#servicos" data-vehicle="moto">
-            <img
-              src="assets/moto.webp"
-              alt="Moto preta estacionada na rua"
-              width="1600"
-              height="1067"
-              loading="lazy"
-            />
-            <span class="shot-label"
-              ><b>Motos</b><small>Preço pela cilindrada</small></span
-            >
-          </a>
-          <a class="shot" href="#servicos" data-vehicle="carro">
-            <img
-              src="assets/detalhe.webp"
-              alt="Carro preto coberto de espuma durante a lavagem"
-              width="1600"
-              height="1067"
-              loading="lazy"
-            />
-            <span class="shot-label"
-              ><b>Carros</b><small>Valor sob consulta</small></span
-            >
-          </a>
-        </div>
-      </section>
-
-      <!-- MARCA GIGANTE -->
-      <section class="statement light" aria-label="Sobre a JV">
-        <p class="statement-meta">
-          Terça a domingo, das 8h às 12h e das 13h às 17h
-        </p>
-        <p class="giant" aria-hidden="true">
-          <span class="giant-a">JV</span><span class="giant-b">Estética</span>
-        </p>
-        <p class="statement-text">
-          Cuidado de verdade em cada detalhe. Você escolhe o serviço, reserva o
-          horário e busca o veículo impecável.
-        </p>
-      </section>
 
       <!-- SERVIÇOS -->
       <section
@@ -167,24 +116,46 @@
       >
         <div class="services-head">
           <h2 id="services-title" class="title">Serviços</h2>
-          <div class="toggle" role="group" aria-label="Tipo de veículo">
-            <button
-              type="button"
-              class="toggle-opt"
-              data-vehicle="moto"
-              aria-pressed="true"
+          <p>
+            Motos e carros com o mesmo cuidado: lavagem com técnica, pretinho,
+            cera e acabamento peça por peça. Escolha o veículo.
+          </p>
+        </div>
+        <div class="vehicle-pick" role="group" aria-label="Tipo de veículo">
+          <button
+            type="button"
+            class="toggle-opt shot"
+            data-vehicle="moto"
+            aria-pressed="true"
+          >
+            <img
+              src="assets/moto.webp"
+              alt=""
+              width="1600"
+              height="1067"
+              loading="lazy"
+            />
+            <span class="shot-label"
+              ><b>Moto</b><small>Preço pela cilindrada</small></span
             >
-              Moto
-            </button>
-            <button
-              type="button"
-              class="toggle-opt"
-              data-vehicle="carro"
-              aria-pressed="false"
+          </button>
+          <button
+            type="button"
+            class="toggle-opt shot"
+            data-vehicle="carro"
+            aria-pressed="false"
+          >
+            <img
+              src="assets/detalhe.webp"
+              alt=""
+              width="1600"
+              height="1067"
+              loading="lazy"
+            />
+            <span class="shot-label"
+              ><b>Carro</b><small>Valor sob consulta</small></span
             >
-              Carro
-            </button>
-          </div>
+          </button>
         </div>
 
         <div class="list">
@@ -329,60 +300,6 @@
         </p>
       </section>
 
-      <!-- COMO FUNCIONA (passos em sequência) -->
-      <section
-        class="steps dark"
-        id="como-funciona"
-        aria-labelledby="steps-title"
-      >
-        <h2 id="steps-title" class="title">Como funciona</h2>
-        <div class="stepper" id="stepper" aria-roledescription="carrossel">
-          <p class="step-count" aria-live="polite">
-            <b id="stepNow">01</b><span>/03</span>
-          </p>
-          <ol class="step-track">
-            <li class="step is-active">
-              <h3>Escolha o serviço</h3>
-              <p>
-                Moto ou carro, da lavagem completa à premium. Os extras de
-                corrente e plásticos são para moto.
-              </p>
-            </li>
-            <li class="step">
-              <h3>Reserve o horário</h3>
-              <p>
-                Veja os horários livres de terça a domingo e garanta o seu sem
-                precisar ligar.
-              </p>
-            </li>
-            <li class="step">
-              <h3>Retire impecável</h3>
-              <p>
-                A equipe confirma pelo WhatsApp. Você deixa o veículo e busca
-                brilhando.
-              </p>
-            </li>
-          </ol>
-          <div class="step-nav">
-            <button
-              type="button"
-              class="round"
-              id="stepPrev"
-              aria-label="Passo anterior"
-            >
-              <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" /></svg>
-            </button>
-            <button
-              type="button"
-              class="round"
-              id="stepNext"
-              aria-label="Próximo passo"
-            >
-              <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" /></svg>
-            </button>
-          </div>
-        </div>
-      </section>
 
       <!-- AGENDAMENTO -->
       <section
@@ -401,10 +318,11 @@
         </div>
         <div class="booking-intro">
           <h2 id="booking-title" class="title">Reserve<br />seu horário</h2>
-          <p>
-            Escolha o veículo, o serviço e um horário livre. O pedido fica salvo
-            e o WhatsApp abre com os dados para você avisar a equipe.
-          </p>
+          <ol class="booking-steps" id="como-funciona" aria-label="Como funciona">
+            <li><b>Escolha o serviço</b>Moto ou carro, da completa à premium.</li>
+            <li><b>Reserve o horário</b>Veja os horários livres e garanta o seu.</li>
+            <li><b>Confirme no WhatsApp</b>O pedido fica salvo e o WhatsApp abre com os dados para avisar a equipe.</li>
+          </ol>
           <dl class="summary" aria-live="polite">
             <div>
               <dt>Veículo</dt>
@@ -590,45 +508,30 @@
             aria-live="polite"
           ></div>
         </form>
+
+        <aside class="contact-card" aria-labelledby="contact-title">
+          <h3 id="contact-title">Onde e quando</h3>
+          <a
+            href="https://www.google.com/maps/search/?api=1&amp;query=Rua+S%C3%A3o+S%C3%A9rgio%2C+179%2C+Uberaba%2C+MG"
+            target="_blank"
+            rel="noopener"
+            >Rua São Sérgio, 179, Uberaba (MG) ↗</a
+          >
+          <p>Terça a domingo, das 8h às 12h e das 13h às 17h. Segunda fechado.</p>
+          <a
+            class="contact-wa"
+            href="https://wa.me/5534984266406"
+            target="_blank"
+            rel="noopener"
+            >WhatsApp (34) 98426-6406</a
+          >
+        </aside>
       </section>
 
       <!-- DÚVIDAS -->
       <section class="faq light" id="duvidas" aria-labelledby="faq-title">
         <h2 id="faq-title" class="title">Dúvidas</h2>
         <div class="list">
-          <details class="row-item" name="faq">
-            <summary>
-              <span class="row-name">Quais dias e horários vocês atendem?</span
-              ><span class="row-arrow" aria-hidden="true"
-                ><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 9v8H9" /></svg
-              ></span>
-            </summary>
-            <div class="row-body">
-              <p>
-                De terça a domingo, das 8h às 12h e das 13h às 17h. Segunda
-                fechado.
-              </p>
-            </div>
-          </details>
-          <details class="row-item" name="faq">
-            <summary>
-              <span class="row-name">Onde fica a JV?</span
-              ><span class="row-arrow" aria-hidden="true"
-                ><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 9v8H9" /></svg
-              ></span>
-            </summary>
-            <div class="row-body">
-              <p>
-                Rua São Sérgio, 179, em Uberaba (MG).
-                <a
-                  href="https://www.google.com/maps/search/?api=1&amp;query=Rua+S%C3%A3o+S%C3%A9rgio%2C+179%2C+Uberaba%2C+MG"
-                  target="_blank"
-                  rel="noopener"
-                  >Abrir no mapa ↗</a
-                >
-              </p>
-            </div>
-          </details>
           <details class="row-item" name="faq">
             <summary>
               <span class="row-name">Quanto custa a lavagem de carro?</span
@@ -701,7 +604,6 @@
         </div>
         <nav class="footer-links" aria-label="Rodapé">
           <a href="#inicio">Início</a><a href="#servicos">Serviços</a
-          ><a href="#como-funciona">Como funciona</a
           ><a href="#agendar">Agendar</a><a href="#duvidas">Dúvidas</a>
         </nav>
         <address class="footer-links">
