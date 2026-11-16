@@ -421,7 +421,9 @@ form.addEventListener("submit", async (event) => {
     link.rel = "noopener noreferrer";
     link.textContent = "Abrir WhatsApp novamente ↗";
     feedback.append(document.createElement("br"), link);
-    document.dispatchEvent(new CustomEvent("jv:booked", { detail: payload }));
+    document.dispatchEvent(new CustomEvent("jv:booked", {
+        detail: { ...payload, id: result.booking.id, vehicle: vehicle() },
+      }));
     const v = vehicle();
     form.reset();
     setFormVehicle(v);
