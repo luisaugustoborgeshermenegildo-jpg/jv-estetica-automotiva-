@@ -116,3 +116,156 @@ label {
 .remember {
   margin-top: -8px;
 }
+
+/* Janela "Instale o app da JV" (js/app.js) */
+.install-sheet {
+  width: min(92vw, 400px);
+  margin: auto auto 0;
+  padding: 28px 22px calc(24px + env(safe-area-inset-bottom));
+  border: 1px solid var(--line);
+  background: #0d0d0d;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: center;
+}
+@media (min-width: 761px) {
+  .install-sheet {
+    margin: auto;
+    padding-bottom: 28px;
+  }
+}
+.install-sheet::backdrop {
+  background: rgb(0 0 0 / 0.65);
+  backdrop-filter: blur(4px);
+}
+.install-sheet[open] {
+  animation: sheet-up 0.4s cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+@keyframes sheet-up {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+.install-sheet img {
+  margin: 0 auto 14px;
+  border-radius: 16px;
+}
+.install-sheet h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+.install-sheet > p {
+  margin: 0 0 20px;
+  color: var(--muted);
+}
+.install-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-size: 26px;
+  cursor: pointer;
+}
+.install-go {
+  width: 100%;
+  min-height: 52px;
+  border: 0;
+  background: var(--blue);
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.install-steps {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0 0 0 22px;
+  text-align: left;
+}
+.install-sheet:not([data-mode="prompt"]) .install-go,
+.install-sheet:not([data-mode="ios"]) [data-for="ios"],
+.install-sheet:not([data-mode="other"]) [data-for="other"] {
+  display: none;
+}
+/* ícone de Compartilhar do Safari (quadrado com seta para cima) */
+.install-share {
+  display: inline-block;
+  width: 14px;
+  height: 16px;
+  vertical-align: -2px;
+  border: 1.5px solid currentColor;
+  border-top: 0;
+  position: relative;
+  margin-left: 2px;
+}
+.install-share::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -7px;
+  width: 1.5px;
+  height: 12px;
+  background: currentColor;
+  transform: translateX(-50%);
+}
+/* No app instalado, os botões de baixar o app somem */
+.is-app [data-install] {
+  display: none !important;
+}
+
+/* Botão "Baixar o app" do site */
+.install-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid currentColor;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.install-link svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.install-link:hover {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+.hero-install {
+  margin-top: 14px;
+}
+.contact-card .install-link {
+  justify-self: start;
+  margin-top: 6px;
+}
+.footer-install {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.footer-install:hover {
+  color: var(--blue-hi, var(--blue));
+}

@@ -36,29 +36,75 @@
     el._t = setTimeout(() => el.classList.remove("is-visible"), 6000);
   }
 
-  /* ---------- Botão "Instalar app" ---------- */
+  /* ---------- Instalar o app ---------- */
+  // Qualquer elemento com data-install abre a instalação. No Android/Chrome
+  // aparece o aviso do próprio navegador; no iPhone e nos demais, uma janela
+  // explica o passo a passo. O link /app (= ?instalar=1) já abre essa janela.
   const installBtn = document.getElementById("installBtn");
+  installBtn?.setAttribute("data-install", "");
   let deferredPrompt = null;
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     deferredPrompt = event;
     if (installBtn) installBtn.hidden = false;
+    if (sheet?.open) sheetMode();
   });
   if (installBtn && isIOS && !standalone) installBtn.hidden = false; // iPhone não tem o aviso automático
-  installBtn?.addEventListener("click", async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice.catch(() => null);
-      deferredPrompt = null;
-      installBtn.hidden = true;
-    } else if (isIOS) {
-      toast(
-        'No iPhone: toque em Compartilhar e depois em "Adicionar à Tela de Início".',
-      );
-    }
+
+  let sheet = null;
+  function buildSheet() {
+    sheet = document.createElement("dialog");
+    sheet.className = "install-sheet";
+    sheet.setAttribute("aria-labelledby", "installTitle");
+    sheet.innerHTML = `
+      <button type="button" class="install-close" aria-label="Fechar">×</button>
+      <img src="/icons/icon-192.png" alt="" width="64" height="64" />
+      <h2 id="installTitle">Instale o app da JV</h2>
+      <p>Agende sua lavagem em poucos toques, direto da tela do celular.</p>
+      <button type="button" class="install-go">Instalar agora</button>
+      <ol class="install-steps" data-for="ios">
+        <li>Toque em <b>Compartilhar</b> <span class="install-share" aria-hidden="true"></span> na barra do Safari.</li>
+        <li>Escolha <b>Adicionar à Tela de Início</b>.</li>
+        <li>Toque em <b>Adicionar</b>. O ícone da JV aparece na sua tela.</li>
+      </ol>
+      <ol class="install-steps" data-for="other">
+        <li>Abra o menu do navegador (<b>⋮</b> no canto da tela).</li>
+        <li>Toque em <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.</li>
+        <li>Confirme. O ícone da JV aparece na sua tela.</li>
+      </ol>`;
+    document.body.append(sheet);
+    sheet.querySelector(".install-close").addEventListener("click", () => sheet.close());
+    sheet.addEventListener("click", (e) => {
+      if (e.target === sheet) sheet.close(); // toque fora fecha
+    });
+    sheet.querySelector(".install-go").addEventListener("click", promptInstall);
+  }
+  function sheetMode() {
+    const mode = deferredPrompt ? "prompt" : isIOS ? "ios" : "other";
+    sheet.dataset.mode = mode;
+  }
+  async function promptInstall() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const choice = await deferredPrompt.userChoice.catch(() => null);
+    deferredPrompt = null;
+    if (installBtn) installBtn.hidden = true;
+    sheet?.close();
+    if (choice?.outcome !== "accepted") sheetMode();
+  }
+  function openInstall() {
+    if (standalone) return toast("Você já está usando o app da JV.");
+    if (!sheet) buildSheet();
+    sheetMode();
+    sheet.showModal();
+  }
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("[data-install]")) openInstall();
   });
+  if (new URLSearchParams(location.search).has("instalar")) openInstall();
   window.addEventListener("appinstalled", () => {
     if (installBtn) installBtn.hidden = true;
+    sheet?.close();
     toast("App instalado! Agora é só abrir pela tela inicial.");
   });
 
