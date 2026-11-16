@@ -28,9 +28,15 @@
   html:not(.is-app) .hero-hours {
     grid-column: 1;
   }
-  html:not(.is-app) .hero-side,
-  html:not(.is-app) .badge {
+  html:not(.is-app) .hero-side {
     display: none;
+  }
+  /* selo girando "colado" no canto do celular */
+  html:not(.is-app) .badge {
+    z-index: 2;
+    left: auto;
+    right: calc(var(--pad) + 268px - 70px);
+    top: calc(50% - 320px);
   }
   .hero-phone {
     display: block;
