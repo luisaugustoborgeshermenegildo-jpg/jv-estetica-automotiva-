@@ -28,16 +28,26 @@
   html:not(.is-app) .hero-hours {
     grid-column: 1;
   }
-  html:not(.is-app) .hero-side,
-  html:not(.is-app) .badge {
+  html:not(.is-app) .hero-side {
     display: none;
+  }
+  /* selo girando "colado" no canto do celular */
+  html:not(.is-app) .badge {
+    z-index: 2;
+    left: auto;
+    right: calc(var(--pad) + 268px - 70px);
+    top: calc(50% - 320px);
+    translate: 0 var(--py, 0); /* acompanha o celular na rolagem */
   }
   .hero-phone {
     display: block;
     grid-column: 2;
     grid-row: 1 / span 2;
     align-self: center;
-    perspective: 1400px;
+    transform: perspective(1400px) translateY(var(--py, 0))
+      rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
+      rotateZ(var(--spin, 0deg));
+    transition: transform 0.6s var(--ease);
   }
 }
 
