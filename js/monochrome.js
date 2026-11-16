@@ -34,8 +34,9 @@
     onScroll();
   }
 
-  // Celular 3D: inclina na direção do mouse sobre o topo.
-  if (!reduce && phone && matchMedia("(hover: hover) and (pointer: fine)").matches) {
+  // Mouse sobre o topo: a moto desliza para o lado oposto (profundidade)
+  // e o celular 3D inclina na direção do mouse.
+  if (!reduce && matchMedia("(hover: hover) and (pointer: fine)").matches) {
     let frame = 0;
     hero.addEventListener("pointermove", (e) => {
       cancelAnimationFrame(frame);
@@ -43,14 +44,18 @@
         const r = hero.getBoundingClientRect();
         const x = (e.clientX - r.left) / r.width - 0.5; // -0,5 a 0,5
         const y = (e.clientY - r.top) / r.height - 0.5;
-        phone.style.setProperty("--ry", `${(x * 22).toFixed(2)}deg`);
-        phone.style.setProperty("--rx", `${(y * -14).toFixed(2)}deg`);
+        hero.style.setProperty("--mx", `${(x * -36).toFixed(1)}px`);
+        hero.style.setProperty("--my", `${(y * -22).toFixed(1)}px`);
+        phone?.style.setProperty("--ry", `${(x * 22).toFixed(2)}deg`);
+        phone?.style.setProperty("--rx", `${(y * -14).toFixed(2)}deg`);
       });
     });
     hero.addEventListener("pointerleave", () => {
       cancelAnimationFrame(frame);
-      phone.style.setProperty("--ry", "0deg");
-      phone.style.setProperty("--rx", "0deg");
+      hero.style.setProperty("--mx", "0px");
+      hero.style.setProperty("--my", "0px");
+      phone?.style.setProperty("--ry", "0deg");
+      phone?.style.setProperty("--rx", "0deg");
     });
   }
 
