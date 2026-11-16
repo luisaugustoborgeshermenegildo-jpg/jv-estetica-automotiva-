@@ -4,12 +4,16 @@ import { copyFile, cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/p
 await rm('dist', { recursive: true, force: true });
 await mkdir('dist', { recursive: true });
 await copyFile('index.html', 'dist/index.html');
+// Versão Monochrome, para o cliente comparar em /monochrome.
+await copyFile('monochrome.html', 'dist/monochrome.html');
 await mkdir('dist/css', { recursive: true });
 await mkdir('dist/js', { recursive: true });
-for (const file of ['style.css', 'forms.css', 'app.css']) await copyFile(`css/${file}`, `dist/css/${file}`);
-for (const file of ['foam.js', 'script.js', 'app.js']) await copyFile(`js/${file}`, `dist/js/${file}`);
+for (const file of ['style.css', 'monochrome.css', 'forms.css', 'app.css']) await copyFile(`css/${file}`, `dist/css/${file}`);
+for (const file of ['foam.js', 'monochrome.js', 'script.js', 'app.js']) await copyFile(`js/${file}`, `dist/js/${file}`);
 await copyFile('manifest.webmanifest', 'dist/manifest.webmanifest');
 await cp('icons', 'dist/icons', { recursive: true });
+await mkdir('dist/assets', { recursive: true });
+for (const file of ['moto.webp', 'detalhe.webp']) await copyFile(`assets/${file}`, `dist/assets/${file}`);
 await mkdir('dist/admin/css', { recursive: true });
 await mkdir('dist/admin/js', { recursive: true });
 await copyFile('admin/index.html', 'dist/admin/index.html');
