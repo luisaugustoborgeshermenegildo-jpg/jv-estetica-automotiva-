@@ -978,3 +978,14 @@ ol {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* Preços da moto por faixa de cilindrada */
+.tiers {
+  margin: 4px 0 14px;
+  font-size: 14px;
+  color: var(--grey);
+}
+.tiers b {
+  color: var(--ink);
+  font-weight: 600;
+}

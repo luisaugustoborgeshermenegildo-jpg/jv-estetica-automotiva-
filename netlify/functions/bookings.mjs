@@ -9,7 +9,11 @@ const SERVICES = new Set([
   'Limpeza e lubrificação da corrente',
   'Revitalização de plásticos',
 ]);
-const MOTO_ENGINES = new Set(['150cc – 400cc', '400cc – 900cc', 'Mais de 900cc']);
+const MOTO_ENGINES = new Set([
+  'Até 160cc', '161cc a 400cc', 'Acima de 400cc',
+  // Faixas antigas: aceitas por um tempo, para celulares com a página antiga em cache.
+  '150cc – 400cc', '400cc – 900cc', 'Mais de 900cc',
+]);
 const CAR_ENGINES = new Set(['Carro hatch ou sedã', 'Carro SUV ou picape']);
 const ENGINES = new Set([...MOTO_ENGINES, ...CAR_ENGINES]);
 const MOTO_ONLY_SERVICES = new Set(['Limpeza e lubrificação da corrente', 'Revitalização de plásticos']);

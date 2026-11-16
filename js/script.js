@@ -2,22 +2,19 @@
 const WHATSAPP = "5534984266406";
 const OPEN_DAYS = new Set([0, 2, 3, 4, 5, 6]); // terça a domingo (segunda fechado)
 const DAYS_AHEAD = 21;
+// Tabela de preços da JV para moto, por faixa de cilindrada (mesma ordem de ENGINES.moto).
 const SERVICES = {
-  "Lavagem completa": { moto: 50 },
-  "Lavagem detalhada": { moto: 100 },
-  "Lavagem premium": { moto: 115 },
-  "Limpeza e lubrificação da corrente": {
-    moto: 20,
-    fixed: true,
-    motoOnly: true,
-  },
+  "Lavagem completa": { moto: [70, 100, 120] },
+  "Lavagem detalhada": { moto: [110, 130, 150] },
+  "Lavagem premium": { moto: [125, 140, 170] },
+  "Limpeza e lubrificação da corrente": { moto: 20, fixed: true, motoOnly: true },
   "Revitalização de plásticos": { moto: 40, fixed: true, motoOnly: true },
 };
 const ENGINES = {
   moto: {
     label: "Cilindrada",
     placeholder: "Ex.: Honda CB 300",
-    options: ["150cc – 400cc", "400cc – 900cc", "Mais de 900cc"],
+    options: ["Até 160cc", "161cc a 400cc", "Acima de 400cc"],
   },
   carro: {
     label: "Porte",
@@ -153,7 +150,10 @@ function priceLabel(service, v = vehicle()) {
   const info = SERVICES[service];
   if (!info) return "—";
   if (v === "carro") return "Sob consulta";
-  return info.fixed ? brl(info.moto) : `A partir de ${brl(info.moto)}`;
+  if (info.fixed) return brl(info.moto);
+  // Com a cilindrada escolhida, mostra o valor exato da tabela.
+  const tier = ENGINES.moto.options.indexOf(engineSelect.value);
+  return tier >= 0 ? brl(info.moto[tier]) : `A partir de ${brl(info.moto[0])}`;
 }
 
 function refreshPrices() {
@@ -193,6 +193,7 @@ form.addEventListener("change", (e) => {
     setFormVehicle(e.target.value);
     setServicesVehicle(e.target.value);
   }
+  if (e.target.name === "engine") refreshPrices(); // valor exato pela cilindrada
   if (e.target.name === "service") {
     setSummary("service", e.target.value);
     refreshPrices();

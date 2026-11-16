@@ -10,7 +10,7 @@ import sqlite3
 import uuid
 from zoneinfo import ZoneInfo
 
-from flask import Flask, jsonify, make_response, request, send_from_directory
+from flask import Flask, jsonify, make_response, request, redirect, send_from_directory
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -36,7 +36,9 @@ SERVICES = {
     "Limpeza e lubrificação da corrente",
     "Revitalização de plásticos",
 }
-MOTO_ENGINES = {"150cc – 400cc", "400cc – 900cc", "Mais de 900cc"}
+MOTO_ENGINES = {"Até 160cc", "161cc a 400cc", "Acima de 400cc"}
+# Faixas antigas: aceitas por um tempo, para celulares com a página antiga em cache.
+MOTO_ENGINES |= {"150cc – 400cc", "400cc – 900cc", "Mais de 900cc"}
 CAR_ENGINES = {"Carro hatch ou sedã", "Carro SUV ou picape"}
 ENGINES = MOTO_ENGINES | CAR_ENGINES
 MOTO_ONLY_SERVICES = {
@@ -104,6 +106,12 @@ def security_headers(response):
 @app.get("/")
 def home():
     return send_from_directory(ROOT, "index.html")
+
+
+@app.get("/app")
+def install_link():
+    # Mesmo atalho do netlify.toml: abre o site com a janela de instalar o app.
+    return redirect("/monochrome?instalar=1")
 
 
 @app.get("/manifest.webmanifest")
