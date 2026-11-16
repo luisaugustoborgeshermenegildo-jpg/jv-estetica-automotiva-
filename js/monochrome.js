@@ -7,12 +7,18 @@
 
   // Parallax da foto do hero.
   const heroImg = document.querySelector(".hero-media img");
+  const phone = document.querySelector(".hero-phone");
   let ticking = false;
   function onScroll() {
     ticking = false;
     const y = window.scrollY;
     if (heroImg && y < window.innerHeight * 1.2)
       heroImg.parentElement.style.transform = `translateY(${y * 0.25}px)`;
+    // Celular do topo: sobe um pouco mais devagar e gira de leve com a rolagem.
+    if (phone && y < window.innerHeight * 1.2) {
+      hero.style.setProperty("--py", `${(y * -0.12).toFixed(1)}px`);
+      hero.style.setProperty("--spin", `${(y * 0.012).toFixed(2)}deg`);
+    }
   }
   if (!reduce) {
     window.addEventListener(
@@ -26,6 +32,26 @@
       { passive: true },
     );
     onScroll();
+  }
+
+  // Celular 3D: inclina na direção do mouse sobre o topo.
+  if (!reduce && phone && matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    let frame = 0;
+    hero.addEventListener("pointermove", (e) => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const r = hero.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5; // -0,5 a 0,5
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        phone.style.setProperty("--ry", `${(x * 22).toFixed(2)}deg`);
+        phone.style.setProperty("--rx", `${(y * -14).toFixed(2)}deg`);
+      });
+    });
+    hero.addEventListener("pointerleave", () => {
+      cancelAnimationFrame(frame);
+      phone.style.setProperty("--ry", "0deg");
+      phone.style.setProperty("--rx", "0deg");
+    });
   }
 
 
