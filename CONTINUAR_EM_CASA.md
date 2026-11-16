@@ -49,7 +49,7 @@ Compare as três propostas no navegador.
 
 - Azul original com moto em http://127.0.0.1:8768/css/original.html
 - Azul refinada em http://127.0.0.1:8768/
-- Preto e vermelho em http://127.0.0.1:8768/css/monochrome.html
+- Azul panorâmico em http://127.0.0.1:8768/css/monochrome.html
 
 O rodapé de cada proposta contém o link para a outra.
 A entrada Monochrome está em css/monochrome.html e carrega o estilo adicional css/monochrome.css.
@@ -66,3 +66,13 @@ Para a prévia com agenda, siga o README e use banco local de teste separado, se
 
 A porta 8767 aberta no computador da empresa não se transfere para o de casa.
 Bancos de teste, perfis do navegador, .venv, node_modules e capturas .qa não são enviados pelo Git.
+
+## Prévia pública para comparação
+
+Publicada em 16/11/2026 com as três propostas azuis.
+
+https://jv-estetica-modelos-azuis.luisaugustoborges18.chatgpt.site
+
+A barra superior permite alternar os modelos. A hospedagem de comparação usa uma cópia estática com formulário demonstrativo, sem envio de agendamentos. O código funcional permanece nesta branch.
+
+Site ID appgprj_6afaee3bccec81919187a038867af6c8, versão publicada 1.

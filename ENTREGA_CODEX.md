@@ -215,3 +215,9 @@ https://dribbble.com/shots/popular/web-design
 
 Skills consultadas para a proposta: Taste Skill e Frontend Design; orientação de acessibilidade/craft e revisão de código.
 A versão é guardada na branch codex/redesign-jv por pedido do Luis, para continuar em casa. A escolha entre os visuais e os ajustes antes de integrar ou publicar continuam pendentes.
+
+## Ajustes e publicação de 16/11/2026
+
+Três propostas em azul. Lavagem recebeu título com entrada em duas linhas e reflexo suave na foto. Build e 37 verificações por proposta passaram nesta etapa, totalizando 111. API simulada nos testes. Diff sem erros de whitespace.
+
+Prévia pública autorizada por Luis para escolha visual, com aviso de demonstração e envio de agendamento desativado na cópia hospedada. URL e retomada registrados em CONTINUAR_EM_CASA.md.

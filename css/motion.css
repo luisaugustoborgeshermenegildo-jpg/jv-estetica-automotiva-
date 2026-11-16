@@ -185,3 +185,59 @@
     transform: none !important;
   }
 }
+
+/* The wash proposal uses a layered entrance inspired by polished bodywork. */
+.wash-design #hero-title {
+  animation: none;
+}
+.wash-design .hero-line {
+  display: block;
+  overflow: clip;
+  padding-bottom: .08em;
+  margin-bottom: -.08em;
+}
+.wash-design .hero-line > span {
+  display: block;
+  animation: jv-title-in 850ms var(--motion-ease) both;
+}
+.wash-design .hero-line:nth-child(2) > span {
+  animation-delay: 110ms;
+}
+.wash-design .hero-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 25%, #ffffff14 45%, transparent 65%);
+  opacity: 0;
+  transform: translateZ(1px);
+}
+.wash-design .hero-photo img {
+  animation: jv-wash-in 1100ms var(--motion-ease) both;
+}
+.wash-design .detail-icon {
+  transition: background 240ms ease, color 240ms ease, transform 300ms var(--motion-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .wash-design .hero-photo:hover::after {
+    animation: jv-reflection 900ms ease-out;
+  }
+  .wash-design .care-details article:hover .detail-icon {
+    background: #2459ec;
+    color: white;
+    transform: translateY(-2px);
+  }
+}
+@keyframes jv-title-in {
+  from { transform: translateY(105%); }
+  to { transform: translateY(0); }
+}
+@keyframes jv-wash-in {
+  from { opacity: .35; clip-path: inset(0 0 10% 0); transform: perspective(1000px) rotateY(-5deg); }
+  to { opacity: 1; clip-path: inset(0); transform: perspective(1000px) rotateY(0); }
+}
+@keyframes jv-reflection {
+  0% { opacity: 0; background-position: -250px 0; }
+  35% { opacity: 1; }
+  100% { opacity: 0; background-position: 250px 0; }
+}
