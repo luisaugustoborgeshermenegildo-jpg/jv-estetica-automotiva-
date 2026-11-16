@@ -187,6 +187,8 @@ function renderBookings(bookings) {
         phoneDigits.length >= 10 ? internationalPhone : "",
       ),
     );
+    if (INSPECTION_STAGES.includes(booking.status))
+      card.append(inspectionPanel(booking));
     if (phoneDigits.length >= 10) {
       const contact = document.createElement("a");
       contact.className = "contact-link";

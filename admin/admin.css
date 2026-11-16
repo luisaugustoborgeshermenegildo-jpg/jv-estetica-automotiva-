@@ -16,3 +16,125 @@
 .stage-whats{background:#1fa855;color:#fff}
 .stage-cancel{border:1px solid var(--line);background:none;color:var(--muted)}
 .stage-actions button:disabled{opacity:.5;cursor:wait}
+/* Vistoria e fotos */
+.inspection {
+  margin: 12px 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #ffffff05;
+}
+.inspection summary {
+  padding: 12px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.inspection-body {
+  display: grid;
+  gap: 12px;
+  padding: 0 14px 14px;
+}
+.inspection-body h3 {
+  margin: 6px 0 0;
+  font-size: 14px;
+}
+.inspection-note,
+.inspection-state {
+  margin: 0;
+  color: var(--muted);
+}
+.inspection-note.error {
+  color: var(--red);
+}
+.inspection-state.ok {
+  color: var(--green);
+}
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+}
+.photo-slot {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  padding: 8px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  font-size: 12px;
+}
+.photo-thumb {
+  position: relative;
+  margin: 0;
+}
+.photo-thumb img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #000;
+}
+.photo-remove {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: #000c;
+  color: #fff;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+.photo-pick {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  border-radius: 8px;
+  background: #ffffff0d;
+  color: var(--cyan);
+  font-weight: 700;
+  cursor: pointer;
+}
+.photo-pick input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.photo-pick.is-busy {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.check-list {
+  display: grid;
+  gap: 6px;
+}
+.check-row {
+  display: grid;
+  grid-template-columns: auto 150px 1fr;
+  gap: 8px;
+  align-items: center;
+  font-size: 14px;
+}
+.check-row input[type="text"],
+.inspection-notes {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #0006;
+  color: var(--white);
+  font: inherit;
+  font-size: 14px;
+}
+@media (max-width: 560px) {
+  .check-row {
+    grid-template-columns: auto 1fr;
+  }
+  .check-row input[type="text"] {
+    grid-column: 1/-1;
+  }
+}

@@ -21,6 +21,8 @@
       "migrations_dir": "migrations"
     }
   ],
+  // Fotos da vistoria e da entrega (privadas: só saem pela API).
+  "r2_buckets": [{ "binding": "PHOTOS", "bucket_name": "jv-fotos" }],
   "ratelimits": [
     { "name": "LIMIT_BOOKING", "namespace_id": "1001", "simple": { "limit": 6, "period": 60 } },
     { "name": "LIMIT_ADMIN", "namespace_id": "1002", "simple": { "limit": 8, "period": 60 } },

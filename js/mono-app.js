@@ -198,12 +198,16 @@
     if (refreshing) return;
     refreshing = true;
     const list = loadMine();
+    // Até 30 dias depois: o cliente ainda vê a vistoria e as fotos de entrega.
+    const cutoff = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
     const open = list.filter(
       (b) =>
         ACCESS.test(b.access || "") &&
-        !["delivered", "cancelled"].includes(b.status),
+        b.status !== "cancelled" &&
+        b.date >= cutoff,
     );
     let changed = false;
+    let viewChanged = false;
     await Promise.all(
       open.map(async (b) => {
         try {
@@ -215,6 +219,10 @@
           });
           if (!response.ok) return;
           const { order } = await response.json();
+          if (JSON.stringify(orders.get(b.id)) !== JSON.stringify(order)) {
+            orders.set(b.id, order);
+            viewChanged = true;
+          }
           if (order?.status && order.status !== b.status) {
             b.status = order.status;
             changed = true;
@@ -225,13 +233,142 @@
       }),
     );
     refreshing = false;
-    if (!changed) return;
-    try {
-      localStorage.setItem(MINE_KEY, JSON.stringify(list));
-    } catch {
-      /* armazenamento bloqueado */
+    if (changed) {
+      try {
+        localStorage.setItem(MINE_KEY, JSON.stringify(list));
+      } catch {
+        /* armazenamento bloqueado */
+      }
     }
-    if (html.dataset.tab === "meus") renderMine(false);
+    if ((changed || viewChanged) && html.dataset.tab === "meus")
+      renderMine(false);
+  }
+
+  /* ---------- Vistoria no app do cliente ---------- */
+  const orders = new Map(); // id → OS vinda da API (só na memória)
+  const ANGLE_LABEL = {
+    frente: "Frente",
+    traseira: "Traseira",
+    "lateral-esquerda": "Lateral esquerda",
+    "lateral-direita": "Lateral direita",
+    painel: "Painel",
+    tanque: "Tanque",
+    extra: "Detalhe",
+  };
+
+  async function osPost(path, body) {
+    const response = await fetch(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error || "Não foi possível carregar.");
+    }
+    return response;
+  }
+
+  function photoList(b, photos, title) {
+    const box = document.createElement("div");
+    box.className = "mine-photos";
+    const h = document.createElement("p");
+    h.className = "mine-sub";
+    h.textContent = title;
+    const grid = document.createElement("div");
+    grid.className = "mine-photo-grid";
+    photos.forEach((photo) => {
+      const figure = document.createElement("figure");
+      const img = document.createElement("img");
+      img.alt = ANGLE_LABEL[photo.angle] || "Foto";
+      const cap = document.createElement("figcaption");
+      cap.textContent = ANGLE_LABEL[photo.angle] || "Foto";
+      figure.append(img, cap);
+      grid.append(figure);
+      osPost("/api/os/photo", { code: b.access, photoId: photo.id })
+        .then((r) => r.blob())
+        .then((blob) => {
+          img.src = URL.createObjectURL(blob);
+        })
+        .catch(() => figure.classList.add("is-error"));
+    });
+    box.append(h, grid);
+    return box;
+  }
+
+  function inspectionView(b, order) {
+    const details = document.createElement("details");
+    details.className = "mine-vistoria";
+    const summary = document.createElement("summary");
+    const insp = order.inspection;
+    summary.textContent = insp?.confirmedAt
+      ? "Vistoria da moto · confirmada"
+      : insp
+        ? "Vistoria da moto · confira e confirme"
+        : "Fotos da moto";
+    details.append(summary);
+    let built = false;
+    details.addEventListener("toggle", () => {
+      if (!details.open || built) return;
+      built = true;
+      const arrival = order.photos.filter((p) => p.kind === "arrival");
+      const delivery = order.photos.filter((p) => p.kind === "delivery");
+      if (arrival.length)
+        details.append(photoList(b, arrival, "Como a moto chegou"));
+      if (insp) {
+        const damages = insp.items.filter((i) => i.damage);
+        const p = document.createElement("p");
+        p.className = "mine-sub";
+        p.textContent = damages.length
+          ? "Avarias anotadas na chegada"
+          : "Nenhuma avaria anotada na chegada.";
+        details.append(p);
+        if (damages.length) {
+          const ul = document.createElement("ul");
+          ul.className = "mine-damages";
+          damages.forEach((d) => {
+            const li = document.createElement("li");
+            li.textContent = d.note ? `${d.item}: ${d.note}` : d.item;
+            ul.append(li);
+          });
+          details.append(ul);
+        }
+        if (insp.notes) {
+          const n = document.createElement("p");
+          n.className = "mine-notes";
+          n.textContent = insp.notes;
+          details.append(n);
+        }
+        if (insp.confirmedAt) {
+          const ok = document.createElement("p");
+          ok.className = "mine-confirmed";
+          ok.textContent = `Você confirmou em ${new Date(insp.confirmedAt).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}.`;
+          details.append(ok);
+        } else {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "btn btn-accent mine-confirm";
+          btn.textContent = "Confirmo o estado da moto";
+          btn.addEventListener("click", async () => {
+            btn.disabled = true;
+            try {
+              const r = await osPost("/api/os/confirm", { code: b.access });
+              const data = await r.json();
+              orders.set(b.id, { ...order, ...data });
+              renderMine(false);
+            } catch (error) {
+              btn.disabled = false;
+              btn.textContent = error.message;
+            }
+          });
+          details.append(btn);
+        }
+      }
+      if (delivery.length)
+        details.append(photoList(b, delivery, "Como a moto foi entregue"));
+    });
+    return details;
   }
 
   function stageTrack(status) {
@@ -295,6 +432,9 @@
         code.textContent = `Protocolo ${b.id}${past ? " · já passou" : ""}`;
         li.append(when, what);
         if (b.status) li.append(stageTrack(b.status));
+        const order = orders.get(b.id);
+        if (order && (order.inspection || order.photos?.length))
+          li.append(inspectionView(b, order));
         li.append(code);
         return li;
       }),

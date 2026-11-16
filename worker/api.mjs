@@ -1,42 +1,12 @@
 // API da JV no Worker (D1). Mesmas rotas e regras das funções da Netlify.
 import {
   adminMode, configuredPassword, readAdminCredential, matchesSetupToken, validAdminPassword,
-  makePasswordRecord, createSessionCookie, clearSessionCookie, hasAdminSession, json,
+  makePasswordRecord, createSessionCookie, clearSessionCookie,
 } from '../netlify/lib/admin-session.mjs';
 import { STATUSES, newAccessCode, hashAccessCode, isAccessCode } from '../netlify/lib/stages.mjs';
 import { TIMES, SERVICES, ENGINES, MOTO_ENGINES, MOTO_ONLY_SERVICES, OPEN_DAYS, localToday } from './rules.mjs';
-
-// db.sql`...` igual ao da Netlify, por cima do D1 (valores sempre como parâmetros).
-function d1(DB) {
-  return {
-    sql: async (strings, ...values) => {
-      const result = await DB.prepare(strings.join('?')).bind(...values.map(v => (v === undefined ? null : v))).all();
-      return result.results;
-    },
-  };
-}
-const isUnique = error => /UNIQUE constraint failed/i.test(error?.message ?? '');
-const ip = request => request.headers.get('cf-connecting-ip') ?? 'local';
-
-async function limited(limiter, request) {
-  if (!limiter) return false;
-  const { success } = await limiter.limit({ key: ip(request) });
-  return !success;
-}
-
-async function readJson(request, max) {
-  if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return { error: json({ error: 'Formato de pedido inválido.' }, 415) };
-  if (Number(request.headers.get('content-length') ?? 0) > max) return { error: json({ error: 'Dados inválidos.' }, 413) };
-  try {
-    const raw = await request.text();
-    if (new TextEncoder().encode(raw).byteLength > max) return { error: json({ error: 'Dados inválidos.' }, 413) };
-    const body = JSON.parse(raw);
-    if (!body || typeof body !== 'object' || Array.isArray(body)) return { error: json({ error: 'Dados inválidos.' }, 400) };
-    return { body };
-  } catch {
-    return { error: json({ error: 'Não foi possível ler os dados enviados.' }, 400) };
-  }
-}
+import { d1, isUnique, limited, readJson, requireAdmin, json } from './http.mjs';
+import { inspectionRoutes, inspectionFor } from './inspection.mjs';
 
 export async function handleApi(request, env, url) {
   const path = url.pathname;
@@ -49,6 +19,8 @@ export async function handleApi(request, env, url) {
     if (path === '/api/os') return method === 'POST' ? serviceOrder(db, request, env) : json({ error: 'Método não permitido.' }, 405);
     if (path === '/api/admin/bookings') return method === 'GET' ? adminBookings(db, request) : json({ error: 'Método não permitido.' }, 405);
     if (path === '/api/admin/bookings/status') return method === 'POST' ? adminStatus(db, request) : json({ error: 'Método não permitido.' }, 405);
+    const inspection = await inspectionRoutes(db, request, env, url);
+    if (inspection) return inspection;
     if (['/api/admin/status', '/api/admin/login', '/api/admin/logout', '/api/admin/setup'].includes(path)) return adminAuth(db, request, env, path);
     return json({ error: 'Não encontrado.' }, 404);
   } catch (error) {
@@ -117,15 +89,9 @@ async function serviceOrder(db, request, env) {
       time: row.booking_time,
       status: row.status,
       events: events.map(e => ({ status: e.status, at: e.created_at })),
+      ...(await inspectionFor(db, row.id)),
     },
   }, 200);
-}
-
-async function requireAdmin(db, request) {
-  const credential = await readAdminCredential(db);
-  if (!credential) return json({ error: 'O painel ainda não foi configurado.' }, 503);
-  if (!hasAdminSession(request, credential.sessionKey)) return json({ error: 'Entre novamente para continuar.' }, 401);
-  return null;
 }
 
 async function adminBookings(db, request) {

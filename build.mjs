@@ -19,9 +19,10 @@ await mkdir('dist/admin/js', { recursive: true });
 await copyFile('admin/index.html', 'dist/admin/index.html');
 await copyFile('admin/admin.css', 'dist/admin/css/admin.css');
 await copyFile('admin/admin.js', 'dist/admin/js/admin.js');
+await copyFile('admin/inspection.js', 'dist/admin/js/inspection.js');
 
 // Cabeçalhos de segurança e link /app para a Cloudflare (mesmo conteúdo do netlify.toml).
-const CSP = "default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+const CSP = "default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data: blob:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
 await writeFile('dist/_headers', `/*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
