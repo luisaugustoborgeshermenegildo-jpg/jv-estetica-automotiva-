@@ -15,7 +15,7 @@ FONT_CANDIDATES = [
     Path("C:/Windows/Fonts/impact.ttf"),
     Path("C:/Windows/Fonts/arialbd.ttf"),
 ]
-BG = (0, 0, 0, 255)
+BG = (40, 97, 237, 255)  # azul da marca JV (#2861ed)
 FG = (255, 255, 255, 255)
 
 

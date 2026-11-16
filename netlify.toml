@@ -3,6 +3,12 @@
   publish = "dist"
   functions = "netlify/functions"
 
+# Link para divulgar: abre o site já com a janela "Instale o app da JV".
+[[redirects]]
+  from = "/app"
+  to = "/monochrome?instalar=1"
+  status = 302
+
 [[headers]]
   for = "/*"
   [headers.values]
