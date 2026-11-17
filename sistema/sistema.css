@@ -2096,3 +2096,123 @@ p.empty {
     grid-template-columns: 1fr;
   }
 }
+/* ---------- Movimento e identidade JV (motion.js) ---------- */
+:root {
+  --ease: cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+/* Topo: a moto da JV em preto e branco, como no site, no lugar do carbono. */
+.top {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 90% -30%, #16295f 0, transparent 55%),
+    var(--ink-2);
+}
+.top::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -24px -24px -24px 35%;
+  background: url("/assets/moto.webp") 70% 45% / cover no-repeat;
+  filter: grayscale(1) contrast(1.15) brightness(0.55);
+  opacity: 0.55;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 45%);
+  mask-image: linear-gradient(90deg, transparent, #000 45%);
+  transform: translate(var(--mx, 0), var(--my, 0)) scale(1.06);
+  transition: transform 0.6s var(--ease);
+}
+.top::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: auto 0 0;
+  height: 110px;
+  background: linear-gradient(transparent, rgb(13 15 20 / 0.85));
+}
+
+/* Título vivo */
+.top h1 .word,
+.login-card h1 .word {
+  display: inline-block;
+  white-space: nowrap;
+}
+.top h1 .ch,
+.login-card h1 .ch {
+  display: inline-block;
+  transform: translate(var(--tx, 0), var(--ty, 0));
+  transition: transform 0.45s var(--ease);
+  will-change: transform;
+}
+.is-enter .ch {
+  animation: jv-rise 0.7s var(--ease) backwards;
+  animation-delay: calc(var(--i) * 32ms);
+}
+@keyframes jv-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.55em) rotate(4deg);
+  }
+}
+
+/* Barra do menu que desliza */
+.sidebar nav {
+  position: relative;
+}
+.sidebar nav a[aria-current="page"]::before {
+  display: none;
+}
+.nav-bar {
+  position: absolute;
+  top: 0;
+  left: -12px;
+  width: 3px;
+  height: var(--h, 0);
+  border-radius: 3px;
+  background: var(--blue);
+  box-shadow: 0 0 12px rgb(40 97 237 / 0.7);
+  opacity: 0;
+  transform: translateY(var(--y, 0));
+  transition:
+    transform 0.4s var(--ease),
+    height 0.4s var(--ease),
+    opacity 0.2s;
+}
+.nav-bar.is-on {
+  opacity: 1;
+}
+
+/* Troca de tela */
+.page-in {
+  animation: jv-page 0.32s var(--ease) both;
+}
+@keyframes jv-page {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .top::before,
+  .nav-bar,
+  .top h1 .ch {
+    transition: none;
+  }
+  .is-enter .ch,
+  .page-in {
+    animation: none;
+  }
+}
+@media (max-width: 860px) {
+  .top::before {
+    inset: -24px -24px -24px 20%;
+    opacity: 0.4;
+  }
+}
+
+/* Cartões passam por cima da faixa do topo */
+.page {
+  position: relative;
+  z-index: 1;
+}
