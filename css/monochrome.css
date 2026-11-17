@@ -1146,13 +1146,16 @@ ol {
   }
 }
 
-/* Foto da moto só no início e nos serviços: faixa do app e rodapé sem foto */
+/* Foto da moto só no início e nos serviços: faixa do app sem foto (rodapé mantém a foto) */
 .app-band {
   border-top: 3px solid var(--accent);
   background:
     radial-gradient(60% 120% at 100% 100%, rgb(40 97 237 / 0.22), transparent 70%),
     var(--ink);
 }
-.footer-card {
-  grid-template-columns: 1fr;
+
+/* Nome JV Estética do rodapé menor */
+.wordmark {
+  margin-top: clamp(28px, 4vw, 44px);
+  font-size: clamp(3.2rem, 12vw, 10rem);
 }
