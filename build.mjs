@@ -47,7 +47,7 @@ await writeFile('dist/_headers', `/*
 /manifest.webmanifest
   Content-Type: application/manifest+json
 `);
-await writeFile('dist/_redirects', '/app /monochrome?instalar=1 302\n');
+await writeFile('dist/_redirects', '/app /monochrome?app=1&instalar=1 302\n');
 
 // Service worker com versão calculada a partir dos arquivos publicados:
 // qualquer mudança no site gera um cache novo nos celulares.

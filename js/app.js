@@ -73,7 +73,9 @@
         <li>Confirme. O ícone da JV aparece na sua tela.</li>
       </ol>`;
     document.body.append(sheet);
-    sheet.querySelector(".install-close").addEventListener("click", () => sheet.close());
+    sheet
+      .querySelector(".install-close")
+      .addEventListener("click", () => sheet.close());
     sheet.addEventListener("click", (e) => {
       if (e.target === sheet) sheet.close(); // toque fora fecha
     });
@@ -98,8 +100,13 @@
     sheetMode();
     sheet.showModal();
   }
+  // "Baixe o app" no site leva direto ao app de agendamento (modo app) e,
+  // lá, abre a instalação. Já dentro do app, só abre a instalação.
+  const APP_URL = "/monochrome?app=1&instalar=1";
   document.addEventListener("click", (e) => {
-    if (e.target.closest("[data-install]")) openInstall();
+    if (!e.target.closest("[data-install]")) return;
+    if (document.documentElement.classList.contains("is-app")) openInstall();
+    else location.href = APP_URL;
   });
   if (new URLSearchParams(location.search).has("instalar")) openInstall();
   window.addEventListener("appinstalled", () => {

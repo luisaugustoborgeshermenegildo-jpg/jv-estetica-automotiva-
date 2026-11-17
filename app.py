@@ -137,7 +137,7 @@ def home():
 @app.get("/app")
 def install_link():
     # Mesmo atalho do netlify.toml: abre o site com a janela de instalar o app.
-    return redirect("/monochrome?instalar=1")
+    return redirect("/monochrome?app=1&instalar=1")
 
 
 @app.get("/manifest.webmanifest")
