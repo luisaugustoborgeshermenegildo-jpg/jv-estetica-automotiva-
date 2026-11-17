@@ -1005,3 +1005,10 @@ ol {
 .tiers .tier:last-child {
   border-bottom: 0;
 }
+
+/* Serviços e dúvidas: conteúdo centralizado em telas largas */
+.services > *,
+.faq > * {
+  max-width: 1080px;
+  margin-inline: auto;
+}
