@@ -9,7 +9,7 @@ await copyFile('monochrome.html', 'dist/monochrome.html');
 await mkdir('dist/css', { recursive: true });
 await mkdir('dist/js', { recursive: true });
 for (const file of ['style.css', 'monochrome.css', 'mono-app.css', 'forms.css', 'app.css']) await copyFile(`css/${file}`, `dist/css/${file}`);
-for (const file of ['foam.js', 'monochrome.js', 'script.js', 'app.js', 'mono-app.js']) await copyFile(`js/${file}`, `dist/js/${file}`);
+for (const file of ['foam.js', 'monochrome.js', 'script.js', 'app.js', 'mono-app.js', 'fluid.js']) await copyFile(`js/${file}`, `dist/js/${file}`);
 await copyFile('manifest.webmanifest', 'dist/manifest.webmanifest');
 await cp('icons', 'dist/icons', { recursive: true });
 await mkdir('dist/assets', { recursive: true });
@@ -37,6 +37,7 @@ await copyFile('sistema/agenda.js', 'dist/sistema/js/agenda.js');
 await copyFile('sistema/finance.js', 'dist/sistema/js/finance.js');
 await copyFile('sistema/team.js', 'dist/sistema/js/team.js');
 await copyFile('sistema/motion.js', 'dist/sistema/js/motion.js');
+await copyFile('js/fluid.js', 'dist/sistema/js/fluid.js');
 // Gerador de QR Code (MIT), usado no "Agendamento online" do sistema.
 await copyFile('node_modules/qrcode-generator/qrcode.js', 'dist/sistema/js/qrcode.js');
 

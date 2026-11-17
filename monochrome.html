@@ -668,39 +668,49 @@
 
       <!-- FAIXA "AGENDE PELO APP" (só no site; ocupa o lugar do agendamento) -->
       <section class="app-band dark" aria-labelledby="app-band-title">
-        <div class="app-band-text">
-          <h2 id="app-band-title" class="title">Agende<br />pelo app</h2>
-          <ol class="app-band-steps">
-            <li>
-              <b>Escolha a lavagem</b>Pela cilindrada da sua moto, com os
-              adicionais que quiser.
-            </li>
-            <li>
-              <b>Reserve o horário</b>Veja os horários livres e garanta o seu.
-            </li>
-            <li>
-              <b>Confirme no WhatsApp</b>A equipe da JV confirma com você.
-            </li>
-          </ol>
-        </div>
-        <div class="app-band-actions">
-          <button type="button" class="install-link" data-install>
-            <span class="install-icon" aria-hidden="true">JV</span
-            ><span class="install-text"
-              ><small>Baixe o app</small><b>JV Estética</b></span
-            ><svg class="install-arrow" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 4v12M7 11l5 5 5-5M6 20h12" />
-            </svg>
-          </button>
-          <p class="app-band-car">
-            Tem carro? A lavagem é sob consulta.<br /><a
-              href="https://wa.me/5534984266406"
-              target="_blank"
-              rel="noopener"
-              >Fale com a JV no WhatsApp</a
-            >
+        <div class="app-band-head">
+          <h2 id="app-band-title" class="title">Agende pelo app</h2>
+          <p>
+            Do celular, em poucos toques. Você escolhe, reserva e a JV confirma
+            com você pelo WhatsApp.
           </p>
         </div>
+        <ol class="flow" data-flow>
+          <li class="flow-step" data-tilt>
+            <span class="flow-dot" aria-hidden="true">1</span>
+            <b>Escolha a lavagem</b>
+            <p>Pela cilindrada da sua moto, com os adicionais que quiser.</p>
+          </li>
+          <li class="flow-step" data-tilt>
+            <span class="flow-dot" aria-hidden="true">2</span>
+            <b>Reserve o horário</b>
+            <p>Veja os horários livres e garanta o seu.</p>
+          </li>
+          <li class="flow-step" data-tilt>
+            <span class="flow-dot" aria-hidden="true">3</span>
+            <b>Confirme no WhatsApp</b>
+            <p>A equipe da JV confirma o horário com você.</p>
+          </li>
+          <li class="flow-step flow-end" data-tilt>
+            <span class="flow-dot" aria-hidden="true"
+              ><svg viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M6 20h12" /></svg
+            ></span>
+            <b>Baixe o app da JV</b>
+            <p>Grátis, no iPhone e no Android. Fica na tela do celular.</p>
+            <button type="button" class="install-link" data-install>
+              <span class="install-icon" aria-hidden="true">JV</span
+              ><span class="install-text"
+                ><small>Baixe o app</small><b>JV Estética</b></span
+              ><svg class="install-arrow" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 4v12M7 11l5 5 5-5M6 20h12" />
+              </svg>
+            </button>
+          </li>
+        </ol>
+        <p class="app-band-car">
+          Tem carro? A lavagem é sob consulta.
+          <a href="https://wa.me/5534984266406" target="_blank" rel="noopener">Fale com a JV no WhatsApp</a>
+        </p>
       </section>
 
       <!-- DÚVIDAS -->
@@ -872,5 +882,6 @@
     <script src="js/script.js" defer></script>
     <script src="js/app.js" defer></script>
     <script src="js/mono-app.js" defer></script>
+    <script src="js/fluid.js" defer></script>
   </body>
 </html>

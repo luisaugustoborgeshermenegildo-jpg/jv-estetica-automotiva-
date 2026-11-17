@@ -2304,3 +2304,88 @@ p.empty {
     display: none;
   }
 }
+
+/* Cartões do topo fluidos: inclinam com o mouse e brilham no ponto do cursor (js/fluid.js) */
+.kpi {
+  --rx: 0deg;
+  --ry: 0deg;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transform: perspective(700px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition:
+    transform 0.5s cubic-bezier(0.2, 0.7, 0.1, 1),
+    box-shadow 0.4s;
+}
+.kpi::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 0%), rgb(40 97 237 / 0.12), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.kpi-dark::after {
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 0%), rgb(111 155 255 / 0.28), transparent 70%);
+}
+.kpi.is-tilting {
+  transition-duration: 0.12s, 0.4s;
+  box-shadow: 0 22px 44px rgb(12 13 16 / 0.16);
+}
+.kpi.is-tilting::after {
+  opacity: 1;
+}
+/* rótulo em texto normal (sem caixa alta) e com um ponto de cor por situação */
+.kpi span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: none;
+}
+.kpi span::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+.kpi-dark span::before {
+  background: var(--blue-hi);
+}
+[data-view="visao"] .kpi:nth-child(2) span::before {
+  background: #f59e0b;
+}
+[data-view="visao"] .kpi:nth-child(3) span::before {
+  background: var(--green);
+}
+.kpi strong {
+  font-size: clamp(38px, 4vw, 56px);
+  font-variant-numeric: tabular-nums;
+}
+/* celular: os quatro cartões deslizam de lado */
+@media (max-width: 560px) {
+  .kpis {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 72%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: 6px;
+  }
+  .kpis::-webkit-scrollbar {
+    display: none;
+  }
+  .kpi {
+    scroll-snap-align: start;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kpi {
+    transition: none;
+  }
+}
