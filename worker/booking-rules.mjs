@@ -8,6 +8,10 @@ export function checkFields(body) {
   if (KEYS.slice(0, 7).some(key => !f[key])) return { error: 'Preencha todos os campos obrigatórios.' };
   if (!SERVICES.has(f.service) || !ENGINES.has(f.engine) || !/^\d{2}:\d{2}$/.test(f.time)) return { error: 'Serviço, cilindrada/porte ou horário inválido.' };
   if (MOTO_ONLY_SERVICES.has(f.service) && !MOTO_ENGINES.has(f.engine)) return { error: 'Esse serviço adicional é só para motos.' };
+  const extras = Array.isArray(body.extras) ? body.extras.map(x => (typeof x === 'string' ? x.trim() : '')) : [];
+  if (extras.length > MOTO_ONLY_SERVICES.size || extras.some(x => !MOTO_ONLY_SERVICES.has(x) || x === f.service) || new Set(extras).size !== extras.length) return { error: 'Revise os adicionais escolhidos.' };
+  if (extras.length && !MOTO_ENGINES.has(f.engine)) return { error: 'Esse serviço adicional é só para motos.' };
+  f.extras = extras.join(', ');
   if (f.name.length > 80 || f.phone.length > 20 || f.motorcycle.length > 80 || f.notes.length > 500) return { error: 'Revise os campos: um deles excede o tamanho permitido.' };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(f.date)) return { error: 'Informe uma data válida.' };
   const chosen = new Date(`${f.date}T12:00:00Z`);

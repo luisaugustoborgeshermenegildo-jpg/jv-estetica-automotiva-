@@ -12,12 +12,13 @@ async function overview(db) {
   const settings = await getSettings(db);
   const staff = await db.sql`SELECT id, name, phone, active FROM staff ORDER BY active DESC, name`;
   // Atendimentos entregues com profissional definido (comissão) e do mês (produção).
-  const done = await db.sql`SELECT b.id, b.name, b.service, b.engine, b.booking_date, b.staff_id, b.commission_paid_at,
+  const done = await db.sql`SELECT b.id, b.name, b.service, b.extras, b.engine, b.booking_date, b.staff_id, b.commission_paid_at,
       (SELECT COALESCE(SUM(t.amount_cents), 0) FROM transactions t WHERE t.booking_id = b.id AND t.kind = 'in') AS paid_cents
     FROM bookings b WHERE b.status = 'delivered' ORDER BY b.booking_date DESC LIMIT 500`;
   const month = localToday().slice(0, 7);
   const enrich = b => {
-    const base = b.paid_cents || priceCents(settings.catalog, b.service, b.engine);
+    const extras = (b.extras || '').split(', ').filter(Boolean);
+    const base = b.paid_cents || [b.service, ...extras].reduce((n, s) => n + priceCents(settings.catalog, s, b.engine), 0);
     const pct = settings.catalog[b.service]?.commission ?? 0;
     return {
       id: b.id, customer: b.name, service: b.service, date: b.booking_date, staffId: b.staff_id,

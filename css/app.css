@@ -278,7 +278,9 @@ label {
   stroke-linecap: round;
   stroke-linejoin: round;
   opacity: 0.7;
-  transition: transform 0.3s, opacity 0.3s;
+  transition:
+    transform 0.3s,
+    opacity 0.3s;
 }
 .install-link:hover {
   border-color: var(--blue);
@@ -315,4 +317,58 @@ label {
 /* Agendamento só no app: no site, o formulário some e os botões abrem o app (js/app.js). */
 html:not(.is-app) #agendar {
   display: none;
+}
+
+/* Faixas de cilindrada (site antigo também): uma por linha */
+body:not(.mono) .tiers .tier {
+  display: block;
+}
+
+/* App: cilindradas abertas embaixo da lavagem escolhida, com o preço do lado */
+.band-pick {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 6px;
+  margin: -2px 0 6px;
+}
+.band-pick[hidden] {
+  display: none;
+}
+.band {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  cursor: pointer;
+}
+.band input {
+  accent-color: var(--blue, #2861ed);
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+.band span {
+  flex: 1;
+}
+.band:has(input:checked) {
+  border-color: var(--blue, #2861ed);
+  background: rgb(40 97 237 / 0.12);
+}
+.extras-field .optional {
+  font-weight: 400;
+  opacity: 0.7;
+  margin-left: 6px;
+  text-transform: none;
+}
+
+/* Tempo do serviço (chips do app e linhas do site) */
+.chip .dur {
+  display: block;
+  opacity: 0.7;
+}
+.duration {
+  font-size: 0.9em;
+  opacity: 0.75;
 }

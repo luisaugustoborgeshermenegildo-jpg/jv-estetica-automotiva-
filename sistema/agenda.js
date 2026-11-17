@@ -16,7 +16,7 @@
     (_, i) => `${String(i + 6).padStart(2, "0")}:00`,
   ); // 06:00 a 22:00
   const ENGINES = {
-    moto: ["Até 160cc", "161cc a 400cc", "Acima de 400cc"],
+    moto: ["Até 160cc", "160cc a 400cc", "Acima de 400cc"],
     carro: ["Carro hatch ou sedã", "Carro SUV ou picape"],
   };
   const SERVICES = {

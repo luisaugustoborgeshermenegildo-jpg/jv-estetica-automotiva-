@@ -37,6 +37,25 @@ def icon(size, safe=1.0):
     return img
 
 
+SISTEMA_BG = (5, 6, 8, 255)  # preto do JV Sistema (#050608)
+
+
+def icon_sistema(size, safe=1.0):
+    """Ícone do JV Sistema: fundo preto e faixa azul, para o João não confundir
+    com o app de agendamento dos clientes (fundo azul) na tela do iPhone."""
+    img = Image.new("RGBA", (size, size), SISTEMA_BG)
+    draw = ImageDraw.Draw(img)
+    f = font(int(size * 0.46 * safe))
+    box = draw.textbbox((0, 0), "JV", font=f)
+    w, h = box[2] - box[0], box[3] - box[1]
+    y = (size - h) / 2 - box[1] - size * 0.06 * safe
+    draw.text(((size - w) / 2 - box[0], y), "JV", font=f, fill=FG)
+    bar_w, bar_h = size * 0.46 * safe, max(2, size * 0.06 * safe)
+    top = y + box[3] + size * 0.07 * safe
+    draw.rectangle(((size - bar_w) / 2, top, (size + bar_w) / 2, top + bar_h), fill=BG)
+    return img
+
+
 def main():
     OUT.mkdir(exist_ok=True)
     icon(192).save(OUT / "icon-192.png")
@@ -44,6 +63,10 @@ def main():
     icon(512, safe=0.72).save(OUT / "icon-maskable-512.png")
     icon(180).convert("RGB").save(OUT / "apple-touch-icon.png")
     icon(48).save(OUT / "favicon-48.png")
+    icon_sistema(192).save(OUT / "sistema-192.png")
+    icon_sistema(512).save(OUT / "sistema-512.png")
+    icon_sistema(512, safe=0.72).save(OUT / "sistema-maskable-512.png")
+    icon_sistema(180).convert("RGB").save(OUT / "sistema-apple-touch-icon.png")
     print("Ícones gerados em", OUT)
 
 

@@ -989,3 +989,19 @@ ol {
   color: var(--ink);
   font-weight: 600;
 }
+
+/* Faixas de cilindrada: uma embaixo da outra, preço do lado */
+.tiers {
+  display: grid;
+  max-width: 360px;
+}
+.tiers .tier {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgb(0 0 0 / 0.08);
+}
+.tiers .tier:last-child {
+  border-bottom: 0;
+}

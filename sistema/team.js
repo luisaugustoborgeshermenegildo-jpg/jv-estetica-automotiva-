@@ -2,7 +2,7 @@
    Usa window.jv, setStatus, showLogin e dashboardStatus de sistema.js. */
 (() => {
   const $ = (s) => document.querySelector(s);
-  const MOTO_BANDS = ["Até 160cc", "161 a 400cc", "Acima de 400cc"];
+  const MOTO_BANDS = ["Até 160cc", "160 a 400cc", "Acima de 400cc"];
   const CAR_BANDS = ["Hatch ou sedã", "SUV ou picape"];
   let team = null;
   let settings = null;

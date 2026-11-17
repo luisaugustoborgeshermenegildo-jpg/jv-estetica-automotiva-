@@ -11,7 +11,7 @@
     <title>JV Sistema | Gestão da JV Estética</title>
     <link rel="manifest" href="/sistema/manifest.webmanifest" />
     <link rel="icon" href="/icons/favicon-48.png" />
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" href="/icons/sistema-apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
@@ -29,6 +29,7 @@
     <script src="/sistema/js/growth.js" defer></script>
     <script src="/sistema/js/qrcode.js" defer></script>
     <script src="/sistema/js/online.js" defer></script>
+    <script src="/sistema/js/instalar.js" defer></script>
   </head>
   <body>
     <!-- ---------- Entrada ---------- -->
@@ -513,6 +514,15 @@
             </div>
           </section>
           <section class="cfg-panel" data-cfg-panel="acesso" hidden>
+            <div class="card install-card" id="installCard">
+              <div>
+                <h2>JV Sistema no celular</h2>
+                <p data-install-status>Instale o sistema como app no iPhone ou no Android. Aponte a câmera do celular para o QR Code, abra o link no Safari (iPhone) ou no Chrome (Android) e toque em Instalar.</p>
+                <p class="install-url" data-install-url></p>
+                <button type="button" class="btn-primary" data-install>Instalar neste aparelho</button>
+              </div>
+              <canvas width="180" height="180" aria-label="QR Code para abrir o JV Sistema no celular" role="img"></canvas>
+            </div>
             <div class="card">
               <h2>Usuários e permissões</h2>
               <div class="user-row">

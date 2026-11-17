@@ -73,12 +73,12 @@ async function createBooking(db, request, env) {
 
   const settings = await getSettings(db);
   if (!slotsFor(settings, f.date).includes(f.time)) return json({ error: 'A data ou o horário escolhido não está disponível.' }, 400);
-  if (settings.disabledServices.includes(f.service)) return json({ error: 'Esse serviço não está disponível para agendamento online.' }, 400);
+  if ([f.service, ...f.extras.split(', ').filter(Boolean)].some(s => settings.disabledServices.includes(s))) return json({ error: 'Esse serviço não está disponível para agendamento online.' }, 400);
   if (tooSoon(f.date, f.time, settings.minNoticeHours)) return json({ error: 'Esse horário já não pode ser agendado. Escolha outro.' }, 409);
   const id = crypto.randomUUID().replaceAll('-', '').slice(0, 8).toUpperCase();
   const access = newAccessCode();
-  const inserted = await db.sql`INSERT INTO bookings (id, name, phone, motorcycle, service, engine, booking_date, booking_time, notes, access_hash)
-    SELECT ${id}, ${f.name}, ${f.phone}, ${f.motorcycle}, ${f.service}, ${f.engine}, ${f.date}, ${f.time}, ${f.notes}, ${hashAccessCode(access)}
+  const inserted = await db.sql`INSERT INTO bookings (id, name, phone, motorcycle, service, extras, engine, booking_date, booking_time, notes, access_hash)
+    SELECT ${id}, ${f.name}, ${f.phone}, ${f.motorcycle}, ${f.service}, ${f.extras}, ${f.engine}, ${f.date}, ${f.time}, ${f.notes}, ${hashAccessCode(access)}
     WHERE (SELECT COUNT(*) FROM bookings WHERE booking_date = ${f.date} AND booking_time = ${f.time} AND status <> 'cancelled') < ${settings.capacity}
     RETURNING id`;
   if (!inserted.length) return json({ error: 'Esse horário acabou de ser reservado. Escolha outro.' }, 409);
@@ -111,13 +111,15 @@ async function serviceOrder(db, request, env) {
 async function adminBookings(db, request) {
   const denied = await requireAdmin(db, request);
   if (denied) return denied;
-  const rows = await db.sql`SELECT id, name, phone, motorcycle, service, engine, booking_date, booking_time, notes, status, created_at, staff_id
+  const rows = await db.sql`SELECT id, name, phone, motorcycle, service, extras, engine, booking_date, booking_time, notes, status, created_at, staff_id
     FROM bookings
     ORDER BY CASE WHEN booking_date >= ${localToday()} THEN 0 ELSE 1 END, booking_date ASC, booking_time ASC, created_at DESC
     LIMIT 250`;
   return json({
     bookings: rows.map(row => ({
-      id: row.id, name: row.name, phone: row.phone, motorcycle: row.motorcycle, service: row.service,
+      // service já junta os adicionais para o sistema mostrar; extras vem separado.
+      id: row.id, name: row.name, phone: row.phone, motorcycle: row.motorcycle,
+      service: row.extras ? `${row.service} + ${row.extras.replaceAll(', ', ' + ')}` : row.service, extras: row.extras || '',
       engine: row.engine, date: row.booking_date, time: row.booking_time, notes: row.notes,
       status: row.status, createdAt: row.created_at, staffId: row.staff_id,
     })),

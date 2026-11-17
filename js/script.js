@@ -20,7 +20,7 @@ const ENGINES = {
   moto: {
     label: "Cilindrada",
     placeholder: "Ex.: Honda CB 300",
-    options: ["Até 160cc", "161cc a 400cc", "Acima de 400cc"],
+    options: ["Até 160cc", "160cc a 400cc", "Acima de 400cc"],
   },
   carro: {
     label: "Porte",
@@ -142,6 +142,20 @@ const sum = {
 };
 const vehicle = () => form.elements.vehicle.value;
 const selectedService = () => form.elements.service.value;
+// Adicionais marcados (app: caixinhas "extras"; vários ao mesmo tempo).
+const selectedExtras = () =>
+  $$('input[name="extras"]:checked', form).map((i) => i.value);
+const engineField = $("#engineField");
+const washChips = $("#washChips");
+// Faixas de cilindrada (ou porte) com o preço, abertas embaixo da lavagem escolhida.
+const bandPick = washChips ? document.createElement("div") : null;
+if (bandPick) {
+  bandPick.className = "band-pick";
+  bandPick.setAttribute("role", "radiogroup");
+  bandPick.setAttribute("aria-label", "Cilindrada ou porte");
+}
+const serviceText = () =>
+  [selectedService(), ...selectedExtras()].filter(Boolean).join(" + ") || "—";
 
 function setSummary(key, text) {
   const el = sum[key];
@@ -167,11 +181,72 @@ function priceLabel(service, v = vehicle()) {
   return tier >= 0 ? brl(info.moto[tier]) : `A partir de ${brl(info.moto[0])}`;
 }
 
+// Valor da lavagem (pela faixa) + adicionais. Sem faixa escolhida: "A partir de".
+function totalLabel() {
+  const items = [selectedService(), ...selectedExtras()].filter(Boolean);
+  if (!items.length) return "—";
+  if (items.length === 1) return priceLabel(items[0]);
+  const v = vehicle();
+  let fixed = 0;
+  let wash = 0;
+  let exact = true;
+  for (const s of items) {
+    const info = SERVICES[s];
+    if (!info) return "—";
+    if (info.fixed) {
+      fixed += info.moto;
+      continue;
+    }
+    const table = v === "carro" ? info.carro : info.moto;
+    if (!Array.isArray(table)) return "Sob consulta";
+    const t = ENGINES[v].options.indexOf(engineSelect.value);
+    if (t < 0) exact = false;
+    wash += table[t < 0 ? 0 : t];
+  }
+  return exact ? brl(wash + fixed) : `A partir de ${brl(wash + fixed)}`;
+}
+
+function renderBands() {
+  if (!bandPick) return;
+  const service = selectedService();
+  const chip = service
+    ? $(`input[name="service"][value="${CSS.escape(service)}"]`, form)?.closest(".chip")
+    : null;
+  if (engineField) engineField.hidden = Boolean(chip);
+  if (!chip) {
+    bandPick.hidden = true;
+    return;
+  }
+  const v = vehicle();
+  const info = SERVICES[service];
+  const table = v === "carro" ? info.carro : info.moto;
+  bandPick.replaceChildren(
+    ...ENGINES[v].options.map((opt, i) => {
+      const label = document.createElement("label");
+      label.className = "band";
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = "band";
+      input.value = opt;
+      input.checked = engineSelect.value === opt;
+      const name = document.createElement("span");
+      name.textContent = opt;
+      const price = document.createElement("b");
+      price.textContent = Array.isArray(table) ? brl(table[i]) : "Sob consulta";
+      label.append(input, name, price);
+      return label;
+    }),
+  );
+  bandPick.hidden = false;
+  chip.after(bandPick);
+}
+
 function refreshPrices() {
   $$("[data-price]", form).forEach((el) => {
     el.textContent = priceLabel(el.dataset.price);
   });
-  setSummary("price", priceLabel(selectedService()));
+  setSummary("price", totalLabel());
+  renderBands();
 }
 
 function setFormVehicle(v) {
@@ -186,15 +261,14 @@ function setFormVehicle(v) {
     ...cfg.options.map((o) => new Option(o, o)),
   );
   if (cfg.options.includes(previous)) engineSelect.value = previous;
-  $$(".moto-only", form).forEach((chip) => {
-    chip.hidden = v !== "moto";
-    const input = $("input", chip);
-    input.disabled = v !== "moto";
-    if (input.disabled && input.checked) {
-      input.checked = false;
-      setSummary("service", "—");
-    }
+  $$(".moto-only", form).forEach((box) => {
+    box.hidden = v !== "moto";
+    $$("input", box).forEach((input) => {
+      input.disabled = v !== "moto";
+      if (input.disabled && input.checked) input.checked = false;
+    });
   });
+  setSummary("service", serviceText());
   setSummary("vehicle", v === "moto" ? "Moto" : "Carro");
   refreshPrices();
 }
@@ -205,8 +279,17 @@ form.addEventListener("change", (e) => {
     setServicesVehicle(e.target.value);
   }
   if (e.target.name === "engine") refreshPrices(); // valor exato pela cilindrada
+  if (e.target.name === "band") {
+    engineSelect.value = e.target.value;
+    engineSelect.removeAttribute("aria-invalid");
+    refreshPrices();
+  }
+  if (e.target.name === "extras") {
+    setSummary("service", serviceText());
+    refreshPrices();
+  }
   if (e.target.name === "service") {
-    setSummary("service", e.target.value);
+    setSummary("service", serviceText());
     refreshPrices();
   }
   if (e.target.matches("[aria-invalid]"))
@@ -221,12 +304,12 @@ $$(".pick").forEach((btn) =>
       ? "moto"
       : servicesSection.dataset.vehicle;
     setFormVehicle(v);
-    const input = $$('input[name="service"]', form).find(
+    const input = $$('input[name="service"], input[name="extras"]', form).find(
       (i) => i.value === service,
     );
     if (input) {
       input.checked = true;
-      setSummary("service", service);
+      setSummary("service", serviceText());
       refreshPrices();
     }
     $("#agendar").scrollIntoView({ behavior: "smooth" });
@@ -368,7 +451,8 @@ function validate() {
     else el.setAttribute("aria-invalid", "true");
     if (!ok && !firstInvalid) firstInvalid = el;
   });
-  if (!selectedService()) return "Escolha um serviço.";
+  if (!selectedService() && !selectedExtras().length)
+    return "Escolha um serviço.";
   if (!dateInput.value) return "Escolha um dia.";
   if (!timeInput.value) return "Escolha um dos horários livres.";
   if (firstInvalid) {
@@ -403,6 +487,11 @@ form.addEventListener("submit", async (event) => {
   submit.textContent = "Enviando solicitação…";
   const payload = Object.fromEntries(new FormData(form).entries());
   delete payload.vehicle;
+  delete payload.band;
+  // Lavagem + adicionais: sem lavagem, o primeiro adicional vira o serviço.
+  const extras = selectedExtras();
+  payload.service = selectedService() || extras.shift() || "";
+  payload.extras = extras;
   try {
     const response = await fetch("/api/bookings", {
       method: "POST",
@@ -420,7 +509,7 @@ form.addEventListener("submit", async (event) => {
       `Olá! Fiz uma solicitação de agendamento na JV. Protocolo ${result.booking.id}.`,
       `${payload.name} — ${payload.phone}`,
       `${payload.motorcycle} (${payload.engine})`,
-      `${payload.service} — ${longDate(payload.date)} às ${payload.time}`,
+      `${[payload.service, ...extras].join(" + ")} — ${longDate(payload.date)} às ${payload.time}`,
       payload.notes ? `Observação: ${payload.notes}` : "",
     ]
       .filter(Boolean)
@@ -437,6 +526,7 @@ form.addEventListener("submit", async (event) => {
       new CustomEvent("jv:booked", {
         detail: {
           ...payload,
+          service: [payload.service, ...extras].join(" + "),
           id: result.booking.id,
           access: result.booking.access,
           vehicle: vehicle(),
@@ -517,13 +607,16 @@ function applyPrices(prices) {
       if (Array.isArray(p.moto)) {
         const tiers = box.querySelector(".tiers");
         if (tiers) {
-          const labels = ["Até 160cc", "161 a 400cc", "Acima de 400cc"];
+          const labels = ["Até 160cc", "160 a 400cc", "Acima de 400cc"];
           tiers.replaceChildren();
+          // Uma faixa por linha, com o preço do lado.
           labels.forEach((label, i) => {
-            if (i) tiers.append(" · ");
+            const row = document.createElement("span");
+            row.className = "tier";
             const b = document.createElement("b");
             b.textContent = reais(p.moto[i]);
-            tiers.append(`${label} `, b);
+            row.append(`${label} `, b);
+            tiers.append(row);
           });
         }
         const from = [...box.querySelectorAll(".only-moto")].find((el) => !el.classList.contains("tiers"));

@@ -11,9 +11,9 @@ export const SERVICES = new Set([
   'Clareamento do motor',
 ]);
 export const MOTO_ENGINES = new Set([
-  'Até 160cc', '161cc a 400cc', 'Acima de 400cc',
+  'Até 160cc', '160cc a 400cc', 'Acima de 400cc',
   // Faixas antigas: aceitas por um tempo, para celulares com a página antiga em cache.
-  '150cc – 400cc', '400cc – 900cc', 'Mais de 900cc',
+  '161cc a 400cc', '150cc – 400cc', '400cc – 900cc', 'Mais de 900cc',
 ]);
 export const CAR_ENGINES = new Set(['Carro hatch ou sedã', 'Carro SUV ou picape']);
 export const ENGINES = new Set([...MOTO_ENGINES, ...CAR_ENGINES]);

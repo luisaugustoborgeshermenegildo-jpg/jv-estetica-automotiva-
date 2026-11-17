@@ -106,7 +106,9 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         })
-        .catch(() => hit);
+        // Sem rede: usa a cópia; sem cópia, devolve um erro de rede de verdade
+        // (antes devolvia "undefined" e a imagem ficava quebrada até limpar o cache).
+        .catch(() => hit || Response.error());
       return hit || network;
     }),
   );

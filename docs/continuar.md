@@ -3,7 +3,7 @@
 Leia este arquivo antes de continuar o projeto em outro PC.
 
 ## O que está no ar
-- **Cloudflare Worker `jv-estetica`:** https://jv-estetica.jv-estetica-automotiva.workers.dev
+- **Cloudflare Worker `jv-estetica`:** https://jv-estetica.jvestetica.workers.dev
   - O deploy é automático a cada push na branch `feat/redesign-site` (Workers Builds ligado ao GitHub).
   - Banco: D1 `jv-db`. As migrações ficam em `migrations/` e rodam com `npx wrangler d1 migrations apply jv-db --remote`.
   - Senha do painel: secret `ADMIN_PASSWORD`, criada com `npx wrangler secret put ADMIN_PASSWORD`. Nunca vai no código.

@@ -1,14 +1,14 @@
 // Catálogo de serviços da JV: preços (em reais), tempo médio e comissão.
 // Os 7 serviços são os que o site oferece; o João edita preços e regras no JV Sistema.
-export const MOTO_BANDS = ['Até 160cc', '161cc a 400cc', 'Acima de 400cc'];
+export const MOTO_BANDS = ['Até 160cc', '160cc a 400cc', 'Acima de 400cc'];
 export const CAR_BANDS = ['Carro hatch ou sedã', 'Carro SUV ou picape'];
 // Faixas antigas que ainda podem existir em agendamentos guardados.
-const OLD_MOTO = { '150cc – 400cc': 1, '400cc – 900cc': 2, 'Mais de 900cc': 2 };
+const OLD_MOTO = { '161cc a 400cc': 1, '150cc – 400cc': 1, '400cc – 900cc': 2, 'Mais de 900cc': 2 };
 
 export const DEFAULT_CATALOG = {
-  'Lavagem completa': { moto: [70, 100, 120], carro: null, minutes: 40, commission: 15 },
-  'Lavagem detalhada': { moto: [110, 130, 150], carro: null, minutes: 90, commission: 15 },
-  'Lavagem premium': { moto: [125, 140, 170], carro: null, minutes: 120, commission: 15 },
+  'Lavagem completa': { moto: [70, 100, 120], carro: null, minutes: 105, commission: 15 },
+  'Lavagem detalhada': { moto: [110, 130, 150], carro: null, minutes: 165, commission: 15 },
+  'Lavagem premium': { moto: [125, 140, 170], carro: null, minutes: 255, commission: 15 },
   'Limpeza e lubrificação da corrente': { moto: 20, minutes: 20, commission: 10, motoOnly: true },
   'Revitalização de plásticos': { moto: 40, minutes: 30, commission: 10, motoOnly: true },
   'Clareamento do bacalhau': { moto: 25, minutes: 30, commission: 10, motoOnly: true },

@@ -13,7 +13,7 @@ for (const file of ['foam.js', 'monochrome.js', 'script.js', 'app.js', 'mono-app
 await copyFile('manifest.webmanifest', 'dist/manifest.webmanifest');
 await cp('icons', 'dist/icons', { recursive: true });
 await mkdir('dist/assets', { recursive: true });
-for (const file of ['moto.webp', 'detalhe.webp']) await copyFile(`assets/${file}`, `dist/assets/${file}`);
+for (const file of ['moto.webp']) await copyFile(`assets/${file}`, `dist/assets/${file}`);
 await mkdir('dist/admin/css', { recursive: true });
 await mkdir('dist/admin/js', { recursive: true });
 await copyFile('admin/index.html', 'dist/admin/index.html');
@@ -32,6 +32,7 @@ await copyFile('sistema/sistema.js', 'dist/sistema/js/sistema.js');
 await copyFile('admin/inspection.js', 'dist/sistema/js/inspection.js');
 await copyFile('admin/growth.js', 'dist/sistema/js/growth.js');
 await copyFile('sistema/online.js', 'dist/sistema/js/online.js');
+await copyFile('sistema/instalar.js', 'dist/sistema/js/instalar.js');
 await copyFile('sistema/agenda.js', 'dist/sistema/js/agenda.js');
 await copyFile('sistema/finance.js', 'dist/sistema/js/finance.js');
 await copyFile('sistema/team.js', 'dist/sistema/js/team.js');

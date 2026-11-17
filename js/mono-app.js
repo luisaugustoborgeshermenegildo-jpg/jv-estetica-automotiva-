@@ -40,7 +40,7 @@
     }
     const tag = document.createElement("p");
     tag.className = "splash-tag";
-    tag.textContent = "Agende a lavagem da sua moto ou carro";
+    tag.textContent = "Agende a lavagem da sua moto";
     splash.append(img, word, tag);
     document.body.append(splash);
     setTimeout(() => splash.classList.add("is-out"), 1700);
@@ -117,11 +117,22 @@
   function problem(n) {
     const el = form.elements;
     if (n === 1) {
-      if (!el.service.value) return "Escolha um serviço.";
+      if (
+        !el.service.value &&
+        !form.querySelector('input[name="extras"]:checked')
+      )
+        return "Escolha uma lavagem ou um adicional.";
+      if (!el.engine.value) {
+        // Com lavagem escolhida, a cilindrada fica nas opções embaixo dela.
+        const band = form.querySelector(".band-pick:not([hidden]) input");
+        if (band) {
+          band.focus();
+          return "Escolha a cilindrada ou o porte.";
+        }
+        return mark(el.engine, "Escolha a cilindrada ou o porte.");
+      }
       if (!el.motorcycle.value.trim())
         return mark(el.motorcycle, "Informe o modelo do veículo.");
-      if (!el.engine.value)
-        return mark(el.engine, "Escolha a cilindrada ou o porte.");
     }
     if (n === 2) {
       if (!el.date.value) return "Escolha um dia.";
@@ -203,7 +214,8 @@
     .catch(() => {});
 
   async function cancelBooking(b, button) {
-    if (!confirm(`Cancelar o agendamento de ${b.service} (protocolo ${b.id})?`)) return;
+    if (!confirm(`Cancelar o agendamento de ${b.service} (protocolo ${b.id})?`))
+      return;
     button.disabled = true;
     try {
       const response = await fetch("/api/os/cancel", {
@@ -212,7 +224,8 @@
         body: JSON.stringify({ code: b.access }),
       });
       const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.error || "Não foi possível cancelar.");
+      if (!response.ok)
+        throw new Error(data.error || "Não foi possível cancelar.");
       const list = loadMine();
       const item = list.find((x) => x.id === b.id);
       if (item) item.status = "cancelled";
