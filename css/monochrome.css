@@ -1093,3 +1093,55 @@ ol {
     grid-template-columns: 1fr;
   }
 }
+
+/* Foto larga da moto nos serviços (no lugar das fotos Moto/Carro) */
+.services-shot {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 21 / 8;
+  margin: 0 auto clamp(28px, 4vw, 44px);
+  background: #ddd;
+}
+.services-shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(1.05);
+  transition: transform 1.2s var(--ease);
+}
+.services-shot:hover img {
+  transform: scale(1.03);
+}
+.services-shot figcaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 12px;
+  padding: 18px 22px;
+  color: #fff;
+  background: linear-gradient(transparent, rgb(0 0 0 / 0.75));
+}
+.services-shot b {
+  font: 800 clamp(1.8rem, 4vw, 3.2rem)/0.9 var(--display);
+  text-transform: uppercase;
+}
+.services-shot small {
+  font-size: 13px;
+  text-align: right;
+}
+@media (max-width: 760px) {
+  .services-shot {
+    aspect-ratio: 4 / 3;
+  }
+  .services-shot figcaption {
+    flex-direction: column;
+    align-items: start;
+  }
+  .services-shot small {
+    text-align: left;
+  }
+}
