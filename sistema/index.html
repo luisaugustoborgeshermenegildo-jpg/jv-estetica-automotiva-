@@ -109,6 +109,16 @@
               <path d="M3 7h18v12H3zM3 11h18M7 15h3M16 4H8" /></svg
             >Financeiro</a
           >
+          <a href="#equipe" data-page="equipe"
+            ><svg viewBox="0 0 24 24">
+              <path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21c0-4 3-6 7-6s7 2 7 6M19 8v6M16 11h6" /></svg
+            >Equipe e comissões</a
+          >
+          <a href="#config" data-page="config"
+            ><svg viewBox="0 0 24 24">
+              <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M14 4v4M8 10v4M16 16v4" /></svg
+            >Serviços e configurações</a
+          >
           <a href="#online" data-page="online"
             ><svg viewBox="0 0 24 24">
               <path
@@ -446,6 +456,73 @@
             </p>
           </div>
           <div class="list" id="autoList"></div>
+        </section>
+
+        <!-- Equipe e comissões (team.js) -->
+        <section class="page" data-view="equipe" hidden>
+          <div class="kpis">
+            <article class="kpi kpi-dark"><span>Funcionários ativos</span><strong id="tmActive">0</strong><small>Sem contar o proprietário</small></article>
+            <article class="kpi"><span>Comissões pendentes</span><strong id="tmPending">R$ 0</strong><small>Ainda não pagas</small></article>
+            <article class="kpi"><span>Serviços entregues no mês</span><strong id="tmServices">0</strong><small>Por toda a equipe</small></article>
+            <article class="kpi kpi-accent"><span>Comissão média</span><strong id="tmAvg">R$ 0</strong><small>Por serviço com comissão</small></article>
+          </div>
+          <div class="team-layout">
+            <div class="panel-block">
+              <div class="block-head"><h2>Profissionais</h2></div>
+              <form class="grid-form team-add" id="tmAddForm">
+                <label>Nome<input name="name" required maxlength="60" placeholder="Ex.: Pedro" /></label>
+                <label>WhatsApp<input name="phone" inputmode="tel" maxlength="20" placeholder="(34) 9 9999-9999" /></label>
+                <button type="submit" class="btn-primary">+ Adicionar funcionário</button>
+              </form>
+              <div class="list" id="tmList"></div>
+            </div>
+            <div class="card">
+              <div class="block-head"><h2>Regras de comissão</h2><a href="#config">Editar</a></div>
+              <div class="rules" id="tmRules"></div>
+              <p class="hint">Valem só para funcionários. A comissão usa o valor recebido no Financeiro; sem lançamento, usa o preço do catálogo. Na OS, escolha quem executou o serviço.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Serviços e configurações (config.js) -->
+        <section class="page" data-view="config" hidden>
+          <div class="growth-tabs config-tabs" role="tablist">
+            <button type="button" data-cfg="servicos" aria-selected="true">Serviços</button>
+            <button type="button" data-cfg="empresa" aria-selected="false">Empresa</button>
+            <button type="button" data-cfg="acesso" aria-selected="false">Acesso</button>
+          </div>
+          <section class="cfg-panel" data-cfg-panel="servicos">
+            <p class="hint">Os preços daqui aparecem no site e no agendamento. Deixe o preço do carro em branco para mostrar "sob consulta".</p>
+            <div id="cfgMoto"></div>
+            <div id="cfgCarro"></div>
+          </section>
+          <section class="cfg-panel" data-cfg-panel="empresa" hidden>
+            <form class="grid-form" id="cfgCompany">
+              <h2>Dados da empresa</h2>
+              <label>Nome<input name="name" required maxlength="120" /></label>
+              <label>WhatsApp<input name="whatsapp" maxlength="120" /></label>
+              <label class="wide">Endereço<input name="address" maxlength="120" /></label>
+              <label>Instagram<input name="instagram" maxlength="120" placeholder="@jvestetica" /></label>
+              <button type="submit" class="btn-primary">Salvar dados</button>
+            </form>
+            <div class="config-links">
+              <a class="cfg-link" href="#horarios"><b>Horários</b><span>Expediente e almoço de cada dia</span></a>
+              <a class="cfg-link" href="#financeiro"><b>Formas de pagamento</b><span>Taxas da maquininha no Financeiro</span></a>
+              <a class="cfg-link" href="#online"><b>Agendamento online</b><span>Link, regras e serviços disponíveis</span></a>
+              <a class="cfg-link" href="#equipe"><b>Equipe</b><span>Funcionários e comissões</span></a>
+            </div>
+          </section>
+          <section class="cfg-panel" data-cfg-panel="acesso" hidden>
+            <div class="card">
+              <h2>Usuários e permissões</h2>
+              <div class="user-row">
+                <span class="brand-mark">J</span>
+                <div><b>João (JV)</b><small>Administrador · acesso total</small></div>
+                <span class="pill pill-delivered">Ativo</span>
+              </div>
+              <p class="hint">Hoje o sistema tem uma senha de administrador. Para trocar, quem cuida do sistema roda <code>npx wrangler secret put ADMIN_PASSWORD</code> e digita a nova senha. Login separado para funcionários (cada um vendo só os próprios serviços) fica para uma próxima etapa.</p>
+            </div>
+          </section>
         </section>
 
         <!-- Financeiro (finance.js) -->
@@ -923,5 +1000,6 @@
     </dialog>
     <script src="/sistema/js/agenda.js" defer></script>
     <script src="/sistema/js/finance.js" defer></script>
+    <script src="/sistema/js/team.js" defer></script>
   </body>
 </html>

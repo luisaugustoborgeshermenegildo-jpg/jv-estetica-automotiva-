@@ -64,6 +64,8 @@ function showLogin() {
       "Agendamento online",
       "Link para a bio do Instagram e as regras do agendamento.",
     ],
+    equipe: ["07 / Gestão", "Equipe e comissões", "Quem executa cada serviço e quanto cada um tem a receber."],
+    config: ["08 / Seu estúdio", "Serviços e configurações", "Preços, tempo e comissão de cada serviço, e os dados da JV."],
     financeiro: [
       "06 / Resultados",
       "Financeiro",
@@ -170,6 +172,8 @@ function showLogin() {
     if (page === "automacoes") window.jvAutoLoad?.();
     if (page === "horarios") window.jvHoursLoad?.();
     if (page === "financeiro") window.jvFinanceLoad?.();
+    if (page === "equipe") window.jvTeamLoad?.();
+    if (page === "config") window.jvConfigLoad?.();
     render();
   }
   window.addEventListener("hashchange", route);
@@ -367,6 +371,8 @@ function showLogin() {
     card.append(el("small", "", `${b.service} · ${longDate(b.date)}`));
     if (b.notes) card.append(el("p", "muted", `Obs.: ${b.notes}`));
     card.append(stageControls(b));
+    const who = window.jvStaffPicker?.(b);
+    if (who) card.append(who);
     if (
       ["received", "washing", "ready", "delivered"].includes(status(b)) &&
       typeof inspectionPanel === "function"

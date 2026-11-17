@@ -1884,3 +1884,215 @@ p.empty {
     font-size: 12px;
   }
 }
+/* ---------- Equipe e comissões ---------- */
+.team-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+.team-add {
+  align-items: end;
+}
+.team-add button {
+  grid-column: auto;
+  justify-self: stretch;
+}
+.person.is-off {
+  opacity: 0.6;
+}
+.person-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 8px 0 4px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.person-stats div {
+  display: grid;
+  gap: 2px;
+  padding: 0 10px;
+  border-left: 1px solid var(--line);
+}
+.person-stats div:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+.person-stats b {
+  font: 800 20px/1 var(--display);
+}
+.person-stats small {
+  font-size: 12px;
+  color: var(--muted);
+}
+.jobs summary {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+  cursor: pointer;
+}
+.jobs p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.rules {
+  display: grid;
+}
+.rule-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+.rule-row b {
+  font: 800 16px/1 var(--display);
+  color: var(--blue);
+}
+.staff-pick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.staff-pick select {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--text);
+}
+
+/* ---------- Serviços e configurações ---------- */
+.cfg-panel {
+  display: grid;
+  gap: 16px;
+}
+.svc-group {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.svc-group small {
+  color: var(--muted);
+}
+.svc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+.svc-card {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+}
+.svc-card h3 {
+  margin: 0;
+  font: 800 20px/1.1 var(--display);
+  text-transform: uppercase;
+}
+.svc-card > .btn-ghost {
+  justify-self: start;
+  min-height: 34px;
+  font-size: 13px;
+}
+.svc-online {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.svc-online small {
+  font-size: 12px;
+  color: var(--muted);
+}
+.svc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.svc-meta span:nth-child(2) {
+  color: var(--blue);
+  font-weight: 600;
+}
+.svc-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.svc-form label {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.svc-form input {
+  min-height: 38px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.svc-form button {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+.config-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.cfg-link {
+  display: grid;
+  gap: 2px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  text-decoration: none;
+}
+.cfg-link:hover {
+  border-color: var(--blue);
+}
+.cfg-link span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.user-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.user-row div {
+  display: grid;
+  flex: 1;
+}
+.user-row small {
+  color: var(--muted);
+}
+.card code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: #f0f1f5;
+  font-size: 12px;
+}
+@media (max-width: 960px) {
+  .team-layout {
+    grid-template-columns: 1fr;
+  }
+}

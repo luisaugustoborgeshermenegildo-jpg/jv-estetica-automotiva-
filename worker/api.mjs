@@ -11,6 +11,7 @@ import { d1, isUnique, limited, readJson, requireAdmin, json } from './http.mjs'
 import { inspectionRoutes, inspectionFor } from './inspection.mjs';
 import { growthRoutes } from './growth.mjs';
 import { financeRoutes } from './finance.mjs';
+import { teamRoutes } from './team.mjs';
 import { settingsRoutes, getSettings, tooSoon, slotsFor } from './settings.mjs';
 
 export async function handleApi(request, env, url) {
@@ -31,6 +32,8 @@ export async function handleApi(request, env, url) {
     if (growth) return growth;
     const finance = await financeRoutes(db, request, url);
     if (finance) return finance;
+    const team = await teamRoutes(db, request, url);
+    if (team) return team;
     const settings = await settingsRoutes(db, request, env, url);
     if (settings) return settings;
     if (['/api/admin/status', '/api/admin/login', '/api/admin/logout', '/api/admin/setup'].includes(path)) return adminAuth(db, request, env, path);
@@ -108,7 +111,7 @@ async function serviceOrder(db, request, env) {
 async function adminBookings(db, request) {
   const denied = await requireAdmin(db, request);
   if (denied) return denied;
-  const rows = await db.sql`SELECT id, name, phone, motorcycle, service, engine, booking_date, booking_time, notes, status, created_at
+  const rows = await db.sql`SELECT id, name, phone, motorcycle, service, engine, booking_date, booking_time, notes, status, created_at, staff_id
     FROM bookings
     ORDER BY CASE WHEN booking_date >= ${localToday()} THEN 0 ELSE 1 END, booking_date ASC, booking_time ASC, created_at DESC
     LIMIT 250`;
@@ -116,7 +119,7 @@ async function adminBookings(db, request) {
     bookings: rows.map(row => ({
       id: row.id, name: row.name, phone: row.phone, motorcycle: row.motorcycle, service: row.service,
       engine: row.engine, date: row.booking_date, time: row.booking_time, notes: row.notes,
-      status: row.status, createdAt: row.created_at,
+      status: row.status, createdAt: row.created_at, staffId: row.staff_id,
     })),
   }, 200);
 }

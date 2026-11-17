@@ -155,7 +155,12 @@ function setSummary(key, text) {
 function priceLabel(service, v = vehicle()) {
   const info = SERVICES[service];
   if (!info) return "—";
-  if (v === "carro") return "Sob consulta";
+  if (v === "carro") {
+    // Preço do carro vem do catálogo do JV Sistema; sem preço, continua "sob consulta".
+    if (!Array.isArray(info.carro)) return "Sob consulta";
+    const t = ENGINES.carro.options.indexOf(engineSelect.value);
+    return t >= 0 ? brl(info.carro[t]) : `A partir de ${brl(Math.min(...info.carro))}`;
+  }
   if (info.fixed) return brl(info.moto);
   // Com a cilindrada escolhida, mostra o valor exato da tabela.
   const tier = ENGINES.moto.options.indexOf(engineSelect.value);
@@ -474,6 +479,7 @@ fetch("/api/booking-config", { cache: "no-store" })
         buildDays();
       }
     }
+    if (cfg?.prices) applyPrices(cfg.prices);
     const off = cfg?.disabledServices ?? [];
     if (!off.length) return;
     $$('input[name="service"]', form).forEach((input) => {
@@ -487,3 +493,62 @@ fetch("/api/booking-config", { cache: "no-store" })
     });
   })
   .catch(() => {});
+
+// Preços editados no JV Sistema: atualiza a tabela usada no agendamento e os
+// textos dos cartões de serviço (as duas versões do site).
+function applyPrices(prices) {
+  const reais = (v) => `R$ ${Number(v).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}`;
+  Object.entries(prices).forEach(([service, p]) => {
+    const info = SERVICES[service];
+    if (!info) return;
+    info.moto = p.moto;
+    info.carro = p.carro;
+    const btn = document.querySelector(`.pick[data-service="${CSS.escape(service)}"]`);
+    // O cartão inteiro do serviço (inclui o resumo com o preço "a partir de").
+    let box = btn?.closest("details, article, li");
+    if (!box?.querySelector(".tiers, .extra-price, .row-price")) {
+      box = btn;
+      for (let i = 0; box && i < 5; i++) {
+        box = box.parentElement;
+        if (box?.querySelector(".tiers, .extra-price, .row-price")) break;
+      }
+    }
+    if (box) {
+      if (Array.isArray(p.moto)) {
+        const tiers = box.querySelector(".tiers");
+        if (tiers) {
+          const labels = ["Até 160cc", "161 a 400cc", "Acima de 400cc"];
+          tiers.replaceChildren();
+          labels.forEach((label, i) => {
+            if (i) tiers.append(" · ");
+            const b = document.createElement("b");
+            b.textContent = reais(p.moto[i]);
+            tiers.append(`${label} `, b);
+          });
+        }
+        const from = [...box.querySelectorAll(".only-moto")].find((el) => !el.classList.contains("tiers"));
+        if (from) {
+          const small = from.querySelector("small");
+          if (small) from.replaceChildren(small, `R$ ${Number(p.moto[0]).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`);
+          else from.textContent = `a partir de ${reais(p.moto[0])}`;
+        }
+        const car = box.querySelector(".only-carro");
+        if (car && Array.isArray(p.carro)) {
+          const small = car.querySelector("small");
+          const value = `R$ ${Number(Math.min(...p.carro)).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+          if (small) car.replaceChildren(small, value);
+          else car.textContent = `a partir de ${reais(Math.min(...p.carro))}`;
+        }
+      } else {
+        const fixed = box.querySelector(".extra-price") || box.querySelector(".row-price");
+        if (fixed) fixed.textContent = fixed.classList.contains("extra-price")
+          ? `R$ ${Number(p.moto).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+          : reais(p.moto);
+      }
+    }
+    // Chips dos adicionais no formulário (preço fixo).
+    const chip = document.querySelector(`input[name="service"][value="${CSS.escape(service)}"]`)?.closest("label")?.querySelector("small:not([data-price])");
+    if (chip && !Array.isArray(p.moto)) chip.textContent = `R$ ${Number(p.moto).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+  });
+  refreshPrices();
+}

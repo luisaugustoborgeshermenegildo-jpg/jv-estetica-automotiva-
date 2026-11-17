@@ -3,6 +3,7 @@
 import { hashAccessCode, isAccessCode } from '../netlify/lib/stages.mjs';
 import { readJson, requireAdmin, limited, json } from './http.mjs';
 import { SERVICES, localToday } from './rules.mjs';
+import { DEFAULT_CATALOG, editCatalogItem } from './pricing.mjs';
 
 const KINDS = ['confirm', 'reminder', 'ready', 'survey', 'return'];
 // Expediente por dia da semana (0 = domingo). Horários cheios (HH:00); a agenda é de 1 em 1 hora.
@@ -28,6 +29,7 @@ export const DEFAULTS = {
   capacity: 1,
   onlineCancel: true,
   disabledServices: [],
+  company: { name: 'JV Estética Automotiva', whatsapp: '(34) 98426-6406', address: '', instagram: '' },
   // Meta de receita do mês e taxa (%) de cada forma de pagamento.
   finance: { goalCents: 0, fees: { pix: 0, dinheiro: 0, debito: 1.99, credito: 4.99, outro: 0 } },
   automations: {
@@ -48,7 +50,10 @@ export async function getSettings(db) {
   const schedule = {};
   for (const d of Object.keys(DEFAULT_SCHEDULE)) schedule[d] = { ...DEFAULT_SCHEDULE[d], ...(saved.schedule?.[d] ?? {}) };
   const finance = { ...DEFAULTS.finance, ...(saved.finance ?? {}), fees: { ...DEFAULTS.finance.fees, ...(saved.finance?.fees ?? {}) } };
-  return { ...DEFAULTS, ...saved, automations, schedule, finance };
+  const catalog = {};
+  for (const name of Object.keys(DEFAULT_CATALOG)) catalog[name] = { ...DEFAULT_CATALOG[name], ...(saved.catalog?.[name] ?? {}) };
+  const company = { ...DEFAULTS.company, ...(saved.company ?? {}) };
+  return { ...DEFAULTS, ...saved, automations, schedule, finance, catalog, company };
 }
 
 // Agora em Uberaba: data (AAAA-MM-DD) e minutos desde meia-noite.
@@ -78,6 +83,24 @@ function validSettings(body, current) {
     next.capacity = body.capacity;
   }
   if (body.onlineCancel !== undefined) next.onlineCancel = body.onlineCancel === true;
+  if (body.catalog !== undefined) {
+    if (!body.catalog || typeof body.catalog !== 'object') return null;
+    for (const [name, patch] of Object.entries(body.catalog)) {
+      if (!(name in next.catalog) || !patch || typeof patch !== 'object') return null;
+      const item = editCatalogItem(next.catalog[name], patch);
+      if (!item) return null;
+      next.catalog[name] = item;
+    }
+  }
+  if (body.company !== undefined) {
+    if (!body.company || typeof body.company !== 'object') return null;
+    for (const key of ['name', 'whatsapp', 'address', 'instagram']) {
+      if (body.company[key] === undefined) continue;
+      if (typeof body.company[key] !== 'string' || body.company[key].length > 120) return null;
+      next.company[key] = body.company[key].trim();
+    }
+    if (!next.company.name) return null;
+  }
   if (body.finance !== undefined) {
     if (!body.finance || typeof body.finance !== 'object') return null;
     if (body.finance.goalCents !== undefined) {
@@ -177,7 +200,8 @@ export async function settingsRoutes(db, request, env, url) {
   if (path === '/api/booking-config' && method === 'GET') {
     const s = await getSettings(db);
     const openDays = Object.entries(s.schedule).filter(([, day]) => day.on).map(([d]) => Number(d));
-    return json({ disabledServices: s.disabledServices, onlineCancel: s.onlineCancel, minNoticeHours: s.minNoticeHours, openDays }, 200);
+    const prices = Object.fromEntries(Object.entries(s.catalog).map(([name, item]) => [name, { moto: item.moto, carro: item.carro ?? null }]));
+    return json({ disabledServices: s.disabledServices, onlineCancel: s.onlineCancel, minNoticeHours: s.minNoticeHours, openDays, prices }, 200);
   }
 
   if (path === '/api/admin/settings') {

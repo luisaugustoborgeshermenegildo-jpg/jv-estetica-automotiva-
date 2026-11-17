@@ -34,6 +34,7 @@ await copyFile('admin/growth.js', 'dist/sistema/js/growth.js');
 await copyFile('sistema/online.js', 'dist/sistema/js/online.js');
 await copyFile('sistema/agenda.js', 'dist/sistema/js/agenda.js');
 await copyFile('sistema/finance.js', 'dist/sistema/js/finance.js');
+await copyFile('sistema/team.js', 'dist/sistema/js/team.js');
 // Gerador de QR Code (MIT), usado no "Agendamento online" do sistema.
 await copyFile('node_modules/qrcode-generator/qrcode.js', 'dist/sistema/js/qrcode.js');
 
