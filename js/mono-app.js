@@ -191,6 +191,42 @@
     delivered: "Entregue",
   };
   const ACCESS = /^[A-Za-z0-9_-]{24}$/;
+  // Regras do agendamento online definidas no JV Sistema (cancelamento pelo app).
+  let bookingConfig = { onlineCancel: false };
+  fetch("/api/booking-config", { cache: "no-store" })
+    .then((r) => (r.ok ? r.json() : null))
+    .then((cfg) => {
+      if (!cfg) return;
+      bookingConfig = cfg;
+      if (html.dataset.tab === "meus") renderMine(false);
+    })
+    .catch(() => {});
+
+  async function cancelBooking(b, button) {
+    if (!confirm(`Cancelar o agendamento de ${b.service} (protocolo ${b.id})?`)) return;
+    button.disabled = true;
+    try {
+      const response = await fetch("/api/os/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: b.access }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Não foi possível cancelar.");
+      const list = loadMine();
+      const item = list.find((x) => x.id === b.id);
+      if (item) item.status = "cancelled";
+      try {
+        localStorage.setItem(MINE_KEY, JSON.stringify(list));
+      } catch {
+        /* armazenamento bloqueado */
+      }
+      renderMine(false);
+    } catch (error) {
+      button.disabled = false;
+      button.textContent = error.message;
+    }
+  }
   let refreshing = false;
 
   // Busca a etapa atual de cada agendamento que tem código e guarda junto.
@@ -432,6 +468,19 @@
         code.textContent = `Protocolo ${b.id}${past ? " · já passou" : ""}`;
         li.append(when, what);
         if (b.status) li.append(stageTrack(b.status));
+        if (
+          bookingConfig.onlineCancel &&
+          ACCESS.test(b.access || "") &&
+          ["pending", "confirmed"].includes(b.status) &&
+          b.date >= today
+        ) {
+          const cancel = document.createElement("button");
+          cancel.type = "button";
+          cancel.className = "mine-cancel";
+          cancel.textContent = "Cancelar agendamento";
+          cancel.addEventListener("click", () => cancelBooking(b, cancel));
+          li.append(cancel);
+        }
         const order = orders.get(b.id);
         if (order && (order.inspection || order.photos?.length))
           li.append(inspectionView(b, order));

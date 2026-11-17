@@ -368,3 +368,15 @@
   color: var(--blue-hi);
   font-weight: 700;
 }
+
+.mine-cancel {
+  justify-self: start;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--line-strong);
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}

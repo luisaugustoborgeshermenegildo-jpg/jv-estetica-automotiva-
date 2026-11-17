@@ -54,6 +54,16 @@ function showLogin() {
       "Orçamentos e pátio",
       "Orçamentos por veículo, carros no pátio, estoque e vendas.",
     ],
+    online: [
+      "06 / Reservas online",
+      "Agendamento online",
+      "Link para a bio do Instagram e as regras do agendamento.",
+    ],
+    automacoes: [
+      "07 / Conexões",
+      "Automações",
+      "Mensagens certas, no momento certo.",
+    ],
   };
   let bookings = [];
   let day = localToday();
@@ -142,9 +152,12 @@ function showLogin() {
     $("#kicker").textContent = kicker;
     $("#crumb").textContent = title;
     $("#pageTitle").textContent = page === "visao" ? greeting() : title;
-    $("#pageSub").textContent = page === "visao" ? capital(longDate(localToday())) : sub;
+    $("#pageSub").textContent =
+      page === "visao" ? capital(longDate(localToday())) : sub;
     closeMenu();
     if (page === "crescimento") window.jvGrowthLoad?.();
+    if (page === "online") window.jvOnlineLoad?.();
+    if (page === "automacoes") window.jvAutoLoad?.();
     render();
   }
   window.addEventListener("hashchange", route);

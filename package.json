@@ -6,7 +6,8 @@
     "build": "node build.mjs"
   },
   "dependencies": {
-    "@netlify/database": "^2.0.1"
+    "@netlify/database": "^2.0.1",
+    "qrcode-generator": "1.4.4"
   },
   "devDependencies": {
     "wrangler": "4"

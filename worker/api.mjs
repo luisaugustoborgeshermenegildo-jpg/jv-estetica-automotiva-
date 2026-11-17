@@ -8,6 +8,7 @@ import { TIMES, SERVICES, ENGINES, MOTO_ENGINES, MOTO_ONLY_SERVICES, OPEN_DAYS, 
 import { d1, isUnique, limited, readJson, requireAdmin, json } from './http.mjs';
 import { inspectionRoutes, inspectionFor } from './inspection.mjs';
 import { growthRoutes } from './growth.mjs';
+import { settingsRoutes, getSettings, tooSoon } from './settings.mjs';
 
 export async function handleApi(request, env, url) {
   const path = url.pathname;
@@ -24,6 +25,8 @@ export async function handleApi(request, env, url) {
     if (inspection) return inspection;
     const growth = await growthRoutes(db, request, url);
     if (growth) return growth;
+    const settings = await settingsRoutes(db, request, env, url);
+    if (settings) return settings;
     if (['/api/admin/status', '/api/admin/login', '/api/admin/logout', '/api/admin/setup'].includes(path)) return adminAuth(db, request, env, path);
     return json({ error: 'Não encontrado.' }, 404);
   } catch (error) {
@@ -38,9 +41,15 @@ async function availability(db, url) {
   const parsed = new Date(`${selected}T12:00:00Z`);
   if (Number.isNaN(parsed.valueOf()) || parsed.toISOString().slice(0, 10) !== selected) return json({ error: 'Informe uma data válida.' }, 400);
   if (selected < localToday() || !OPEN_DAYS.has(parsed.getUTCDay())) return json({ slots: [] }, 200);
-  const rows = await db.sql`SELECT booking_time FROM bookings WHERE booking_date = ${selected} AND status <> 'cancelled'`;
-  const busy = new Set(rows.map(row => row.booking_time));
-  return json({ slots: [...TIMES].map(time => ({ time, available: !busy.has(time) })) }, 200);
+  const settings = await getSettings(db);
+  const rows = await db.sql`SELECT booking_time, COUNT(*) AS n FROM bookings WHERE booking_date = ${selected} AND status <> 'cancelled' GROUP BY booking_time`;
+  const taken = new Map(rows.map(row => [row.booking_time, row.n]));
+  return json({
+    slots: [...TIMES].map(time => ({
+      time,
+      available: (taken.get(time) ?? 0) < settings.capacity && !tooSoon(selected, time, settings.minNoticeHours),
+    })),
+  }, 200);
 }
 
 async function createBooking(db, request, env) {
@@ -62,15 +71,16 @@ async function createBooking(db, request, env) {
   const digits = (f.phone.match(/\d/g) ?? []).length;
   if (!/^\+?[\d\s().-]+$/.test(f.phone) || digits < 10 || digits > 13) return json({ error: 'Informe um número de WhatsApp válido.' }, 400);
 
+  const settings = await getSettings(db);
+  if (settings.disabledServices.includes(f.service)) return json({ error: 'Esse serviço não está disponível para agendamento online.' }, 400);
+  if (tooSoon(f.date, f.time, settings.minNoticeHours)) return json({ error: 'Esse horário já não pode ser agendado. Escolha outro.' }, 409);
   const id = crypto.randomUUID().replaceAll('-', '').slice(0, 8).toUpperCase();
   const access = newAccessCode();
-  try {
-    await db.sql`INSERT INTO bookings (id, name, phone, motorcycle, service, engine, booking_date, booking_time, notes, access_hash)
-      VALUES (${id}, ${f.name}, ${f.phone}, ${f.motorcycle}, ${f.service}, ${f.engine}, ${f.date}, ${f.time}, ${f.notes}, ${hashAccessCode(access)})`;
-  } catch (err) {
-    if (isUnique(err)) return json({ error: 'Esse horário acabou de ser reservado. Escolha outro.' }, 409);
-    throw err;
-  }
+  const inserted = await db.sql`INSERT INTO bookings (id, name, phone, motorcycle, service, engine, booking_date, booking_time, notes, access_hash)
+    SELECT ${id}, ${f.name}, ${f.phone}, ${f.motorcycle}, ${f.service}, ${f.engine}, ${f.date}, ${f.time}, ${f.notes}, ${hashAccessCode(access)}
+    WHERE (SELECT COUNT(*) FROM bookings WHERE booking_date = ${f.date} AND booking_time = ${f.time} AND status <> 'cancelled') < ${settings.capacity}
+    RETURNING id`;
+  if (!inserted.length) return json({ error: 'Esse horário acabou de ser reservado. Escolha outro.' }, 409);
   await db.sql`INSERT INTO booking_events (booking_id, status) VALUES (${id}, 'pending')`;
   return json({ booking: { id, status: 'pending', access } }, 201);
 }
@@ -122,6 +132,15 @@ async function adminStatus(db, request) {
   const denied = await requireAdmin(db, request);
   if (denied) return denied;
   try {
+    if (status !== 'cancelled') {
+      const current = await db.sql`SELECT status, booking_date, booking_time FROM bookings WHERE id = ${id}`;
+      if (current[0]?.status === 'cancelled') {
+        const { capacity } = await getSettings(db);
+        const busy = await db.sql`SELECT COUNT(*) AS n FROM bookings WHERE booking_date = ${current[0].booking_date}
+          AND booking_time = ${current[0].booking_time} AND status <> 'cancelled'`;
+        if (busy[0].n >= capacity) return json({ error: 'Esse horário já foi ocupado por outro agendamento.' }, 409);
+      }
+    }
     const changed = await db.sql`UPDATE bookings SET status = ${status} WHERE id = ${id} AND status <> ${status} RETURNING id`;
     if (changed.length) {
       await db.sql`INSERT INTO booking_events (booking_id, status) VALUES (${id}, ${status})`;

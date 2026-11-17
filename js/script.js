@@ -462,3 +462,21 @@ form.addEventListener("submit", async (event) => {
 
 buildDays();
 setFormVehicle("moto");
+
+// Serviços desligados pelo João no JV Sistema somem do agendamento online.
+fetch("/api/booking-config", { cache: "no-store" })
+  .then((r) => (r.ok ? r.json() : null))
+  .then((cfg) => {
+    const off = cfg?.disabledServices ?? [];
+    if (!off.length) return;
+    $$('input[name="service"]', form).forEach((input) => {
+      if (!off.includes(input.value)) return;
+      input.checked = false;
+      input.disabled = true;
+      input.closest("label").style.display = "none";
+    });
+    $$(".pick").forEach((btn) => {
+      if (off.includes(btn.dataset.service)) btn.style.display = "none";
+    });
+  })
+  .catch(() => {});

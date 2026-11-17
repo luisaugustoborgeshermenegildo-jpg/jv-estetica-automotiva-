@@ -27,6 +27,8 @@
     <script src="/sistema/js/sistema.js" defer></script>
     <script src="/sistema/js/inspection.js" defer></script>
     <script src="/sistema/js/growth.js" defer></script>
+    <script src="/sistema/js/qrcode.js" defer></script>
+    <script src="/sistema/js/online.js" defer></script>
   </head>
   <body>
     <!-- ---------- Entrada ---------- -->
@@ -97,12 +99,19 @@
               <path d="M3 4h2l2 12h11l2-8H6M9 20h.01M17 20h.01" /></svg
             >Orçamentos e pátio</a
           >
-          <a href="/monochrome" target="_blank" rel="noopener"
+          <a href="#online" data-page="online"
             ><svg viewBox="0 0 24 24">
               <path
                 d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"
               /></svg
             >Agendamento online</a
+          >
+          <a href="#automacoes" data-page="automacoes"
+            ><svg viewBox="0 0 24 24">
+              <path
+                d="M21 12a8 8 0 0 1-11.8 7L4 20l1.2-4.6A8 8 0 1 1 21 12zM9 10h.01M12 10h.01M15 10h.01"
+              /></svg
+            >Automações<span class="side-count" id="countAuto" hidden>0</span></a
           >
         </nav>
         <div class="side-foot">
@@ -241,6 +250,139 @@
             placeholder="Buscar por nome, WhatsApp ou veículo"
           />
           <div class="list" id="clientList"></div>
+        </section>
+
+        <!-- Agendamento online (online.js) -->
+        <section class="page" data-view="online" hidden>
+          <div class="card card-dark link-card">
+            <div class="link-head">
+              <span class="link-icon"
+                ><svg viewBox="0 0 24 24">
+                  <path
+                    d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"
+                  /></svg
+              ></span>
+              <div>
+                <h2>Seu link de agendamento</h2>
+                <p>
+                  Coloque na bio do Instagram e mande no WhatsApp. O cliente
+                  agenda sozinho.
+                </p>
+              </div>
+            </div>
+            <code class="link-url" id="bookingUrl"></code>
+            <div class="link-actions">
+              <button type="button" class="btn-dark" data-act="copy">
+                Copiar link
+              </button>
+              <a
+                class="btn-dark"
+                id="openBooking"
+                target="_blank"
+                rel="noopener"
+                >Abrir página</a
+              >
+              <button type="button" class="btn-dark" data-act="share">
+                Compartilhar
+              </button>
+              <button type="button" class="btn-dark" data-act="qr">
+                QR Code
+              </button>
+            </div>
+            <div class="qr-box" id="qrBox" hidden>
+              <canvas
+                id="qrCanvas"
+                width="240"
+                height="240"
+                aria-label="QR Code do link de agendamento"
+              ></canvas>
+              <a
+                class="btn-light"
+                id="qrDownload"
+                download="jv-agendamento-qrcode.png"
+                >Baixar QR Code</a
+              >
+            </div>
+          </div>
+          <div class="card card-dark vitrine">
+            <div>
+              <h2>Vitrine digital</h2>
+              <p>
+                Os serviços para motos e carros com os preços. Mande para o
+                cliente antes de ele agendar.
+              </p>
+            </div>
+            <div class="link-actions">
+              <button type="button" class="btn-dark" data-act="copy-vitrine">
+                Copiar link da vitrine
+              </button>
+              <a
+                class="btn-dark"
+                id="openVitrine"
+                target="_blank"
+                rel="noopener"
+                >Abrir vitrine</a
+              >
+            </div>
+          </div>
+          <div class="card settings-list">
+            <div class="setting">
+              <div>
+                <h3>Cancelamento online</h3>
+                <p>
+                  O cliente pode cancelar pelo app até o limite de antecedência.
+                </p>
+              </div>
+              <label class="switch"
+                ><input type="checkbox" id="setCancel" /><span></span
+              ></label>
+            </div>
+            <div class="setting">
+              <div>
+                <h3>Antecedência mínima</h3>
+                <p>Tempo mínimo entre agora e o horário escolhido.</p>
+              </div>
+              <select id="setNotice">
+                <option value="0">Sem mínimo</option>
+                <option value="1">1 hora</option>
+                <option value="2">2 horas</option>
+                <option value="4">4 horas</option>
+                <option value="12">12 horas</option>
+                <option value="24">1 dia</option>
+              </select>
+            </div>
+            <div class="setting">
+              <div>
+                <h3>Atendimentos simultâneos</h3>
+                <p>Quantos veículos podem ser agendados no mesmo horário.</p>
+              </div>
+              <select id="setCapacity">
+                <option value="1">1 veículo</option>
+                <option value="2">Até 2 veículos</option>
+                <option value="3">Até 3 veículos</option>
+              </select>
+            </div>
+          </div>
+          <div class="card settings-list">
+            <h2>Serviços disponíveis</h2>
+            <p class="hint">
+              Escolha quais serviços aparecem no agendamento online.
+            </p>
+            <div id="serviceToggles"></div>
+          </div>
+        </section>
+
+        <!-- Automações (automations.js) -->
+        <section class="page" data-view="automacoes" hidden>
+          <div class="card card-dark">
+            <h2>WhatsApp com 1 toque</h2>
+            <p>
+              O sistema separa quem precisa receber mensagem e deixa o texto
+              pronto. Toque em "Enviar" e o WhatsApp abre com a mensagem: é só
+              mandar. Sem conectar o número, sem risco de bloqueio.
+            </p>
+          </div>
+          <div class="list" id="autoList"></div>
         </section>
 
         <!-- Orçamentos e pátio (growth.js) -->
