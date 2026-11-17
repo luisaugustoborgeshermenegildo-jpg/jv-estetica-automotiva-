@@ -311,3 +311,8 @@ label {
 .footer-install:hover {
   color: var(--blue-hi, var(--blue));
 }
+
+/* Agendamento só no app: no site, o formulário some e os botões abrem o app (js/app.js). */
+html:not(.is-app) #agendar {
+  display: none;
+}

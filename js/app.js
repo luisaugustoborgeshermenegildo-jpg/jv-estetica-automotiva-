@@ -6,7 +6,54 @@
     window.matchMedia("(display-mode: standalone)").matches ||
     window.navigator.standalone === true;
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  document.documentElement.classList.toggle("is-app", standalone);
+  const params = new URLSearchParams(location.search);
+  document.documentElement.classList.toggle(
+    "is-app",
+    standalone || params.get("app") === "1",
+  );
+  const inApp = () => document.documentElement.classList.contains("is-app");
+
+  /* ---------- Agendamento só no app ---------- */
+  // No site, o formulário fica escondido (app.css) e todo botão de agendar
+  // abre o app, levando o serviço escolhido. Fase de captura: roda antes dos
+  // outros cliques e impede que o site tente rolar até o formulário.
+  document.addEventListener(
+    "click",
+    (e) => {
+      if (inApp()) return;
+      const trigger = e.target.closest(
+        '.pick, a[href="#agendar"], [data-go="agendar"]',
+      );
+      if (!trigger) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const url = new URL("/monochrome", location.origin);
+      url.searchParams.set("app", "1");
+      const service = trigger.dataset.service;
+      if (service) {
+        url.searchParams.set("servico", service);
+        const vehicle = document.querySelector("#servicos")?.dataset.vehicle;
+        if (vehicle) url.searchParams.set("veiculo", vehicle);
+      }
+      location.href = url.href;
+    },
+    true,
+  );
+  // Já no app: marca o serviço que veio do site (depois que todos os scripts
+  // registraram seus cliques).
+  document.addEventListener("DOMContentLoaded", () => {
+    const service = params.get("servico");
+    if (!inApp() || !service) return;
+    const vehicle = params.get("veiculo");
+    if (vehicle === "moto" || vehicle === "carro") {
+      document
+        .querySelector(`#servicos [data-vehicle="${vehicle}"]:is(button)`)
+        ?.click();
+    }
+    document
+      .querySelector(`.pick[data-service="${CSS.escape(service)}"]`)
+      ?.click();
+  });
 
   /* ---------- Service worker (só em HTTPS ou localhost) ---------- */
   if (
