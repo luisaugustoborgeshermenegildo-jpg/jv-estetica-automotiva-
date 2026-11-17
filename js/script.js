@@ -508,7 +508,7 @@ form.addEventListener("submit", async (event) => {
     const text = [
       `Olá! Fiz uma solicitação de agendamento na JV. Protocolo ${result.booking.id}.`,
       `${payload.name} — ${payload.phone}`,
-      `${payload.motorcycle} (${payload.engine})`,
+      `${payload.motorcycle} (${payload.engine})${payload.plate ? ` · placa ${payload.plate.toUpperCase()}` : ""}`,
       `${[payload.service, ...extras].join(" + ")} — ${longDate(payload.date)} às ${payload.time}`,
       payload.notes ? `Observação: ${payload.notes}` : "",
     ]

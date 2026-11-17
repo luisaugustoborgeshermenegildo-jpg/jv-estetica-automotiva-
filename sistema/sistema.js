@@ -355,7 +355,7 @@ function showLogin() {
       el("strong", "", `${b.time} · ${b.name}`),
       el("span", `pill pill-${status(b)}`, STAGE_LABEL[status(b)]),
     );
-    card.append(head, el("small", "", `${b.motorcycle} · ${b.service}`));
+    card.append(head, el("small", "", [b.motorcycle, b.plate, b.service].filter(Boolean).join(" · ")));
     return card;
   }
 
@@ -367,7 +367,7 @@ function showLogin() {
       el("span", "protocol", `#${b.id}`),
     );
     card.append(head);
-    card.append(el("p", "", `${b.motorcycle} · ${b.engine}`));
+    card.append(el("p", "", [b.motorcycle, b.engine, b.plate].filter(Boolean).join(" · ")));
     card.append(el("small", "", `${b.service} · ${longDate(b.date)}`));
     if (b.notes) card.append(el("p", "muted", `Obs.: ${b.notes}`));
     card.append(stageControls(b));

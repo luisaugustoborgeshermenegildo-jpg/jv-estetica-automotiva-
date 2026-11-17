@@ -320,3 +320,140 @@
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+/* App: cards de lavagem/adicionais e Meus horários fluidos */
+.chip,
+.mine-list li {
+  transform: perspective(700px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.5s var(--ease, ease);
+}
+.chip.is-tilting,
+.mine-list li.is-tilting {
+  transition-duration: 0.12s;
+}
+.chip span,
+.mine-list li {
+  position: relative;
+  isolation: isolate;
+}
+.chip span::after,
+.mine-list li::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(180px circle at var(--mx, 50%) var(--my, 50%), rgb(31 92 255 / 0.22), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.chip.is-tilting span::after,
+.mine-list li.is-tilting::after {
+  opacity: 1;
+}
+/* Toque no celular: o card afunda um pouco e, escolhido, acende */
+.chip span {
+  transition:
+    border-color 0.25s,
+    background 0.25s,
+    box-shadow 0.35s,
+    transform 0.15s;
+}
+.chip:active span {
+  transform: scale(0.97);
+}
+.chip input:checked + span {
+  box-shadow: 0 0 0 1px var(--blue), 0 10px 28px -12px rgb(31 92 255 / 0.7);
+  animation: chip-pop 0.35s var(--ease, ease);
+}
+@keyframes chip-pop {
+  50% { transform: scale(1.03); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chip,
+  .mine-list li {
+    transform: none;
+  }
+  .chip input:checked + span {
+    animation: none;
+  }
+  .chip:active span {
+    transform: none;
+  }
+}
+
+/* Formulário: serviços em lista (caixa, nome, tempo · preço), como no "Novo agendamento" */
+.booking-form .chips {
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+.booking-form .chip {
+  transform: perspective(1600px) rotateX(var(--rx, 0deg)) rotateY(calc(var(--ry, 0deg) / 3));
+}
+.booking-form .chip span {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 12px;
+  row-gap: 2px;
+  padding: 14px 16px;
+}
+.booking-form .chip span::before {
+  content: "";
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 4px;
+  background: center / 12px no-repeat;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.booking-form .chip input[type="radio"] + span::before {
+  border-radius: 50%;
+}
+.booking-form .chip input:checked + span::before {
+  border-color: var(--blue);
+  background-color: var(--blue);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
+}
+.booking-form .chip b {
+  flex: 1;
+  min-width: 0;
+}
+.booking-form .chip small {
+  white-space: nowrap;
+}
+.booking-form .chip .dur:has(+ small:not(:empty))::after {
+  content: " ·";
+}
+@media (max-width: 760px) {
+  .booking-form .chips {
+    grid-template-columns: 1fr;
+  }
+}
+/* Lavagens: tempo · preço na linha de baixo, alinhados ao nome */
+.booking-form .chip span:has(.dur) b {
+  flex-basis: calc(100% - 30px);
+}
+.booking-form .chip span:has(.dur) .dur {
+  margin-left: 30px;
+}
+/* Faixas de cilindrada: recuadas sob a lavagem e com o mesmo marcador da lista */
+.booking-form .band-pick {
+  margin-left: 30px;
+}
+.booking-form .band input {
+  appearance: none;
+  flex: none;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 50%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.booking-form .band input:checked {
+  border-color: var(--blue);
+  box-shadow: inset 0 0 0 4px var(--black), inset 0 0 0 9px var(--blue);
+}
+.booking-form .band input:focus-visible {
+  outline: 2px solid var(--blue-hi);
+  outline-offset: 2px;
+}

@@ -175,7 +175,7 @@
             el("b", "", b.time),
             el("span", "", b.name.split(" ")[0]),
           );
-          item.title = `${b.time} · ${b.name} · ${b.motorcycle} · ${b.service}`;
+          item.title = [b.time, b.name, b.motorcycle, b.plate, b.service].filter(Boolean).join(" · ");
           item.addEventListener("click", () => openDay(d));
           col.append(item);
         });

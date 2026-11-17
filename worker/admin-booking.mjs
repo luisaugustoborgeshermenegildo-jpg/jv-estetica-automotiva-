@@ -14,8 +14,8 @@ export async function adminCreateBooking(db, request) {
   const settings = await getSettings(db);
   if (!slotsFor(settings, f.date).includes(f.time)) return json({ error: 'Esse horário está fora do expediente.' }, 400);
   const id = crypto.randomUUID().replaceAll('-', '').slice(0, 8).toUpperCase();
-  const inserted = await db.sql`INSERT INTO bookings (id, name, phone, motorcycle, service, extras, engine, booking_date, booking_time, notes)
-    SELECT ${id}, ${f.name}, ${f.phone}, ${f.motorcycle}, ${f.service}, ${f.extras}, ${f.engine}, ${f.date}, ${f.time}, ${f.notes}
+  const inserted = await db.sql`INSERT INTO bookings (id, name, phone, motorcycle, plate, service, extras, engine, booking_date, booking_time, notes)
+    SELECT ${id}, ${f.name}, ${f.phone}, ${f.motorcycle}, ${f.plate}, ${f.service}, ${f.extras}, ${f.engine}, ${f.date}, ${f.time}, ${f.notes}
     WHERE (SELECT COUNT(*) FROM bookings WHERE booking_date = ${f.date} AND booking_time = ${f.time} AND status <> 'cancelled') < ${settings.capacity}
     RETURNING id`;
   if (!inserted.length) return json({ error: 'Esse horário já está cheio. Escolha outro.' }, 409);
