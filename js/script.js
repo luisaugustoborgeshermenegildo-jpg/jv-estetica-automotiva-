@@ -1,6 +1,6 @@
 // JV Estética Automotiva — navegação, seções interativas e agendamento.
 const WHATSAPP = "5534984266406";
-const OPEN_DAYS = new Set([0, 2, 3, 4, 5, 6]); // terça a domingo (segunda fechado)
+let OPEN_DAYS = new Set([0, 2, 3, 4, 5, 6]); // padrão; o expediente do JV Sistema substitui ao carregar
 const DAYS_AHEAD = 21;
 // Tabela de preços da JV para moto, por faixa de cilindrada (mesma ordem de ENGINES.moto).
 const SERVICES = {
@@ -467,6 +467,13 @@ setFormVehicle("moto");
 fetch("/api/booking-config", { cache: "no-store" })
   .then((r) => (r.ok ? r.json() : null))
   .then((cfg) => {
+    if (Array.isArray(cfg?.openDays)) {
+      const days = new Set(cfg.openDays);
+      if ([...days].join() !== [...OPEN_DAYS].join()) {
+        OPEN_DAYS = days;
+        buildDays();
+      }
+    }
     const off = cfg?.disabledServices ?? [];
     if (!off.length) return;
     $$('input[name="service"]', form).forEach((input) => {

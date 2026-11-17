@@ -81,6 +81,11 @@
               <path d="M4 6h16v14H4zM4 10h16M8 3v5M16 3v5" /></svg
             >Agenda<span class="side-count" id="countToday">0</span></a
           >
+          <a href="#horarios" data-page="horarios"
+            ><svg viewBox="0 0 24 24">
+              <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2" /></svg
+            >Horários</a
+          >
           <a href="#os" data-page="os"
             ><svg viewBox="0 0 24 24">
               <path d="M6 3h9l3 3v15H6zM9 9h6M9 13h6M9 17h4" /></svg
@@ -99,6 +104,11 @@
               <path d="M3 4h2l2 12h11l2-8H6M9 20h.01M17 20h.01" /></svg
             >Orçamentos e pátio</a
           >
+          <a href="#financeiro" data-page="financeiro"
+            ><svg viewBox="0 0 24 24">
+              <path d="M3 7h18v12H3zM3 11h18M7 15h3M16 4H8" /></svg
+            >Financeiro</a
+          >
           <a href="#online" data-page="online"
             ><svg viewBox="0 0 24 24">
               <path
@@ -111,7 +121,9 @@
               <path
                 d="M21 12a8 8 0 0 1-11.8 7L4 20l1.2-4.6A8 8 0 1 1 21 12zM9 10h.01M12 10h.01M15 10h.01"
               /></svg
-            >Automações<span class="side-count" id="countAuto" hidden>0</span></a
+            >Automações<span class="side-count" id="countAuto" hidden
+              >0</span
+            ></a
           >
         </nav>
         <div class="side-foot">
@@ -146,13 +158,9 @@
               <h1 id="pageTitle">Boa tarde, João</h1>
               <p class="subtitle" id="pageSub"></p>
             </div>
-            <a
-              class="btn-primary"
-              href="/monochrome?app=1#agendar"
-              target="_blank"
-              rel="noopener"
-              >+ Novo agendamento</a
-            >
+            <button type="button" class="btn-primary" data-new-booking>
+              + Novo agendamento
+            </button>
           </div>
         </header>
 
@@ -214,6 +222,17 @@
         <!-- Agenda -->
         <section class="page" data-view="agenda" hidden>
           <div class="day-nav">
+            <div class="view-tabs" role="tablist" aria-label="Visão da agenda">
+              <button type="button" data-range="day" aria-selected="true">
+                Dia
+              </button>
+              <button type="button" data-range="week" aria-selected="false">
+                Semana
+              </button>
+              <button type="button" data-range="month" aria-selected="false">
+                Mês
+              </button>
+            </div>
             <button
               type="button"
               class="btn-ghost"
@@ -233,7 +252,51 @@
             </button>
             <button type="button" class="btn-ghost" id="dayToday">Hoje</button>
           </div>
+          <div class="range-head">
+            <h2 id="rangeTitle"></h2>
+            <span id="rangeCount"></span>
+          </div>
           <div class="list" id="agendaList"></div>
+          <div class="week-grid" id="weekGrid" hidden></div>
+          <div class="month-grid" id="monthGrid" hidden></div>
+        </section>
+
+        <!-- Horários -->
+        <section class="page" data-view="horarios" hidden>
+          <div class="card card-dark hours-hero">
+            <span class="hours-clock" aria-hidden="true"
+              ><svg viewBox="0 0 24 24">
+                <path
+                  d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2"
+                /></svg
+            ></span>
+            <div>
+              <p class="kicker">Expediente de hoje</p>
+              <p class="hours-big" id="hoursToday">--</p>
+              <p id="hoursTodaySub"></p>
+            </div>
+          </div>
+          <div class="hours-layout">
+            <div class="card">
+              <h2>Expediente por dia</h2>
+              <p class="hint">
+                Abertura, fechamento e pausa para almoço. Os horários que o
+                cliente vê no site seguem este expediente.
+              </p>
+              <div class="week-hours" id="weekHours"></div>
+              <button type="button" class="btn-primary" id="saveHours">
+                Salvar expediente
+              </button>
+            </div>
+            <div class="card">
+              <div class="block-head">
+                <h2>Hoje no estúdio</h2>
+                <span class="kpi-mini" id="todayCount">00</span>
+              </div>
+              <p class="hint" id="todayName"></p>
+              <div class="list" id="todayStudio"></div>
+            </div>
+          </div>
         </section>
 
         <!-- Ordens de serviço -->
@@ -385,6 +448,173 @@
           <div class="list" id="autoList"></div>
         </section>
 
+        <!-- Financeiro (finance.js) -->
+        <section class="page" data-view="financeiro" hidden>
+          <div class="fin-bar">
+            <label class="fin-month"
+              >Mês <input type="month" id="finMonth"
+            /></label>
+            <button type="button" class="btn-primary" data-fin-new="in">
+              + Registrar entrada
+            </button>
+            <button type="button" class="btn-ghost" data-fin-new="out">
+              Registrar despesa
+            </button>
+          </div>
+
+          <div class="fin-top">
+            <article class="card card-dark fin-revenue">
+              <div class="block-head">
+                <p class="kicker">Receita do mês</p>
+                <button type="button" class="btn-dark" id="finGoalBtn">
+                  Definir meta
+                </button>
+              </div>
+              <strong class="fin-big" id="finRevenue">R$ 0</strong>
+              <div
+                class="fin-goal"
+                role="progressbar"
+                aria-label="Meta do mês"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                id="finGoalBar"
+              >
+                <i id="finGoalFill"></i>
+              </div>
+              <p id="finGoalText"></p>
+              <form class="fin-goal-form" id="finGoalForm" hidden>
+                <label
+                  >Meta do mês (R$)<input
+                    name="goal"
+                    inputmode="decimal"
+                    placeholder="Ex.: 6.000,00"
+                /></label>
+                <button type="submit" class="btn-light">Salvar meta</button>
+              </form>
+            </article>
+            <div class="fin-cards">
+              <article class="kpi">
+                <span>Despesas do mês</span
+                ><strong id="finExpenses">R$ 0</strong
+                ><small>Produtos, contas, equipe e outros</small>
+              </article>
+              <article class="kpi">
+                <span>Taxas das maquininhas</span
+                ><strong id="finFees">R$ 0</strong
+                ><small>Descontadas do resultado</small>
+              </article>
+              <article class="kpi kpi-accent">
+                <span>Resultado do mês</span><strong id="finResult">R$ 0</strong
+                ><small id="finTicket">Ticket médio R$ 0</small>
+              </article>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="block-head">
+              <h2>Movimento do mês</h2>
+              <span class="legend"
+                ><i class="lg-in"></i>Entradas
+                <i class="lg-out"></i>Despesas</span
+              >
+            </div>
+            <div class="fin-chart" id="finChart"></div>
+          </div>
+
+          <div class="fin-two">
+            <div class="card">
+              <h2>Recebimentos por forma</h2>
+              <table class="fin-table">
+                <thead>
+                  <tr>
+                    <th>Forma</th>
+                    <th>Bruto</th>
+                    <th>Taxas</th>
+                    <th>Líquido</th>
+                  </tr>
+                </thead>
+                <tbody id="finMethods"></tbody>
+              </table>
+            </div>
+            <div class="card">
+              <h2>Despesas por categoria</h2>
+              <div class="fin-cats" id="finCats"></div>
+            </div>
+          </div>
+
+          <div class="card" id="finUnpaidBox">
+            <h2>Atendimentos sem pagamento lançado</h2>
+            <p class="hint">
+              Veículos prontos ou entregues nos últimos 30 dias. Toque em
+              "Registrar pagamento" quando o cliente pagar.
+            </p>
+            <div class="list" id="finUnpaid"></div>
+          </div>
+
+          <div class="card">
+            <h2>Movimentações do mês</h2>
+            <div class="list" id="finEntries"></div>
+          </div>
+
+          <details class="card fin-details">
+            <summary>Taxas por forma de pagamento</summary>
+            <p class="hint">
+              Porcentagem que a maquininha ou o banco cobra. É descontada
+              automaticamente de cada entrada.
+            </p>
+            <form class="grid-form fin-fees" id="finFeesForm"></form>
+          </details>
+
+          <details class="card fin-details">
+            <summary>Quanto cobrar? Calculadora de preço</summary>
+            <p class="hint">
+              Use os custos reais da JV para achar um preço que paga as contas e
+              dá lucro.
+            </p>
+            <div class="calc">
+              <form class="grid-form" id="calcForm">
+                <label
+                  >Custos fixos por mês (R$)<input
+                    name="fixed"
+                    inputmode="decimal"
+                    value="3.000,00"
+                /></label>
+                <label
+                  >Horas trabalhadas no mês<input
+                    name="hours"
+                    inputmode="decimal"
+                    value="160"
+                /></label>
+                <label
+                  >Impostos e taxas (%)<input
+                    name="tax"
+                    inputmode="decimal"
+                    value="6"
+                /></label>
+                <label
+                  >Lucro desejado (%)<input
+                    name="margin"
+                    inputmode="decimal"
+                    value="25"
+                /></label>
+                <label
+                  >Tempo do serviço (min)<input
+                    name="minutes"
+                    inputmode="decimal"
+                    value="60"
+                /></label>
+                <label
+                  >Produtos usados (R$)<input
+                    name="products"
+                    inputmode="decimal"
+                    value="8,00"
+                /></label>
+              </form>
+              <div class="card card-dark calc-out" id="calcOut"></div>
+            </div>
+          </details>
+        </section>
+
         <!-- Orçamentos e pátio (growth.js) -->
         <section class="page" data-view="crescimento" hidden>
           <div id="growthView">
@@ -413,7 +643,13 @@
               <form id="quoteForm" class="grid-form">
                 <h2>Novo orçamento</h2>
                 <label
-                  >Cliente<input name="customer" required maxlength="80"
+                  >Cliente<input
+                    name="customer"
+                    required
+                    maxlength="80"
+                    list="clientOptions"
+                    autocomplete="off"
+                    placeholder="Digite ou escolha um cliente"
                 /></label>
                 <label
                   >WhatsApp<input
@@ -439,7 +675,9 @@
                     name="service"
                     required
                     maxlength="120"
-                    placeholder="Ex.: Lavagem premium + clareamento do motor"
+                    list="serviceOptions"
+                    autocomplete="off"
+                    placeholder="Escolha da lista ou escreva (ex.: Premium + clareamento do motor)"
                 /></label>
                 <label
                   >Valor (R$)<input
@@ -553,5 +791,137 @@
         </section>
       </div>
     </div>
+    <datalist id="clientOptions"></datalist>
+    <datalist id="serviceOptions">
+      <option value="Lavagem completa"></option>
+      <option value="Lavagem detalhada"></option>
+      <option value="Lavagem premium"></option>
+      <option value="Limpeza e lubrificação da corrente"></option>
+      <option value="Revitalização de plásticos"></option>
+      <option value="Clareamento do bacalhau"></option>
+      <option value="Clareamento do motor"></option>
+    </datalist>
+
+    <!-- Novo agendamento (cliente que ligou ou chegou no balcão) -->
+    <dialog class="sheet" id="newBooking" aria-labelledby="newBookingTitle">
+      <form id="newBookingForm" class="grid-form" method="dialog">
+        <h2 id="newBookingTitle">Novo agendamento</h2>
+        <label
+          >Cliente<input
+            name="name"
+            required
+            maxlength="80"
+            list="clientOptions"
+            autocomplete="off"
+        /></label>
+        <label
+          >WhatsApp<input
+            name="phone"
+            required
+            inputmode="tel"
+            maxlength="20"
+            placeholder="(34) 9 9999-9999"
+        /></label>
+        <label
+          >Veículo<select name="vehicle">
+            <option value="moto">Moto</option>
+            <option value="carro">Carro</option>
+          </select></label
+        >
+        <label
+          >Modelo<input
+            name="motorcycle"
+            required
+            maxlength="80"
+            placeholder="Ex.: CG 160"
+        /></label>
+        <label
+          >Cilindrada / porte<select name="engine" required></select
+        ></label>
+        <label>Serviço<select name="service" required></select></label>
+        <label>Dia<input name="date" type="date" required /></label>
+        <label
+          >Horário<select name="time" required>
+            <option value="">Escolha o dia</option>
+          </select></label
+        >
+        <label class="wide"
+          >Observação<input name="notes" maxlength="500"
+        /></label>
+        <p
+          class="status wide"
+          id="newBookingStatus"
+          role="status"
+          aria-live="polite"
+        ></p>
+        <div class="sheet-actions wide">
+          <button type="button" class="btn-ghost" id="newBookingClose">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-primary">Agendar</button>
+        </div>
+      </form>
+    </dialog>
+    <!-- Registrar entrada ou despesa -->
+    <dialog class="sheet" id="finDialog" aria-labelledby="finDialogTitle">
+      <form id="finForm" class="grid-form" method="dialog">
+        <h2 id="finDialogTitle">Registrar entrada</h2>
+        <input type="hidden" name="kind" value="in" />
+        <label
+          >Valor (R$)<input
+            name="amount"
+            required
+            inputmode="decimal"
+            placeholder="Ex.: 120,00"
+        /></label>
+        <label>Data<input name="date" type="date" required /></label>
+        <label data-only="in"
+          >Forma de pagamento<select name="method">
+            <option value="pix">Pix</option>
+            <option value="dinheiro">Dinheiro</option>
+            <option value="debito">Cartão de débito</option>
+            <option value="credito">Cartão de crédito</option>
+            <option value="outro">Outro</option>
+          </select></label
+        >
+        <label data-only="in"
+          >Atendimento (opcional)<select name="bookingId">
+            <option value="">Sem vínculo</option>
+          </select></label
+        >
+        <label data-only="out"
+          >Categoria<select name="category">
+            <option value="produtos">Produtos e insumos</option>
+            <option value="aluguel">Aluguel</option>
+            <option value="contas">Água, luz e internet</option>
+            <option value="equipe">Equipe</option>
+            <option value="manutencao">Manutenção e equipamentos</option>
+            <option value="marketing">Marketing</option>
+            <option value="impostos">Impostos</option>
+            <option value="outros">Outros</option>
+          </select></label
+        >
+        <label class="wide"
+          >Descrição<input
+            name="description"
+            maxlength="200"
+            placeholder="Ex.: Lavagem premium da XRE"
+        /></label>
+        <p
+          class="status wide"
+          id="finFormStatus"
+          role="status"
+          aria-live="polite"
+        ></p>
+        <div class="sheet-actions wide">
+          <button type="button" class="btn-ghost" id="finFormClose">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-primary">Salvar</button>
+        </div>
+      </form>
+    </dialog>
+    <script src="/sistema/js/agenda.js" defer></script>
+    <script src="/sistema/js/finance.js" defer></script>
   </body>
 </html>

@@ -4,11 +4,14 @@ import {
   makePasswordRecord, createSessionCookie, clearSessionCookie,
 } from '../netlify/lib/admin-session.mjs';
 import { STATUSES, newAccessCode, hashAccessCode, isAccessCode } from '../netlify/lib/stages.mjs';
-import { TIMES, SERVICES, ENGINES, MOTO_ENGINES, MOTO_ONLY_SERVICES, OPEN_DAYS, localToday } from './rules.mjs';
+import { localToday } from './rules.mjs';
+import { checkFields } from './booking-rules.mjs';
+import { adminCreateBooking } from './admin-booking.mjs';
 import { d1, isUnique, limited, readJson, requireAdmin, json } from './http.mjs';
 import { inspectionRoutes, inspectionFor } from './inspection.mjs';
 import { growthRoutes } from './growth.mjs';
-import { settingsRoutes, getSettings, tooSoon } from './settings.mjs';
+import { financeRoutes } from './finance.mjs';
+import { settingsRoutes, getSettings, tooSoon, slotsFor } from './settings.mjs';
 
 export async function handleApi(request, env, url) {
   const path = url.pathname;
@@ -20,11 +23,14 @@ export async function handleApi(request, env, url) {
     if (path === '/api/bookings') return method === 'POST' ? createBooking(db, request, env) : json({ error: 'Método não permitido.' }, 405);
     if (path === '/api/os') return method === 'POST' ? serviceOrder(db, request, env) : json({ error: 'Método não permitido.' }, 405);
     if (path === '/api/admin/bookings') return method === 'GET' ? adminBookings(db, request) : json({ error: 'Método não permitido.' }, 405);
+    if (path === '/api/admin/bookings/new') return method === 'POST' ? adminCreateBooking(db, request) : json({ error: 'Método não permitido.' }, 405);
     if (path === '/api/admin/bookings/status') return method === 'POST' ? adminStatus(db, request) : json({ error: 'Método não permitido.' }, 405);
     const inspection = await inspectionRoutes(db, request, env, url);
     if (inspection) return inspection;
     const growth = await growthRoutes(db, request, url);
     if (growth) return growth;
+    const finance = await financeRoutes(db, request, url);
+    if (finance) return finance;
     const settings = await settingsRoutes(db, request, env, url);
     if (settings) return settings;
     if (['/api/admin/status', '/api/admin/login', '/api/admin/logout', '/api/admin/setup'].includes(path)) return adminAuth(db, request, env, path);
@@ -40,12 +46,12 @@ async function availability(db, url) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(selected)) return json({ error: 'Informe uma data válida.' }, 400);
   const parsed = new Date(`${selected}T12:00:00Z`);
   if (Number.isNaN(parsed.valueOf()) || parsed.toISOString().slice(0, 10) !== selected) return json({ error: 'Informe uma data válida.' }, 400);
-  if (selected < localToday() || !OPEN_DAYS.has(parsed.getUTCDay())) return json({ slots: [] }, 200);
+  if (selected < localToday()) return json({ slots: [] }, 200);
   const settings = await getSettings(db);
   const rows = await db.sql`SELECT booking_time, COUNT(*) AS n FROM bookings WHERE booking_date = ${selected} AND status <> 'cancelled' GROUP BY booking_time`;
   const taken = new Map(rows.map(row => [row.booking_time, row.n]));
   return json({
-    slots: [...TIMES].map(time => ({
+    slots: slotsFor(settings, selected).map(time => ({
       time,
       available: (taken.get(time) ?? 0) < settings.capacity && !tooSoon(selected, time, settings.minNoticeHours),
     })),
@@ -59,19 +65,11 @@ async function createBooking(db, request, env) {
   if (String(body.website ?? '').trim()) return json({ error: 'Não foi possível enviar o pedido.' }, 400);
   if (body.consent !== 'yes') return json({ error: 'Confirme a autorização de uso dos dados para este agendamento.' }, 400);
 
-  const keys = ['name', 'phone', 'motorcycle', 'service', 'engine', 'date', 'time', 'notes'];
-  const f = Object.fromEntries(keys.map(key => [key, typeof body[key] === 'string' ? body[key].trim() : '']));
-  if (keys.slice(0, 7).some(key => !f[key])) return json({ error: 'Preencha todos os campos obrigatórios.' }, 400);
-  if (!SERVICES.has(f.service) || !ENGINES.has(f.engine) || !TIMES.has(f.time)) return json({ error: 'Serviço, cilindrada/porte ou horário inválido.' }, 400);
-  if (MOTO_ONLY_SERVICES.has(f.service) && !MOTO_ENGINES.has(f.engine)) return json({ error: 'Esse serviço adicional é só para motos.' }, 400);
-  if (f.name.length > 80 || f.phone.length > 20 || f.motorcycle.length > 80 || f.notes.length > 500) return json({ error: 'Revise os campos: um deles excede o tamanho permitido.' }, 400);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(f.date)) return json({ error: 'Informe uma data válida.' }, 400);
-  const chosen = new Date(`${f.date}T12:00:00Z`);
-  if (Number.isNaN(chosen.valueOf()) || chosen.toISOString().slice(0, 10) !== f.date || f.date < localToday() || !OPEN_DAYS.has(chosen.getUTCDay())) return json({ error: 'A data escolhida não está disponível. Selecione outro dia.' }, 400);
-  const digits = (f.phone.match(/\d/g) ?? []).length;
-  if (!/^\+?[\d\s().-]+$/.test(f.phone) || digits < 10 || digits > 13) return json({ error: 'Informe um número de WhatsApp válido.' }, 400);
+  const { f, error: invalid } = checkFields(body);
+  if (invalid) return json({ error: invalid }, 400);
 
   const settings = await getSettings(db);
+  if (!slotsFor(settings, f.date).includes(f.time)) return json({ error: 'A data ou o horário escolhido não está disponível.' }, 400);
   if (settings.disabledServices.includes(f.service)) return json({ error: 'Esse serviço não está disponível para agendamento online.' }, 400);
   if (tooSoon(f.date, f.time, settings.minNoticeHours)) return json({ error: 'Esse horário já não pode ser agendado. Escolha outro.' }, 409);
   const id = crypto.randomUUID().replaceAll('-', '').slice(0, 8).toUpperCase();

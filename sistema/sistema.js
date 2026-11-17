@@ -39,6 +39,11 @@ function showLogin() {
       "Agenda",
       "Atendimentos do dia escolhido, com as etapas de cada veículo.",
     ],
+    horarios: [
+      "03 / Expediente",
+      "Horários",
+      "O expediente de cada dia da semana, para a agenda e o link de reservas.",
+    ],
     os: [
       "03 / Ordens de serviço",
       "Ordens de serviço",
@@ -58,6 +63,11 @@ function showLogin() {
       "06 / Reservas online",
       "Agendamento online",
       "Link para a bio do Instagram e as regras do agendamento.",
+    ],
+    financeiro: [
+      "06 / Resultados",
+      "Financeiro",
+      "Entradas, despesas, taxas e o resultado do mês.",
     ],
     automacoes: [
       "07 / Conexões",
@@ -158,6 +168,8 @@ function showLogin() {
     if (page === "crescimento") window.jvGrowthLoad?.();
     if (page === "online") window.jvOnlineLoad?.();
     if (page === "automacoes") window.jvAutoLoad?.();
+    if (page === "horarios") window.jvHoursLoad?.();
+    if (page === "financeiro") window.jvFinanceLoad?.();
     render();
   }
   window.addEventListener("hashchange", route);
@@ -286,7 +298,31 @@ function showLogin() {
     );
     fillList($("#osList"), inShop, "Nenhum veículo no estúdio agora.");
     renderClients();
+    window.jvAgendaRender?.();
   }
+
+  // Usado por agenda.js (semana/mês, horários, novo agendamento).
+  window.jv = {
+    get bookings() {
+      return bookings;
+    },
+    get day() {
+      return day;
+    },
+    setDay(value) {
+      day = value;
+      render();
+    },
+    status,
+    longDate,
+    localToday,
+    compactCard,
+    fillList,
+    async reload() {
+      await loadBookings();
+      render();
+    },
+  };
 
   /* ---------- Cartão de atendimento ---------- */
   function fillList(list, items, emptyText, compact = false) {
@@ -528,6 +564,11 @@ function showLogin() {
 
   /* ---------- Início ---------- */
   (async () => {
+    // Espera os outros scripts (agenda, financeiro...) carregarem antes de abrir a tela.
+    if (document.readyState === "loading")
+      await new Promise((resolve) =>
+        document.addEventListener("DOMContentLoaded", resolve, { once: true }),
+      );
     try {
       const response = await fetch("/api/admin/bookings", {
         credentials: "same-origin",

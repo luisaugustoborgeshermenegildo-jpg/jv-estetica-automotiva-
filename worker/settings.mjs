@@ -5,11 +5,31 @@ import { readJson, requireAdmin, limited, json } from './http.mjs';
 import { SERVICES, localToday } from './rules.mjs';
 
 const KINDS = ['confirm', 'reminder', 'ready', 'survey', 'return'];
+// Expediente por dia da semana (0 = domingo). Horários cheios (HH:00); a agenda é de 1 em 1 hora.
+const DAY = { on: true, open: '08:00', close: '18:00', lunch: false, lunchStart: '12:00', lunchEnd: '13:00' };
+export const DEFAULT_SCHEDULE = Object.fromEntries([0, 1, 2, 3, 4, 5, 6].map(d => [String(d), { ...DAY, on: d !== 1 }]));
+const HOUR = /^([01]\d|2[0-3]):00$/;
+
+// Horários de atendimento de uma data, conforme o expediente.
+export function slotsFor(settings, date) {
+  const day = settings.schedule[String(new Date(`${date}T12:00:00Z`).getUTCDay())];
+  if (!day?.on) return [];
+  const h = t => Number(t.slice(0, 2));
+  const slots = [];
+  for (let hour = h(day.open); hour < h(day.close); hour++) {
+    if (day.lunch && hour >= h(day.lunchStart) && hour < h(day.lunchEnd)) continue;
+    slots.push(`${String(hour).padStart(2, '0')}:00`);
+  }
+  return slots;
+}
+
 export const DEFAULTS = {
   minNoticeHours: 1,
   capacity: 1,
   onlineCancel: true,
   disabledServices: [],
+  // Meta de receita do mês e taxa (%) de cada forma de pagamento.
+  finance: { goalCents: 0, fees: { pix: 0, dinheiro: 0, debito: 1.99, credito: 4.99, outro: 0 } },
   automations: {
     confirm: { on: true, text: 'Olá, {nome}! Seu agendamento na JV Estética está confirmado: {servico} em {data} às {hora}. Protocolo #{protocolo}.' },
     reminder: { on: true, text: 'Olá, {nome}! Lembrete: hoje às {hora} tem {servico} da sua {veiculo} na JV Estética. Te esperamos!' },
@@ -25,7 +45,10 @@ export async function getSettings(db) {
   try { saved = rows.length ? JSON.parse(rows[0].value) : {}; } catch { saved = {}; }
   const automations = {};
   for (const kind of KINDS) automations[kind] = { ...DEFAULTS.automations[kind], ...(saved.automations?.[kind] ?? {}) };
-  return { ...DEFAULTS, ...saved, automations };
+  const schedule = {};
+  for (const d of Object.keys(DEFAULT_SCHEDULE)) schedule[d] = { ...DEFAULT_SCHEDULE[d], ...(saved.schedule?.[d] ?? {}) };
+  const finance = { ...DEFAULTS.finance, ...(saved.finance ?? {}), fees: { ...DEFAULTS.finance.fees, ...(saved.finance?.fees ?? {}) } };
+  return { ...DEFAULTS, ...saved, automations, schedule, finance };
 }
 
 // Agora em Uberaba: data (AAAA-MM-DD) e minutos desde meia-noite.
@@ -55,6 +78,37 @@ function validSettings(body, current) {
     next.capacity = body.capacity;
   }
   if (body.onlineCancel !== undefined) next.onlineCancel = body.onlineCancel === true;
+  if (body.finance !== undefined) {
+    if (!body.finance || typeof body.finance !== 'object') return null;
+    if (body.finance.goalCents !== undefined) {
+      if (!Number.isInteger(body.finance.goalCents) || body.finance.goalCents < 0 || body.finance.goalCents > 100_000_000) return null;
+      next.finance.goalCents = body.finance.goalCents;
+    }
+    if (body.finance.fees !== undefined) {
+      if (!body.finance.fees || typeof body.finance.fees !== 'object') return null;
+      for (const [method, pct] of Object.entries(body.finance.fees)) {
+        if (!(method in next.finance.fees) || typeof pct !== 'number' || !Number.isFinite(pct) || pct < 0 || pct > 30) return null;
+        next.finance.fees[method] = Math.round(pct * 100) / 100;
+      }
+    }
+  }
+  if (body.schedule !== undefined) {
+    if (!body.schedule || typeof body.schedule !== 'object') return null;
+    for (const [d, day] of Object.entries(body.schedule)) {
+      if (!(d in DEFAULT_SCHEDULE) || !day || typeof day !== 'object') return null;
+      const merged = { ...next.schedule[d] };
+      for (const key of ['open', 'close', 'lunchStart', 'lunchEnd']) {
+        if (day[key] === undefined) continue;
+        if (!HOUR.test(day[key])) return null;
+        merged[key] = day[key];
+      }
+      if (day.on !== undefined) merged.on = day.on === true;
+      if (day.lunch !== undefined) merged.lunch = day.lunch === true;
+      if (merged.open >= merged.close) return null;
+      if (merged.lunch && (merged.lunchStart >= merged.lunchEnd || merged.lunchStart < merged.open || merged.lunchEnd > merged.close)) return null;
+      next.schedule[d] = merged;
+    }
+  }
   if (body.disabledServices !== undefined) {
     if (!Array.isArray(body.disabledServices) || body.disabledServices.some(s => !SERVICES.has(s))) return null;
     next.disabledServices = [...new Set(body.disabledServices)];
@@ -122,7 +176,8 @@ export async function settingsRoutes(db, request, env, url) {
   // Público: o site usa para esconder serviços desligados e mostrar o cancelamento.
   if (path === '/api/booking-config' && method === 'GET') {
     const s = await getSettings(db);
-    return json({ disabledServices: s.disabledServices, onlineCancel: s.onlineCancel, minNoticeHours: s.minNoticeHours }, 200);
+    const openDays = Object.entries(s.schedule).filter(([, day]) => day.on).map(([d]) => Number(d));
+    return json({ disabledServices: s.disabledServices, onlineCancel: s.onlineCancel, minNoticeHours: s.minNoticeHours, openDays }, 200);
   }
 
   if (path === '/api/admin/settings') {
