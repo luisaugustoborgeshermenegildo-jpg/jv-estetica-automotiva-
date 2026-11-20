@@ -82,7 +82,7 @@ try{
  await sleep(700);
  await check('Profundidade retorna ao repouso', "document.querySelector('.hero-photo').style.getPropertyValue('--depth-y')===''");
  await check('Letras retornam ao repouso', "document.querySelector('.motion-letter').style.translate===''");
- await ev("document.querySelector('.hero-actions a[href=\"#servicos\"]').click()");
+ await ev("(document.querySelector('.hero-actions a[href=\"#servicos\"]')||document.querySelector('.nav a[href=\"#servicos\"]')).click()");
  await wait("location.hash==='#servicos' && Math.abs(document.querySelector('#servicos').getBoundingClientRect().top-112)<5");
  await check('Navegação suave chega ao destino com foco', "document.activeElement.id==='servicos'");
  if (pagePath.includes('monochrome')) {
